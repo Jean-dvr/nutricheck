@@ -1,9 +1,9 @@
 <?php 
 namespace App\Controllers;
 
-use App\Models\UsuarioModel;
+use App\Models\UserModel;
 
-use App\Libraries\Hash;
+use App\Libraries\Hash; 
 
 class Authen extends BaseController{
 
@@ -37,7 +37,6 @@ class Authen extends BaseController{
         return view('authen/register');
     }
 
-
    /**
      * Procesa los datos del formulario de registro.
      * Valida la información, encripta la contraseña e inserta el registro en la base de datos.
@@ -51,12 +50,12 @@ class Authen extends BaseController{
         }
         
         // 2. Instanciamos el modelo de base de datos
-        $usuarioModel = new UsuarioModel(); 
+        $userModel = new UserModel(); 
 
         // 3. Preparamos e insertamos en un solo paso (El Hash se aplica en línea)
-        $insercion = $usuarioModel->insert([
-            'nombre'   => trim($this->request->getPost('nombre')),
-            'correo'   => trim($this->request->getPost('correo')),
+        $insercion = $userModel->insert([
+            'name'   => trim($this->request->getPost('name')),
+            'email'   => trim($this->request->getPost('email')),
             'password' => Hash::make($this->request->getPost('password'))
         ]);
 
@@ -84,31 +83,31 @@ class Authen extends BaseController{
         }
 
         // 2. Atrapamos los datos limpios enviados por el usuario
-        $correo   = trim($this->request->getPost('correo'));
+        $email   = trim($this->request->getPost('email'));
         $password = $this->request->getPost('password');
 
         // 3. Buscamos al usuario en la base de datos por su correo
-        $usuarioModel = new UsuarioModel();
+        $userModel = new UserModel();
 
-        $usuario = $usuarioModel->where('correo', $correo)->first(); 
+        $user = $userModel->where('email', $email)->first(); 
 
         // 4. EL PORTERO: Verificamos si el correo no existe
-        if (!$usuario) {
+        if (!$user) {
             return redirect()->to(base_url('login'))->withInput()->with('fail', 
             'Este correo no se encuentra registrado. Por favor, regístrate.');
         }
 
         // 5. Verificamos la contraseña usando la función de Hash personalizada
 
-        if (!Hash::check($password, $usuario['password'])) {
+        if (!Hash::check($password, $user['password'])) {
             return redirect()->to(base_url('login'))->withInput()->with('fail', 
             'Contraseña incorrecta. Intenta de nuevo.');
         }
 
         // 6. Iniciamos sesión y guardamos datos esenciales en la sesión
         session()->set([
-            'loggedUser' => $usuario['id_usuario'], //
-            'nombre'     => $usuario['nombre'],  // Guardamos el nombre para la interfaz
+            'loggedUser' => $user['id'], //
+            'name'     => $user['name'],  // Guardamos el nombre para la interfaz
             'isLoggedIn' => true                 // Bandera explícita de seguridad
         ]);
         

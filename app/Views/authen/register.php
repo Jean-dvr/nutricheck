@@ -19,21 +19,21 @@
         
        
             
-        <label for="nombre">Nombre de Usuario:</label><br>
-        <input type="text" id="nombre" name="nombre"  placeholder="Ingresa tu nombre de usuario"
-        value="<?= set_value('nombre') ?>">
+        <label for="name">Nombre de Usuario:</label><br>
+        <input type="text" id="name" name="name"  placeholder="Ingresa tu nombre de usuario"
+        value="<?= set_value('name') ?>">
         
         <br>
             
-        <span class="text-danger"><?= isset($validation) ? display_error($validation, 'nombre') : '' ?></span>
+        <span class="text-danger"><?= isset($validation) ? display_error($validation, 'name') : '' ?></span>
 
         <br>
 
-        <label for="correo">Correo Electrónico:</label><br>
-        <input type="email" id="correo" name="correo"  placeholder="Ingresa tu correo electrónico" 
-        value="<?= set_value('correo') ?>">
+        <label for="email">Correo Electrónico:</label><br>
+        <input type="email" id="email" name="email"  placeholder="Ingresa tu correo electrónico" 
+        value="<?= set_value('email') ?>">
         <br>
-        <span class="text-danger"><?= isset($validation) ? display_error($validation, 'correo') : '' ?></span>
+        <span class="text-danger"><?= isset($validation) ? display_error($validation, 'email') : '' ?></span>
         <br>
         
 

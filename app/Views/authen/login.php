@@ -24,10 +24,10 @@
             </div>
         <?php endif; ?>
         
-        <label for="correo">Correo Electrónico:</label><br>
-        <input type="email" id="correo" name="correo"  placeholder="Ingresa tu correo electrónico" value="<?= set_value('correo') ?>">
+        <label for="email">Correo Electrónico:</label><br>
+        <input type="email" id="email" name="email"  placeholder="Ingresa tu correo electrónico" value="<?= set_value('email') ?>">
         <br>
-        <span class="text-danger"><?= isset($validation) ? display_error($validation, 'correo') : '' ?></span>
+        <span class="text-danger"><?= isset($validation) ? display_error($validation, 'email') : '' ?></span>
         <br>
 
         <label for="password">Contraseña:</label><br>
