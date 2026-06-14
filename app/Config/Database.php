@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => '',
+        'username'     => 'root',
         'password'     => '',
-        'database'     => '',
+        'database'     => 'biblioteca',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -140,7 +140,7 @@ class Database extends Config
     //     * @var array<string, mixed>
     //     */
     //    public array $default = [
-    //        'DSN'        => 'localhost:1521/FREEPDB1',
+    //        'DSN'        => 'localhost:1521/XEPDB1',
     //        'username'   => 'root',
     //        'password'   => 'root',
     //        'DBDriver'   => 'OCI8',
