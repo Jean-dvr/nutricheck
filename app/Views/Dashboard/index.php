@@ -6,7 +6,7 @@
 </head>
 <body>
 
-    <h1>Bienvenido a NutriCheck, <?= session()->get('nombre') ?></h1>
+    <h1>Bienvenido a NutriCheck, <?= session()->get('name') ?></h1>
     <p>Este es tu panel de control privado.</p>
 
 

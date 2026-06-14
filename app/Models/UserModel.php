@@ -8,14 +8,13 @@ use CodeIgniter\Model;
  /*Modelo de Usuarios para NutriCheck.
  Gestiona la conexión y las reglas de interacción con la tabla de usuarios en la base de datos.
  */
-class UsuarioModel extends Model
+class UserModel extends Model
 {
 
     // CONFIGURACIÓN DE LA TABLA
-    protected $table            = 'usuarios';
-    protected $primaryKey       = 'id_usuario';
+    protected $table            = 'users'; // Nombre de la tabla en la base de datos
+    protected $primaryKey       = 'id';    // Clave primaria de la tabla
     protected $useAutoIncrement = true;
-    
     // Queremos que las consultas nos devuelvan arreglos para un manejo más rápido
     protected $returnType       = 'array';
 
@@ -23,7 +22,7 @@ class UsuarioModel extends Model
     
     // ¡Súper importante! Solo estos campos pueden ser modificados por el usuario.
     // Protege contra la inyección de columnas no autorizadas (ej. cambiar un rol o permisos).
-    protected $allowedFields    = ['nombre', 'correo', 'password'];
+    protected $allowedFields    = ['name', 'email', 'password'];
 
     
     // AUDITORÍA AUTOMÁTICA
@@ -31,4 +30,17 @@ class UsuarioModel extends Model
     protected $useTimestamps    = true;
     protected $createdField     = 'created_at';
     protected $updatedField     = 'updated_at';
+
+    /**
+     * @var bool $useSoftDeletes Activa la eliminación lógica. Cuando ejecutes un delete(),
+     * el registro NO se borrará físicamente del disco duro; se mantendrá guardado pero oculto.
+     */
+    protected $useSoftDeletes   = true;
+
+    /**
+     * @var string $deletedField Columna que almacena la fecha del borrado. Si este campo está en
+     * NULL, el usuario está activo. Si tiene una fecha, CodeIgniter lo ignorará en las consultas
+     * normales (findAll() o first()), simulando que ya no existe (ideal para resguardar historial médico).
+     */
+    protected $deletedField     = 'deleted_at';
 }
