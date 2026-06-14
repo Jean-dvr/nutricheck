@@ -57,8 +57,8 @@ class Authen extends BaseController{
 
         // 3. Preparamos e insertamos en un solo paso (El Hash se aplica en línea)
         $insercion = $usuarioModel->insert([
-            'nombre'   => $this->request->getPost('nombre'),
-            'correo'   => $this->request->getPost('correo'),
+            'nombre'   => trim($this->request->getPost('nombre')),
+            'correo'   => trim($this->request->getPost('correo')),
             'password' => Hash::make($this->request->getPost('password'))
         ]);
 
@@ -86,7 +86,7 @@ class Authen extends BaseController{
         }
 
         // 2. Atrapamos los datos limpios enviados por el usuario
-        $correo   = $this->request->getPost('correo');
+        $correo   = trim($this->request->getPost('correo'));
         $password = $this->request->getPost('password');
 
         // 3. Buscamos al usuario en la base de datos por su correo
@@ -116,6 +116,21 @@ class Authen extends BaseController{
         
         return redirect()->to(base_url('dashboard'));
     }
+
+    /**
+     * Cierra la sesión del usuario.
+     * Ruta: GET /logout
+     */
+    public function logout() 
+    {
+        // Destruimos la sesión completa por seguridad
+        session()->destroy();
+        
+        // Redirigimos al login
+        return redirect()->to(base_url('login'))->with('success', 'Has cerrado sesión exitosamente. ¡Hasta pronto!');
+    }
+
+
 
 }
 

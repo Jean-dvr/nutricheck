@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         // Filtros personalizados
         'auth'          => \App\Filters\AuthCheckFilter::class,
+        'guest'         => \App\Filters\GuestFilter::class,
     ];
 
     /**
@@ -108,5 +109,13 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = ['guest' => [
+            'before' => [
+                'login', 
+                'login/*', 
+                'register', 
+                'register/*'
+            ]
+        ],
+        ];
 }

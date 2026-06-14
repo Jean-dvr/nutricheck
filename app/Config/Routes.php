@@ -28,3 +28,8 @@ $routes->post('/register/guardar', 'Authen::guardar');
 // 4. ÁREA PRIVADA / PROTEGIDA (Requieren sesión iniciada)
 // --------------------------------------------------------------------
 $routes->get('/dashboard', 'Dashboard::index', ['filter' => 'auth']);
+
+// --------------------------------------------------------------------
+// 5. RUTAS DE CIERRE DE SESIÓN
+// --------------------------------------------------------------------
+$routes->get('/logout', 'Authen::logout');

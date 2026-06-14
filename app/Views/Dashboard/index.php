@@ -1,11 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - NutriCheck</title>
 </head>
 <body>
-    <h4>    Dashboard</h4>
+
+    <h1>Bienvenido a NutriCheck, <?= session()->get('nombre') ?></h1>
+    <p>Este es tu panel de control privado.</p>
+
+
+    <a href="<?= base_url('logout') ?>" style="color: red; text-decoration: none; font-weight: bold;">
+        Cerrar Sesión
+    </a>
+
 </body>
-</html> 
+</html>
