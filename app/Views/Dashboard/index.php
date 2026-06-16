@@ -1,18 +1,61 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - NutriCheck</title>
-</head>
-<body>
+<?= view('template/cabecera') ?>
 
-    <h1>Bienvenido a NutriCheck, <?= session()->get('name') ?></h1>
-    <p>Este es tu panel de control privado.</p>
+<div class="container mt-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="font-weight-bold text-dark">Bienvenido, <?= session()->get('name') ?> 👋</h1>
+            <p class="text-muted">¿Qué deseas gestionar hoy en NutriCheck?</p>
+        </div>
+        <div>
+            <a href="<?= base_url('perfil') ?>" class="btn btn-outline-secondary shadow-sm">
+                ⚙️ Configuración de Perfil
+            </a>
+        </div>
+    </div>
 
+    <div class="row">
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center mt-3">
+                    <h1 class="mb-3">⚖️</h1>
+                    <h5 class="card-title font-weight-bold">Calculadora IMC</h5>
+                    <p class="card-text text-muted">Calcula tu Índice de Masa Corporal y conoce tu estado actual.</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center mb-3">
+                    <a href="<?= base_url('imc') ?>" class="btn btn-primary btn-block rounded-pill">Calcular IMC</a>
+                </div>
+            </div>
+        </div>
 
-    <a href="<?= base_url('logout') ?>" style="color: red; text-decoration: none; font-weight: bold;">
-        Cerrar Sesión
-    </a>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center mt-3">
+                    <h1 class="mb-3">🥗</h1>
+                    <h5 class="card-title font-weight-bold">Diario de Comidas</h5>
+                    <p class="card-text text-muted">Registra y monitorea tus alimentos consumidos día a día.</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center mb-3">
+                    <a href="<?= base_url('comidas') ?>" class="btn btn-success btn-block rounded-pill">Registrar Comida</a>
+                </div>
+            </div>
+        </div>
 
-</body>
-</html>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center mt-3">
+                    <h1 class="mb-3">📖</h1>
+                    <h5 class="card-title font-weight-bold">Buscador de Recetas</h5>
+                    <p class="card-text text-muted">Encuentra recetas filtradas según tu perfil clínico y patologías.</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center mb-3">
+                    <a href="<?= base_url('recetas') ?>" class="btn btn-warning btn-block rounded-pill text-white">Buscar Recetas</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<?= view('template/piepagina') ?>
