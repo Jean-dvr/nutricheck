@@ -6,17 +6,22 @@ use CodeIgniter\Database\Migration;
 
 class CreateUsersTable extends Migration
 {
-   public function up() {
+   public function up() 
+   {
     $this->forge->addField([
         'id' => ['type' => 'INT', 'auto_increment' => true],
         'name' => ['type' => 'VARCHAR', 'constraint' => '100'],
         'email' => ['type' => 'VARCHAR', 'constraint' => '150', 'unique' => true],
         'password' => ['type' => 'VARCHAR', 'constraint' => '255'],
-        'is_premium' => ['type' => 'BOOLEAN', 'default' => false],
+        'rol' => ['type' => 'ENUM','constraint' => ['free','premium','nutricionista','admin'],'default' => 'free','null' => false],
         'created_at' => ['type' => 'DATETIME', 'null' => true],
         'updated_at' => ['type' => 'DATETIME', 'null' => true],
         'deleted_at' => ['type' => 'DATETIME', 'null' => true],
-    ]);
+        'sex' => ['type'       => 'ENUM','constraint' => ['male', 'female', 'other'],'null'       => true,],
+        'birth_date' => ['type' => 'DATE','null' => true,],
+        'waist_measure' => ['type' => 'DECIMAL','constraint' => '5,2', 'null'=> true ] 
+        ]);
+
     $this->forge->addKey('id', true);
     $this->forge->createTable('users');
     }

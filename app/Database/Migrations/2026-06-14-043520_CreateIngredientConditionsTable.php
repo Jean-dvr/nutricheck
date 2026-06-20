@@ -6,16 +6,37 @@ use CodeIgniter\Database\Migration;
 
 class CreateIngredientConditionsTable extends Migration
 {
-    public function up() {
-    $this->forge->addField([
-        'ingredient_id' => ['type' => 'INT'],
-        'condition_id' => ['type' => 'INT'],
-    ]);
-    $this->forge->addKey(['ingredient_id', 'condition_id'], true);
-    $this->forge->addForeignKey('ingredient_id', 'ingredients', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->addForeignKey('condition_id', 'health_conditions', 'id', 'CASCADE', 'CASCADE');
-    $this->forge->createTable('ingredient_conditions');
-    }
-        public function down() { $this->forge->dropTable('ingredient_conditions'); }
+    public function up() 
+    {
+        $this->forge->addField([
+            'id' => [
+                'type'           => 'INT',
+                'unsigned'       => true,
+                'auto_increment' => true
+            ],
+            'ingredient_id' => ['type' => 'INT'],
+            'condition_id'  => ['type' => 'INT'],
+        ]);
 
+        // 1. Llave primaria simple
+        $this->forge->addKey('id', true);
+        
+        // 2. Índice único para evitar duplicados
+        $this->forge->addUniqueKey(['ingredient_id', 'condition_id']);
+        
+        // 3. Índice de búsqueda para filtros automáticos de alergias
+        $this->forge->addKey('ingredient_id');
+        $this->forge->addKey('condition_id');
+
+        // Llaves foráneas
+        $this->forge->addForeignKey('ingredient_id', 'ingredients', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('condition_id', 'health_conditions', 'id', 'CASCADE', 'CASCADE');
+        
+        $this->forge->createTable('ingredient_conditions');
+    }
+
+    public function down() 
+    { 
+        $this->forge->dropTable('ingredient_conditions'); 
+    }
 }
