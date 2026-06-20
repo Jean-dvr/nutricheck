@@ -108,6 +108,7 @@ class Authen extends BaseController{
         session()->set([
             'loggedUser' => $user['id'], //
             'name'     => $user['name'],  // Guardamos el nombre para la interfaz
+            'rol'       => $user['rol'], // Guardamos el rol para el control de acceso
             'isLoggedIn' => true                 // Bandera explícita de seguridad
         ]);
         
