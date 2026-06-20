@@ -17,7 +17,8 @@ class HealthProfilesModel extends Model
         'weight_kg', 
         'height_cm', 
         'current_bmi', 
-        'goal'
+        'goal',
+        'waist_measure',
     ];
 
     protected bool $allowEmptyInserts = false;

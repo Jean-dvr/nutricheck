@@ -14,6 +14,7 @@ class CreateHealthProfilesTable extends Migration
         'height_cm' => ['type' => 'INT'],
         'current_bmi' => ['type' => 'DECIMAL', 'constraint' => '4,2', 'null' => true],
         'goal' => ['type' => 'ENUM', 'constraint' => ['lose_fat', 'gain_muscle', 'maintenance']],
+        'waist_measure' => ['type' => 'DECIMAL','constraint' => '5,2', 'null'=> true ] 
     ]);
     $this->forge->addKey('id', true);
     $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
