@@ -29,6 +29,9 @@ $routes->post('/register/guardar', 'Authen::guardar');
 // --------------------------------------------------------------------
 $routes->get('/dashboard', 'Dashboard::index', ['filter' => 'auth']);
 
+// Nuevas rutas de la calculadora IMC
+$routes->get('/imc', 'Imc::index', ['filter' => 'auth']);
+$routes->post('/imc/calcular', 'Imc::calcular', ['filter' => 'auth']);
 // --------------------------------------------------------------------
 // 5. RUTAS DE CIERRE DE SESIÓN
 // --------------------------------------------------------------------

@@ -98,4 +98,39 @@ class Validation extends BaseConfig
             'min_length' => 'La contraseña debe tener al menos 6 caracteres.'
         ]
     ];
+
+    // 3. Grupo IMC
+
+    public $calculoImc = [
+        'sexo'    => 'required|in_list[M,F]',
+        'altura'  => 'required|numeric|greater_than_equal_to[50]|less_than_equal_to[250]',
+        'peso'    => 'required|numeric|greater_than_equal_to[10]|less_than_equal_to[300]',
+        'cintura' => 'required|numeric|greater_than_equal_to[30]|less_than_equal_to[200]'
+    ];
+
+    public $calculoImc_errors = [
+        'sexo' => [
+            'required' => 'Debes seleccionar tu sexo biológico.',
+            'in_list'  => 'El sexo seleccionado no es válido.'
+        ],
+        'altura' => [
+            'required'              => 'La altura es obligatoria.',
+            'numeric'               => 'La altura debe ser un número.',
+            'greater_than_equal_to' => 'La altura ingresada es demasiado baja.',
+            'less_than_equal_to'    => 'La altura excede el límite realista (250 cm).'
+        ],
+        'peso' => [
+            'required'              => 'El peso es obligatorio.',
+            'numeric'               => 'El peso debe ser un número.',
+            'greater_than_equal_to' => 'El peso ingresado es demasiado bajo.',
+            'less_than_equal_to'    => 'El peso excede el límite realista (300 kg).'
+        ],
+        'cintura' => [
+            'required'              => 'La medida de la cintura es obligatoria.',
+            'numeric'               => 'La cintura debe ser un número.',
+            'greater_than_equal_to' => 'La cintura es demasiado baja.',
+            'less_than_equal_to'    => 'La cintura excede el límite realista (200 cm).'
+        ]
+    ];
+
 }
