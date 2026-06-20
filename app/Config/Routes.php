@@ -36,3 +36,9 @@ $routes->post('/imc/calcular', 'Imc::calcular', ['filter' => 'auth']);
 // 5. RUTAS DE CIERRE DE SESIÓN
 // --------------------------------------------------------------------
 $routes->get('/logout', 'Authen::logout');
+
+// --------------------------------------------------------------------
+// RUTAS DE CONFIGURACIÓN DE PERFIL
+// --------------------------------------------------------------------
+$routes->get('/perfil', 'Profile::index', ['filter' => 'auth']);
+$routes->post('/perfil/actualizar', 'Profile::actualizar', ['filter' => 'auth']);
