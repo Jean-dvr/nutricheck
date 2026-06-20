@@ -15,8 +15,7 @@ class UsersSeeder extends Seeder
                 'password'   => password_hash('12345', PASSWORD_BCRYPT),
                 'rol'        => 'admin',
                 'sex'        => 'male',          
-                'birth_date' => '1995-05-26',     
-                'waist_measure' => 75.50,             
+                'birth_date' => '1995-05-26',                 
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
@@ -26,7 +25,6 @@ class UsersSeeder extends Seeder
                 'rol'        => 'nutricionista',
                 'sex'        => 'famale',          
                 'birth_date' => '1996-07-10',     
-                'waist_measure' => 70.50,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
@@ -36,7 +34,6 @@ class UsersSeeder extends Seeder
                 'rol'        => 'free',
                 'sex'        => 'male',          
                 'birth_date' => '1990-08-20',     
-                'waist_measure' => 65.50,
                 'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
