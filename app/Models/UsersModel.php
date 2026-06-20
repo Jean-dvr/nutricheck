@@ -24,7 +24,6 @@ class UserModel extends Model
         'deleted_at',
         'sex',
         'birth_date',
-        'waist_measure',
         ];
 
     protected $useTimestamps    = true;
