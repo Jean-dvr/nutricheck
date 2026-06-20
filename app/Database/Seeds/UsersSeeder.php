@@ -15,7 +15,8 @@ class UsersSeeder extends Seeder
                 'password'   => password_hash('12345', PASSWORD_BCRYPT),
                 'rol'        => 'admin',
                 'sex'        => 'male',          
-                'birth_date' => '1995-05-26',                 
+                'birth_date' => '1995-05-26', 
+                'avatar'     => 'admin_profile.png', // Ejemplo: Ponemos una imagen personalizada                
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
@@ -24,7 +25,8 @@ class UsersSeeder extends Seeder
                 'password'   => password_hash('123456', PASSWORD_BCRYPT),
                 'rol'        => 'nutricionista',
                 'sex'        => 'famale',          
-                'birth_date' => '1996-07-10',     
+                'birth_date' => '1996-07-10', 
+                'avatar'        => 'default-avatar.png',    
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
@@ -33,7 +35,8 @@ class UsersSeeder extends Seeder
                 'password'   => password_hash('123456', PASSWORD_BCRYPT),
                 'rol'        => 'free',
                 'sex'        => 'male',          
-                'birth_date' => '1990-08-20',     
+                'birth_date' => '1990-08-20',  
+                'avatar'        => 'default-avatar.png',   
                 'created_at' => date('Y-m-d H:i:s'),
             ]
         ];

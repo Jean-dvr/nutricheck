@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
         'deleted_at' => ['type' => 'DATETIME', 'null' => true],
         'sex' => ['type'       => 'ENUM','constraint' => ['male', 'female', 'other'],'null'       => true,],
         'birth_date' => ['type' => 'DATE','null' => true,],
+        'avatar'     => ['type' => 'VARCHAR', 'constraint' => '255', 'null' => true, 'default' => 'default-avatar.png'],
         ]);
 
     $this->forge->addKey('id', true);
