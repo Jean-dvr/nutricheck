@@ -42,3 +42,9 @@ $routes->get('/logout', 'Authen::logout');
 // --------------------------------------------------------------------
 $routes->get('/perfil', 'Profile::index', ['filter' => 'auth']);
 $routes->post('/perfil/actualizar', 'Profile::actualizar', ['filter' => 'auth']);
+
+// --------------------------------------------------------------------
+// Rutas del registro de comidas
+// --------------------------------------------------------------------
+$routes->get('/comidas', 'MealLogs::index', ['filter' => 'auth']);
+$routes->post('/comidas/guardar', 'MealLogs::guardar', ['filter' => 'auth']);
