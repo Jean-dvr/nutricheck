@@ -13,6 +13,8 @@ class CreatePostsTable extends Migration
             'user_id'     => ['type' => 'INT'], // Llave foránea
             'title'       => ['type' => 'VARCHAR', 'constraint' => '255'],
             'contents'    => ['type' => 'TEXT'],
+            'category'    => ['type' => 'ENUM', 'constraint' => ['general', 'eventos', 'recetas'], 'default' => 'general'],
+            'status' => ['type' => 'ENUM', 'constraint' => ['pending', 'approved'], 'default' => 'pending'],
             'image_url'   => ['type' => 'VARCHAR', 'constraint' => '255', 'null' => true],
             'created_at'  => ['type' => 'DATETIME', 'null' => true],
             'updated_at'  => ['type' => 'DATETIME', 'null' => true],

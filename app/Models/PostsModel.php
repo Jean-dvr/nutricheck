@@ -16,6 +16,8 @@ class PostsModel extends Model
         'user_id',
         'title',
         'contents',
+        'category',
+        'status',
         'image_url',
         'created_at',
         'updated_at',
