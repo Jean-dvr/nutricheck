@@ -15,7 +15,11 @@ class RecipesModel extends Model
     protected $allowedFields    = [
         'title',
         'preparation',
-        'total_calories'
+        'prep_time_minutes',
+        'difficulty',
+        'portions',
+        'total_calories',
+        'image_url'
     ];
 
     protected bool $allowEmptyInserts = false;
