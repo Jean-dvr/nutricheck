@@ -162,5 +162,13 @@ class Validation extends BaseConfig
             'less_than_equal_to'    => 'La cintura excede el límite realista (200 cm).'
         ]
     ];
+    
+    // Reglas para el Newspaper
+    public $crearPost = [
+        'title'    => 'required|min_length[5]|max_length[150]',
+        'category' => 'required|in_list[general,eventos,recetas]',
+        'contents' => 'required|min_length[15]'
+    ];
+
 
 }

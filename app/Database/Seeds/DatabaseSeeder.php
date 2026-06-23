@@ -8,22 +8,24 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // 1. Tablas Maestras
+        // Tablas Maestras
         $this->call('UsersSeeder');
         $this->call('HealthConditionsSeeder');
         $this->call('IngredientsSeeder');
         $this->call('RecipesSeeder');
+        $this->call('TagsSeeder');
 
-        // 2. Tablas Dependientes
+        // Tablas Dependientes
         $this->call('HealthProfilesSeeder');
         $this->call('MealLogsSeeder');
-        $this->call('PostsSeeder'); // Corregido a PostsSeeder (antes decía PostSeeder)
+        $this->call('PostsSeeder');
 
-        // 3. Tablas Pivote
+        // Tablas Pivote
         $this->call('UserConditionsSeeder');
         $this->call('IngredientConditionsSeeder');
         $this->call('RecipeIngredientsSeeder');
         $this->call('RecipeConditionsSeeder');
+        $this->call('RecipeTagsSeeder');
         $this->call('UserPantriesSeeder');
     }
 }

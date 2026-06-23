@@ -72,19 +72,36 @@ class Profile extends BaseController
         $db = \Config\Database::connect();
         $db->transStart();
 
+// -----------------------------------------------------------
+        // 1. MANEJO DE LA FOTO DE PERFIL (AVATAR)
         // -----------------------------------------------------------
-        // 1. MANEJO DE LA FOTO DE PERFIL (AVATAR) - COMENTADO
-        // -----------------------------------------------------------
-        /*
         $archivoFoto = $this->request->getFile('foto_perfil');
         $nombreFoto = $this->request->getPost('foto_actual'); 
         
-        if ($archivoFoto && $archivoFoto->isValid() && !$archivoFoto->hasMoved()) {
-            $nombreFoto = $archivoFoto->getRandomName(); // Nombre único seguro
-            // Guardamos físicamente la imagen en la carpeta public/assets/imagenes/avatars
-            $archivoFoto->move(FCPATH . 'assets/imagenes/avatars', $nombreFoto);
+        // NUEVO: Evaluamos si el usuario intentó subir un archivo
+        if ($archivoFoto && $archivoFoto->getError() !== UPLOAD_ERR_NO_FILE) {
+            
+            // NUEVO: Verificamos si la imagen excede el límite de peso de PHP (usualmente 2MB)
+            // Si es así, lanzamos una alerta roja en la vista en lugar de fallar en silencio.
+            if (!$archivoFoto->isValid()) {
+                return redirect()->to(base_url('perfil'))->with('fail', 'Error al subir: La imagen es muy pesada. Intenta con una que pese menos de 2MB.');
+            }
+
+            // NUEVO: Usamos guessExtension() en lugar de getMimeType(). Es mucho más preciso en CodeIgniter 4.
+            $extension = $archivoFoto->guessExtension();
+            if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
+                
+                $nombreFoto = $archivoFoto->getRandomName(); // Nombre único seguro
+                
+                // Movemos la imagen a la carpeta física
+                $archivoFoto->move(FCPATH . 'assets/avatars', $nombreFoto);
+                
+            } else {
+                // Si suben un PDF o un archivo que no es imagen, bloqueamos el proceso
+                return redirect()->to(base_url('perfil'))->with('fail', 'Formato de imagen no permitido. Solo JPG o PNG.');
+            }
         }
-        */
+        
 
         // -----------------------------------------------------------
         // 2. ACTUALIZACIÓN DE USUARIO (Tabla: users)
@@ -92,8 +109,8 @@ class Profile extends BaseController
         $datosUsuario = [
             'name'       => trim($this->request->getPost('name')),
             'sex'        => $this->request->getPost('sex'),
-            'birth_date' => $this->request->getPost('birth_date')
-            // 'avatar'     => $nombreFoto  <--- COMENTADO HASTA ACTUALIZAR LA BD
+            'birth_date' => $this->request->getPost('birth_date'), 
+            'avatar'     => $nombreFoto
         ];
 
         // Verificar si el usuario escribió una contraseña nueva

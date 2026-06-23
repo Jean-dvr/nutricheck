@@ -14,8 +14,11 @@ class MealLogsModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'user_id',
-        'recipe_id',
         'meal_type',
+        'meal_date',
+        'meal_time',
+        'description',
+        'image_path',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -27,9 +30,9 @@ class MealLogsModel extends Model
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'log_date';
-    protected $updatedField  = '';
-    protected $deletedField  = '';
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
 
     // Validation
     protected $validationRules      = [];

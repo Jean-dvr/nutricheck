@@ -9,15 +9,12 @@ class CreateRecipeIngredientsTable extends Migration
     public function up() 
     {
         $this->forge->addField([
-            'id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
-                'auto_increment' => true
-            ],
-            'recipe_id'       => ['type' => 'INT'],
-            'ingredient_id'   => ['type' => 'INT'],
-            'quantity'        => ['type' => 'DECIMAL', 'constraint' => '6,2'],
+            'id' => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],
+            'recipe_id' => ['type' => 'INT'],
+            'ingredient_id' => ['type' => 'INT'],
+            'quantity' => ['type' => 'DECIMAL', 'constraint' => '6,2'],
             'unit_of_measure' => ['type' => 'VARCHAR', 'constraint' => '20'],
+            'is_main_ingredient' => ['type' => 'BOOLEAN', 'default' => false],
         ]);
 
         // 1. Llave primaria simple
