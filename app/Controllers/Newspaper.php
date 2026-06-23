@@ -136,4 +136,31 @@ class Newspaper extends BaseController
         $postsModel->delete($id); // Borramos el post rechazado
         return redirect()->to(base_url('newspaper/pendientes'))->with('fail', 'Publicación rechazada y eliminada.');
     }
+    
+    public function eliminar($id)
+    {
+        // Medida de seguridad: Solo el admin puede eliminar publicaciones directas
+        if (session()->get('rol') !== 'admin') {
+            return redirect()->to(base_url('newspaper'));
+        }
+        
+        $postsModel = new \App\Models\PostsModel();
+        $post = $postsModel->find($id);
+        
+        if ($post) {
+            // Borrar la imagen física de la carpeta assets/postsimg si existe
+            if (!empty($post['image_url'])) {
+                $rutaImagen = FCPATH . 'assets/postsimg/' . $post['image_url'];
+                if (file_exists($rutaImagen)) {
+                    unlink($rutaImagen);
+                }
+            }
+            
+            // Eliminar el registro de la base de datos
+            $postsModel->delete($id);
+            return redirect()->back()->with('success', 'Publicación eliminada correctamente del periódico.');
+        }
+
+        return redirect()->back()->with('fail', 'La publicación no existe o ya fue eliminada.');
+    }
 }
