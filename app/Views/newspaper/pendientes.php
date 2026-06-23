@@ -14,12 +14,6 @@
         <a href="<?= base_url('newspaper') ?>" class="btn btn-outline-secondary rounded-pill">Volver al Periódico</a>
     </div>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert alert-success shadow-sm rounded"><?= session()->getFlashdata('success') ?></div>
-    <?php endif; ?>
-    <?php if(session()->getFlashdata('fail')): ?>
-        <div class="alert alert-danger shadow-sm rounded"><?= session()->getFlashdata('fail') ?></div>
-    <?php endif; ?>
 
     <?php if(empty($posts)): ?>
         <div class="alert alert-info border-0 shadow-sm text-center py-5" style="border-radius: 15px;">

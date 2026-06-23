@@ -7,7 +7,7 @@ use App\Models\UserModel;
 
 class Newspaper extends BaseController
 {
-    public function index()
+   public function index()
     {
         $postsModel = new PostsModel();
         $userModel = new UserModel();
@@ -15,11 +15,19 @@ class Newspaper extends BaseController
 
         $categoriaActual = $this->request->getGet('cat') ?? 'general';
 
-        // MODIFICADO: Solo traemos los posts que están APROBADOS
-        $posts = $postsModel->where('category', $categoriaActual)
-                            ->where('status', 'approved')
-                            ->orderBy('created_at', 'DESC')
-                            ->findAll();
+        // LÓGICA DE FILTRADO MODIFICADA
+        if ($categoriaActual === 'general') {
+            // Si está en 'general', traemos TODAS las publicaciones aprobadas
+            $posts = $postsModel->where('status', 'approved')
+                                ->orderBy('created_at', 'DESC')
+                                ->findAll();
+        } else {
+            // Si está en otra pestaña, filtramos por esa categoría específica
+            $posts = $postsModel->where('category', $categoriaActual)
+                                ->where('status', 'approved')
+                                ->orderBy('created_at', 'DESC')
+                                ->findAll();
+        }
 
         foreach ($posts as &$post) {
             $autor = $userModel->find($post['user_id']);
@@ -27,7 +35,6 @@ class Newspaper extends BaseController
             $post['autor_avatar'] = $autor ? $autor['avatar'] : 'default-avatar.png';
         }
 
-        // Si es administrador, calculamos cuántos posts pendientes hay para mostrarle una notificación
         $pendientesCount = 0;
         if ($rolUsuario === 'admin') {
             $pendientesCount = $postsModel->where('status', 'pending')->countAllResults();
