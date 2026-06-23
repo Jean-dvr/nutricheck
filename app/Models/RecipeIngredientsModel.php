@@ -16,7 +16,8 @@ class RecipeIngredientsModel extends Model
         'recipe_id',
         'ingredient_id',
         'quantity',
-        'unit_of_measure'
+        'unit_of_measure',
+        'is_main_ingredient',
     ];
 
     protected bool $allowEmptyInserts = false;

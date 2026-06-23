@@ -49,14 +49,27 @@ $routes->post('/perfil/actualizar', 'Profile::actualizar', ['filter' => 'auth'])
 $routes->get('/comidas', 'MealLogs::index', ['filter' => 'auth']);
 $routes->post('/comidas/guardar', 'MealLogs::guardar', ['filter' => 'auth']);
 
+//--------------------------------------------------------------------
+// Rutas del Buscador de Recetas
+//--------------------------------------------------------------------
+$routes->match(['get', 'post'], '/recetas', 'RecipeSearch::index', ['filter' => 'auth']);
 // Rutas del Newspaper 
-// CORREGIDO: Usamos un arreglo para pasar múltiples filtros
+
+// Usamos un arreglo para pasar múltiples filtros
 $routes->get('/newspaper', 'Newspaper::index', ['filter' => ['auth', 'premiumAccess']]);
 // Rutas de Moderación (Solo accesibles para profesionales, luego el controlador verifica si es Admin)
+
 $routes->get('/newspaper/pendientes', 'Newspaper::pendientes', ['filter' => ['auth', 'authorAccess']]);
 $routes->get('/newspaper/aprobar/(:num)', 'Newspaper::aprobar/$1', ['filter' => ['auth', 'authorAccess']]);
 $routes->get('/newspaper/rechazar/(:num)', 'Newspaper::rechazar/$1', ['filter' => ['auth', 'authorAccess']]);
 
+// Ruta para eliminar posts ya publicados
+$routes->get('/newspaper/eliminar/(:num)', 'Newspaper::eliminar/$1', ['filter' => ['auth', 'authorAccess']]);
+
 // Rutas protegidas para profesionales
 $routes->get('/newspaper/crear', 'Newspaper::crear', ['filter' => ['auth', 'authorAccess']]);
 $routes->post('/newspaper/guardar', 'Newspaper::guardar', ['filter' => ['auth', 'authorAccess']]);
+
+// Rutas del sistema de Banners
+$routes->post('/dashboard/actualizarAnuncio', 'Dashboard::actualizarAnuncio', ['filter' => 'auth']);
+$routes->get('/dashboard/eliminarAnuncio/(:num)', 'Dashboard::eliminarAnuncio/$1', ['filter' => 'auth']);
