@@ -55,6 +55,29 @@
             </div>
         </div>
 
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center mt-3">
+                    <h1 class="mb-3">📰</h1>
+                    <h5 class="card-title font-weight-bold">NutriCheck News</h5>
+                    <p class="card-text text-muted">Mantente al día con artículos médicos, jornadas y consejos nutricionales.</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center mb-3">
+                    
+                    <?php if(session()->get('rol') === 'free'): ?>
+                        <a href="<?= base_url('newspaper') ?>" class="btn btn-secondary btn-block rounded-pill text-white">
+                            🔒 Exclusivo Premium
+                        </a>
+                    <?php else: ?>
+                        <a href="<?= base_url('newspaper') ?>" class="btn btn-info btn-block rounded-pill text-white">
+                            Leer Artículos
+                        </a>
+                    <?php endif; ?>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

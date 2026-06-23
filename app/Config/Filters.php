@@ -37,6 +37,8 @@ class Filters extends BaseFilters
         // Filtros personalizados
         'auth'          => \App\Filters\AuthCheckFilter::class,
         'guest'         => \App\Filters\GuestFilter::class,
+        'authorAccess'  => \App\Filters\AuthorFilter::class,
+        'premiumAccess' => \App\Filters\PremiumFilter::class, 
     ];
 
     /**
