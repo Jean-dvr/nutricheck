@@ -24,9 +24,9 @@ class UsersSeeder extends Seeder
                 'email'      => 'angelesfit@nutricheck.com',
                 'password'   => password_hash('123456', PASSWORD_BCRYPT),
                 'rol'        => 'nutricionista',
-                'sex'        => 'famale',          
+                'sex'        => 'female',          
                 'birth_date' => '1996-07-10', 
-                'avatar'        => 'default-avatar.png',    
+                'avatar'     => 'default-avatar.png',    
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [

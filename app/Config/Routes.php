@@ -49,6 +49,10 @@ $routes->post('/perfil/actualizar', 'Profile::actualizar', ['filter' => 'auth'])
 $routes->get('/comidas', 'MealLogs::index', ['filter' => 'auth']);
 $routes->post('/comidas/guardar', 'MealLogs::guardar', ['filter' => 'auth']);
 
+//--------------------------------------------------------------------
+// Rutas del Buscador de Recetas
+//--------------------------------------------------------------------
+$routes->match(['get', 'post'], '/recetas', 'RecipeSearch::index', ['filter' => 'auth']);
 // Rutas del Newspaper 
 // CORREGIDO: Usamos un arreglo para pasar múltiples filtros
 $routes->get('/newspaper', 'Newspaper::index', ['filter' => ['auth', 'premiumAccess']]);

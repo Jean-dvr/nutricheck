@@ -14,7 +14,12 @@ class IngredientsModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'name',
+        'category',
         'calories_per_100g',
+        'protein_g',
+        'carb_g',
+        'fat_g',
+        'image_url',
     ];
 
     protected bool $allowEmptyInserts = false;
