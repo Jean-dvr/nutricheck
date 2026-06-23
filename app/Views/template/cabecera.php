@@ -31,15 +31,36 @@
         
         <div id="my-nav" class="collapse navbar-collapse">
             
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('dashboard') ?>">Inicio</a>
+                    <a class="nav-link font-weight-bold" href="<?= base_url('dashboard') ?>">Inicio</a>
                 </li>
+                
+                <?php if(session()->has('rol')): ?>
+                    <li class="nav-item ml-lg-3 mt-2 mt-lg-0">
+                        <?php 
+                            $rol = session()->get('rol');
+                            if ($rol === 'admin'): 
+                        ?>
+                            <span class="badge badge-danger px-3 py-2 shadow-sm" style="font-size: 0.85rem;">🛡️ Admin</span>
+                        
+                        <?php elseif ($rol === 'nutricionista'): ?>
+                            <span class="badge badge-success px-3 py-2 shadow-sm" style="font-size: 0.85rem;">🩺 Nutricionista</span>
+                        
+                        <?php elseif ($rol === 'premium'): ?>
+                            <span class="badge px-3 py-2 shadow-sm" style="background-color: #ffc107; color: #856404; font-size: 0.85rem;">⭐ NutriCheck Premium</span>
+                        
+                        <?php elseif ($rol === 'free'): ?>
+                            <span class="badge badge-secondary px-3 py-2 shadow-sm" style="font-size: 0.85rem;">👤 Paciente</span>
+                        
+                        <?php endif; ?>
+                    </li>
+                <?php endif; ?>
             </ul>
             
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="btn btn-outline-danger btn-sm mt-1" href="<?= base_url('logout') ?>">
+                    <a class="btn btn-outline-danger btn-sm mt-1 font-weight-bold rounded-pill px-3" href="<?= base_url('logout') ?>">
                         Cerrar Sesión
                     </a>
                 </li>
@@ -52,7 +73,7 @@
 <div class="container">
 
     <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
             <?= session()->getFlashdata('success') ?>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -61,7 +82,7 @@
     <?php endif; ?>
 
     <?php if(session()->getFlashdata('fail')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
             <?= session()->getFlashdata('fail') ?>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
