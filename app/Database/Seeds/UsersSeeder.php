@@ -12,7 +12,7 @@ class UsersSeeder extends Seeder
             [
                 'name'       => 'Ricardo DBA',
                 'email'      => 'dbasdbah@gmail.com',
-                'password'   => password_hash('12345', PASSWORD_BCRYPT),
+                'password'   => password_hash('123456', PASSWORD_BCRYPT),
                 'rol'        => 'admin',
                 'sex'        => 'male',          
                 'birth_date' => '1995-05-26', 
@@ -33,7 +33,7 @@ class UsersSeeder extends Seeder
                 'name'       => 'Paciente Prueba',
                 'email'      => 'paciente@gmail.com',
                 'password'   => password_hash('123456', PASSWORD_BCRYPT),
-                'rol'        => 'free',
+                'rol'        => 'premium',
                 'sex'        => 'male',          
                 'birth_date' => '1990-08-20',  
                 'avatar'        => 'default-avatar.png',   
