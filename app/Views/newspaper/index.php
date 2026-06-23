@@ -34,7 +34,9 @@
             <?php endif; ?>
 
         </div>
-    </div> <div class="d-flex justify-content-center mb-5">
+    </div> 
+    
+    <div class="d-flex justify-content-center mb-5">
         <ul class="nav nav-pills font-weight-bold flex-wrap justify-content-center">
             <li class="nav-item mx-2 mb-2">
                 <a class="nav-link px-4 rounded-pill <?= $categoria_actual == 'general' ? 'active shadow-sm text-white' : 'bg-light text-dark' ?>" 
@@ -62,7 +64,7 @@
             </div>
         <?php else: ?>
             <?php foreach($posts as $post): ?>
-<div class="col-md-6 mb-4">
+                <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm border-0 position-relative" style="border-radius: 15px; overflow: hidden;">
                         
                         <div class="position-absolute" style="top: 15px; right: 15px; z-index: 10;">
@@ -86,13 +88,33 @@
                             </p>
                         </div>
                         
-                        <div class="card-footer bg-white border-top-0 pt-0 pb-3 d-flex align-items-center">
-                            <img src="<?= base_url('assets/avatars/' . $post['autor_avatar']) ?>" class="rounded-circle mr-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #f1682d;">
-                            <div>
-                                <small class="d-block font-weight-bold text-dark mb-0" style="line-height: 1.2;"><?= esc($post['autor_nombre']) ?></small>
-                                <small class="text-muted" style="font-size: 0.75rem;">📅 <?= date('d/m/Y h:i A', strtotime($post['created_at'])) ?></small>
+                       
+                        
+                        
+                        <div class="card-footer bg-white border-top-0 pt-0 pb-3 d-flex justify-content-between align-items-center">
+                            
+                            <!-- Datos del Autor -->
+                            <div class="d-flex align-items-center">
+                                <img src="<?= base_url('assets/avatars/' . $post['autor_avatar']) ?>" class="rounded-circle mr-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #f1682d;">
+                                <div>
+                                    <small class="d-block font-weight-bold text-dark mb-0" style="line-height: 1.2;"><?= esc($post['autor_nombre']) ?></small>
+                                    <small class="text-muted" style="font-size: 0.75rem;">📅 <?= date('d/m/Y h:i A', strtotime($post['created_at'])) ?></small>
+                                </div>
                             </div>
+
+                            <!-- Botón de Eliminar (Exclusivo para el Admin) -->
+                            <?php if($rol_usuario === 'admin'): ?>
+                                <a href="<?= base_url('newspaper/eliminar/' . $post['id']) ?>" 
+                                   onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación permanentemente?')" 
+                                   class="btn btn-sm btn-outline-danger shadow-sm rounded-circle" 
+                                   style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;"
+                                   title="Eliminar Publicación">
+                                    🗑️
+                                </a>
+                            <?php endif; ?>
+
                         </div>
+                       
 
                     </div>
                 </div>
