@@ -61,7 +61,7 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label class="font-weight-bold">Nombre y Apellido</label>
-                                        <input type="text" class="form-control" name="name" value="<?= esc($usuario['name']) ?>" required>
+                                        <input type="text" class="form-control" name="name" value="<?= old('name', esc($usuario['name'])) ?>" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-bold">Sexo Biológico</label>
@@ -84,13 +84,13 @@
                             <div class="card-body">
                                 <div class="form-row">
                                     <div class="form-group col-md-4">
-                                        <label class="font-weight-bold">Peso (kg)</label>
-                                        <input type="number" step="0.1" class="form-control" name="weight_kg" value="<?= isset($perfil['weight_kg']) ? esc($perfil['weight_kg']) : '' ?>">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label class="font-weight-bold">Altura (cm)</label>
-                                        <input type="number" class="form-control" name="height_cm" value="<?= isset($perfil['height_cm']) ? esc($perfil['height_cm']) : '' ?>">
-                                    </div>
+                                            <label class="font-weight-bold">Peso (kg)</label>
+                                            <input type="number" step="0.1" min="1" max="300" class="form-control" name="weight_kg" value="<?= old('weight_kg', esc($perfil['weight_kg'] ?? '')) ?>">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="font-weight-bold">Altura (cm)</label>
+                                            <input type="number" min="50" max="250" class="form-control" name="height_cm" value="<?= old('height_cm', esc($perfil['height_cm'] ?? '')) ?>">
+                                        </div>
                                     <div class="form-group col-md-4">
                                         <label class="font-weight-bold">Tu Objetivo</label>
                                         <select class="form-control" name="goal">

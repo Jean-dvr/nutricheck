@@ -43,6 +43,25 @@ class Profile extends BaseController
 
     public function actualizar()
     {
+        $reglas = config('Validation')->actualizarPerfil;
+        $mensajes = config('Validation')->actualizarPerfil_errors;
+
+        // 2. LÓGICA DE ROLES: Prevenir usurpación de títulos médicos
+        $rolActual = session()->get('rol');
+        
+        // Si el usuario es un paciente (free o premium), le endurecemos la regla
+        if (in_array($rolActual, ['free', 'premium'])) {
+            $reglas['name'] = 'required|alpha_space|min_length[5]|max_length[50]';
+            $mensajes['name']['alpha_space'] = 'Tu nombre solo debe contener letras y espacios. El uso de puntos y títulos (Dr., Dra.) es exclusivo para los Nutricionistas de la plataforma.';
+        }
+
+        // 3. Ejecutamos la validación con las reglas ya personalizadas
+        if (!$this->validate($reglas, $mensajes)) {
+            $errores = $this->validator->getErrors();
+            $primerError = reset($errores);
+            
+            return redirect()->to(base_url('perfil'))->withInput()->with('fail', $primerError);
+        }
         $userId = session()->get('loggedUser');
         
         $userModel = new UserModel();
