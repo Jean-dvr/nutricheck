@@ -25,6 +25,7 @@ class UserModel extends Model
         'sex',
         'birth_date',
         'avatar',
+        'premium_expires_at'
         ];
 
     protected $useTimestamps    = true;

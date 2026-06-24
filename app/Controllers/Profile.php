@@ -24,8 +24,8 @@ class Profile extends BaseController
         $perfilSalud = $healthModel->where('user_id', $userId)->first();
         
         $listaPatologias = $conditionsModel->where('type', 'pathology')->findAll();
-        $listaAlergias = $conditionsModel->where('type', 'allergy')->findAll();
-
+        $listaAlergias = $conditionsModel->whereIn('type', ['allergy', 'intolerance'])->findAll();
+        
         // Extraer las condiciones que ya tiene marcadas el usuario (para el checkbox)
         $condicionesActuales = $userConditionsModel->where('user_id', $userId)->findAll();
         $idsCondiciones = array_column($condicionesActuales, 'condition_id');
@@ -43,6 +43,25 @@ class Profile extends BaseController
 
     public function actualizar()
     {
+        $reglas = config('Validation')->actualizarPerfil;
+        $mensajes = config('Validation')->actualizarPerfil_errors;
+
+        // 2. LÓGICA DE ROLES: Prevenir usurpación de títulos médicos
+        $rolActual = session()->get('rol');
+        
+        // Si el usuario es un paciente (free o premium), le endurecemos la regla
+        if (in_array($rolActual, ['free', 'premium'])) {
+            $reglas['name'] = 'required|alpha_space|min_length[5]|max_length[50]';
+            $mensajes['name']['alpha_space'] = 'Tu nombre solo debe contener letras y espacios. El uso de puntos y títulos (Dr., Dra.) es exclusivo para los Nutricionistas de la plataforma.';
+        }
+
+        // 3. Ejecutamos la validación con las reglas ya personalizadas
+        if (!$this->validate($reglas, $mensajes)) {
+            $errores = $this->validator->getErrors();
+            $primerError = reset($errores);
+            
+            return redirect()->to(base_url('perfil'))->withInput()->with('fail', $primerError);
+        }
         $userId = session()->get('loggedUser');
         
         $userModel = new UserModel();
@@ -161,5 +180,62 @@ class Profile extends BaseController
         session()->set('name', $datosUsuario['name']);
 
         return redirect()->to(base_url('perfil'))->with('success', '¡Perfil y cuadro clínico actualizados correctamente!');
+    }
+
+   
+    // MÓDULO DE Cuadro Clinico (Solo Admin)
+ 
+    
+    public function agregarCondicion()
+    {
+        // Seguridad: Bloquear si no es admin
+        if (session()->get('rol') !== 'admin') {
+            return redirect()->back()->with('fail', 'No tienes permisos para alterar el catálogo médico.');
+        }
+
+        // Extraemos las reglas y mensajes de nuestro archivo central Validation.php
+        $reglas = config('Validation')->catalogoMedico;
+        $mensajes = config('Validation')->catalogoMedico_errors;
+
+        // Ejecutamos la validación
+        if (!$this->validate($reglas, $mensajes)) {
+            // Si falla, tomamos el primer mensaje de error y lo enviamos a la vista
+            $errores = $this->validator->getErrors();
+            $primerError = reset($errores);
+            
+            return redirect()->back()->with('fail', $primerError);
+        }
+
+        // Si pasa la validación, procedemos a guardar en la base de datos
+        $conditionsModel = new HealthConditionsModel();
+        
+        $conditionsModel->insert([
+            'name' => trim($this->request->getPost('name')),
+            'type' => $this->request->getPost('type')
+        ]);
+
+        return redirect()->back()->with('success', '✅ Nueva condición médica añadida al catálogo exitosamente.');
+    }
+
+    public function eliminarCondicion($id)
+    {
+        if (session()->get('rol') !== 'admin') {
+            return redirect()->back()->with('fail', 'No tienes permisos para alterar el catálogo médico.');
+        }
+
+        $conditionsModel = new HealthConditionsModel();
+        $userConditionsModel = new UserConditionsModel();
+
+        if ($conditionsModel->find($id)) {
+            // 1. Eliminamos primero las referencias en los cuadros clínicos de los pacientes (Evita errores de llave foránea)
+            $userConditionsModel->where('condition_id', $id)->delete();
+            
+            // 2. Eliminamos la condición global del sistema
+            $conditionsModel->delete($id);
+            
+            return redirect()->back()->with('success', '🗑️ Condición médica eliminada permanentemente del sistema.');
+        }
+
+        return redirect()->back()->with('fail', 'La condición no existe.');
     }
 }

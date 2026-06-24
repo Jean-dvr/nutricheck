@@ -12,12 +12,6 @@
         <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary btn-sm">Volver al Inicio</a>
     </div>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert alert-success shadow-sm rounded"><?= session()->getFlashdata('success') ?></div>
-    <?php endif; ?>
-    <?php if(session()->getFlashdata('fail')): ?>
-        <div class="alert alert-danger shadow-sm rounded"><?= session()->getFlashdata('fail') ?></div>
-    <?php endif; ?>
 
     <div class="row">
         <div class="col-md-5 mb-4">

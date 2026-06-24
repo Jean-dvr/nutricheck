@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f4f6f9; }
@@ -74,7 +75,7 @@
 
     <?php if(session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <?= session()->getFlashdata('success') ?>
+            <strong><?= session()->getFlashdata('success') ?></strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -83,7 +84,7 @@
 
     <?php if(session()->getFlashdata('fail')): ?>
         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <?= session()->getFlashdata('fail') ?>
+            <strong><?= session()->getFlashdata('fail') ?></strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
