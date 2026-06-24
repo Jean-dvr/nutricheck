@@ -99,6 +99,54 @@ class Validation extends BaseConfig
         ]
     ];
 
+    // Reglas para Actualizar el Perfil
+    public $actualizarPerfil = [
+        'name'       => 'required|alpha_space|min_length[5]|max_length[50]',
+        'password'   => 'permit_empty|min_length[6]|regex_match[/^(?=.*[a-zA-Z])(?=.*\d)/]',
+        'weight_kg'  => 'permit_empty|numeric|greater_than[19]|less_than_equal_to[300]',
+        'height_cm'  => 'permit_empty|numeric|greater_than[49]|less_than_equal_to[250]',
+    ];
+
+    public $actualizarPerfil_errors = [
+        'name' => [
+            'required'    => 'El nombre es obligatorio.',
+            'alpha_space' => 'El nombre solo debe contener letras y espacios.',
+            'min_length'  => 'El nombre debe tener al menos 5 caracteres.'
+        ],
+        'password' => [
+            'min_length'  => 'La nueva contraseña debe tener al menos 6 caracteres.',
+            'regex_match' => 'La nueva contraseña debe contener letras y números.'
+        ],
+        'weight_kg' => [
+            'numeric'              => 'El peso debe ser un valor numérico.',
+            'greater_than'         => 'El peso no puede ser negativo ni inferior que 20kg',
+            'less_than_equal_to'   => 'El peso ingresado excede el límite permitido (300kg).'
+        ],
+        'height_cm' => [
+            'numeric'              => 'La altura debe ser un valor numérico.',
+            'greater_than'         => 'La altura no puede ser negativa ni inferior que 50 cm.',
+            'less_than_equal_to'   => 'La altura ingresada excede el límite permitido (250cm).'
+        ]
+    ];
+
+    // Reglas para el Cuadro Clinico
+    public $catalogoMedico = [
+        'name' => 'required|min_length[3]|max_length[100]',
+        'type' => 'required|in_list[pathology,allergy]'
+    ];
+
+    public $catalogoMedico_errors = [
+        'name' => [
+            'required'   => 'El nombre de la condición es obligatorio.',
+            'min_length' => 'El nombre debe tener al menos 3 caracteres.',
+            'max_length' => 'El nombre no puede exceder los 100 caracteres.'
+        ],
+        'type' => [
+            'required' => 'Debes seleccionar una clasificación válida (Patología o Alergia).',
+            'in_list'  => 'La clasificación seleccionada ha sido alterada y no es válida.'
+        ]
+    ];
+    
     // 3. Grupo IMC
 
     public $calculoImc = [
@@ -138,6 +186,28 @@ class Validation extends BaseConfig
         'title'    => 'required|min_length[5]|max_length[150]',
         'category' => 'required|in_list[general,eventos,recetas]',
         'contents' => 'required|min_length[15]'
+    ];
+    // Reglas para Reporte de Pagos
+    public $reportePago = [
+        'amount'           => 'required|numeric|greater_than[0]',
+        'payment_method'   => 'required|in_list[pago_movil,zelle]',
+        'reference_number' => 'required|min_length[4]|max_length[20]'
+    ];
+
+    public $reportePago_errors = [
+        'amount' => [
+            'required' => 'El monto es obligatorio.',
+            'numeric'  => 'El monto debe ser numérico.',
+            'greater_than' => 'El monto debe ser mayor a 0.'
+        ],
+        'payment_method' => [
+            'required' => 'Debes seleccionar un método de pago.',
+            'in_list'  => 'Método de pago no válido.'
+        ],
+        'reference_number' => [
+            'required'   => 'El número de referencia es obligatorio.',
+            'min_length' => 'La referencia debe tener al menos los últimos 4 dígitos.'
+        ]
     ];
 
 

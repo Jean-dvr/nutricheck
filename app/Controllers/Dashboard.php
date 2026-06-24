@@ -6,12 +6,30 @@ class Dashboard extends BaseController
 {
     public function index()
     {
-        // Redirige al login si intentan entrar sin iniciar sesión
-        if (!session()->get('isLoggedIn')) {
-            return redirect()->to(base_url('login'));
+        $userModel = new \App\Models\UserModel();
+        $usuario = $userModel->find(session()->get('loggedUser'));
+
+        // EL VIGILANTE DE SUSCRIPCIONES
+        // Si es Premium y la fecha actual es mayor a su fecha de expiración...
+        if ($usuario['rol'] === 'premium' && !empty($usuario['premium_expires_at'])) {
+            if (date('Y-m-d H:i:s') > $usuario['premium_expires_at']) {
+                
+                // 1. Le quitamos el rol en la base de datos y vaciamos la fecha
+                $userModel->update($usuario['id'], [
+                    'rol' => 'free',
+                    'premium_expires_at' => null
+                ]);
+
+                // 2. Le quitamos el rol en la sesión actual
+                session()->set('rol', 'free');
+
+                // 3. Le avisamos que su suscripción terminó
+                session()->setFlashdata('fail', 'Tu suscripción Premium ha caducado. ¡Renueva para seguir disfrutando sin anuncios!');
+            }
         }
 
-        return view('Dashboard/index');
+        // ... (El resto de tu código del Dashboard para cargar estadísticas sigue abajo) ...
+        return view('dashboard/index');
     }
 
     public function actualizarAnuncio()

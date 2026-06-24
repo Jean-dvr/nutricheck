@@ -42,6 +42,9 @@ $routes->get('/logout', 'Authen::logout');
 // --------------------------------------------------------------------
 $routes->get('/perfil', 'Profile::index', ['filter' => 'auth']);
 $routes->post('/perfil/actualizar', 'Profile::actualizar', ['filter' => 'auth']);
+// Rutas para la gestión del cuadro clinico (Exclusivo Admin)
+$routes->post('/perfil/agregar-condicion', 'Profile::agregarCondicion', ['filter' => 'auth']);
+$routes->get('/perfil/eliminar-condicion/(:num)', 'Profile::eliminarCondicion/$1', ['filter' => 'auth']);
 
 // --------------------------------------------------------------------
 // Rutas del registro de comidas
@@ -84,3 +87,10 @@ $routes->get('admin/eliminarReceta/(:num)', 'AdminController::eliminarReceta/$1'
 $routes->get('admin/aprobarReceta/(:num)', 'AdminController::aprobarReceta/$1', ['filter' => 'auth']);
 $routes->get('admin/editarReceta/(:num)', 'AdminController::editarReceta/$1', ['filter' => 'auth']);
 $routes->post('admin/actualizarReceta', 'AdminController::actualizarReceta', ['filter' => 'auth']);
+// Módulo de Pagos y Suscripciones
+$routes->get('/premium/checkout', 'Payments::checkout', ['filter' => 'auth']);
+$routes->post('/premium/reportar', 'Payments::reportar', ['filter' => 'auth']);
+// Panel de control de pagos para el Administrador
+$routes->get('/dashboard/pagos', 'Payments::lista', ['filter' => 'auth']);
+$routes->get('/dashboard/pagos/aprobar/(:num)', 'Payments::aprobar/$1', ['filter' => 'auth']);
+$routes->get('/dashboard/pagos/rechazar/(:num)', 'Payments::rechazar/$1', ['filter' => 'auth']);
