@@ -16,6 +16,7 @@ class RecipesSeeder extends Seeder
                 'difficulty' => 'media',
                 'portions' => 2,
                 'total_calories' => 450,
+                'is_approved' => 1,
                 'image_url' => 'pabellon_fit.jpg'
             ],
             [
@@ -25,6 +26,7 @@ class RecipesSeeder extends Seeder
                 'difficulty' => 'facil',
                 'portions' => 1,
                 'total_calories' => 320,
+                'is_approved' => 1,
                 'image_url' => 'arepa_perico.jpg',
             ]
         ];

@@ -19,6 +19,7 @@ class RecipesModel extends Model
         'difficulty',
         'portions',
         'total_calories',
+        'is_approved',
         'image_url'
     ];
 

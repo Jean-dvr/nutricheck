@@ -77,6 +77,16 @@ $routes->post('/newspaper/guardar', 'Newspaper::guardar', ['filter' => ['auth', 
 $routes->post('/dashboard/actualizarAnuncio', 'Dashboard::actualizarAnuncio', ['filter' => 'auth']);
 $routes->get('/dashboard/eliminarAnuncio/(:num)', 'Dashboard::eliminarAnuncio/$1', ['filter' => 'auth']);
 
+// PANEL DE ADMINISTRACIÓN Y NUTRICIONISTAS
+$routes->get('admin', 'AdminController::index');
+$routes->post('admin/guardarIngrediente', 'AdminController::guardarIngrediente');
+$routes->post('admin/guardarEtiqueta', 'AdminController::guardarEtiqueta');
+$routes->post('admin/guardarReceta', 'AdminController::guardarReceta');
+// NUEVAS RUTAS DE GESTIÓN DE RECETAS (CRUD Y APROBACIÓN)
+$routes->get('admin/eliminarReceta/(:num)', 'AdminController::eliminarReceta/$1', ['filter' => 'auth']);
+$routes->get('admin/aprobarReceta/(:num)', 'AdminController::aprobarReceta/$1', ['filter' => 'auth']);
+$routes->get('admin/editarReceta/(:num)', 'AdminController::editarReceta/$1', ['filter' => 'auth']);
+$routes->post('admin/actualizarReceta', 'AdminController::actualizarReceta', ['filter' => 'auth']);
 // Módulo de Pagos y Suscripciones
 $routes->get('/premium/checkout', 'Payments::checkout', ['filter' => 'auth']);
 $routes->post('/premium/reportar', 'Payments::reportar', ['filter' => 'auth']);
