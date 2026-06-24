@@ -187,6 +187,28 @@ class Validation extends BaseConfig
         'category' => 'required|in_list[general,eventos,recetas]',
         'contents' => 'required|min_length[15]'
     ];
+    // Reglas para Reporte de Pagos
+    public $reportePago = [
+        'amount'           => 'required|numeric|greater_than[0]',
+        'payment_method'   => 'required|in_list[pago_movil,zelle]',
+        'reference_number' => 'required|min_length[4]|max_length[20]'
+    ];
+
+    public $reportePago_errors = [
+        'amount' => [
+            'required' => 'El monto es obligatorio.',
+            'numeric'  => 'El monto debe ser numérico.',
+            'greater_than' => 'El monto debe ser mayor a 0.'
+        ],
+        'payment_method' => [
+            'required' => 'Debes seleccionar un método de pago.',
+            'in_list'  => 'Método de pago no válido.'
+        ],
+        'reference_number' => [
+            'required'   => 'El número de referencia es obligatorio.',
+            'min_length' => 'La referencia debe tener al menos los últimos 4 dígitos.'
+        ]
+    ];
 
 
 }

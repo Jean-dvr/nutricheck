@@ -76,3 +76,11 @@ $routes->post('/newspaper/guardar', 'Newspaper::guardar', ['filter' => ['auth', 
 // Rutas del sistema de Banners
 $routes->post('/dashboard/actualizarAnuncio', 'Dashboard::actualizarAnuncio', ['filter' => 'auth']);
 $routes->get('/dashboard/eliminarAnuncio/(:num)', 'Dashboard::eliminarAnuncio/$1', ['filter' => 'auth']);
+
+// Módulo de Pagos y Suscripciones
+$routes->get('/premium/checkout', 'Payments::checkout', ['filter' => 'auth']);
+$routes->post('/premium/reportar', 'Payments::reportar', ['filter' => 'auth']);
+// Panel de control de pagos para el Administrador
+$routes->get('/dashboard/pagos', 'Payments::lista', ['filter' => 'auth']);
+$routes->get('/dashboard/pagos/aprobar/(:num)', 'Payments::aprobar/$1', ['filter' => 'auth']);
+$routes->get('/dashboard/pagos/rechazar/(:num)', 'Payments::rechazar/$1', ['filter' => 'auth']);
