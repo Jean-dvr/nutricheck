@@ -15,6 +15,7 @@ class CreateRecipesTable extends Migration
         'difficulty' => ['type' => 'ENUM', 'constraint' => ['facil', 'media', 'dificil'], 'default' => 'media'],
         'portions' => ['type' => 'INT', 'default' => 1],
         'total_calories' => ['type' => 'INT'],
+        'is_approved' => ['type' => 'TINYINT', 'constraint' => '1', 'default' => 0],
         'image_url' => ['type' => 'VARCHAR', 'constraint' => '255', 'null' => true],
      ]);
 

@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class RecipeTagsModel extends Model
 {
-    protected $table            = 'recipetags';
+    protected $table            = 'recipe_tags';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
