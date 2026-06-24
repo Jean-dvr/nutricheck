@@ -15,8 +15,9 @@ class HealthConditionsSeeder extends Seeder
             ['name' => 'Diabetes Tipo 2', 'type' => 'pathology'],
             ['name' => 'Hipertensión Arterial', 'type' => 'pathology'],
             ['name' => 'Obesidad', 'type' => 'pathology'],
+            ['name' => 'Enfermedad Celíaca (Sensibilidad al Gluten)', 'type' => 'pathology'],
+            
              // Intolerancias
-            ['name' => 'Enfermedad Celíaca (Sensibilidad al Gluten)', 'type' => 'intolerance'],
             ['name' => 'Intolerancia a la Lactosa', 'type' => 'intolerance'],
              // Alergias
             ['name' => 'Alergia al Pescado y Mariscos', 'type' => 'allergy'],

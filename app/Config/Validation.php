@@ -103,8 +103,8 @@ class Validation extends BaseConfig
     public $actualizarPerfil = [
         'name'       => 'required|alpha_space|min_length[5]|max_length[50]',
         'password'   => 'permit_empty|min_length[6]|regex_match[/^(?=.*[a-zA-Z])(?=.*\d)/]',
-        'weight_kg'  => 'permit_empty|numeric|greater_than[0]|less_than_equal_to[300]',
-        'height_cm'  => 'permit_empty|numeric|greater_than[0]|less_than_equal_to[250]',
+        'weight_kg'  => 'permit_empty|numeric|greater_than[19]|less_than_equal_to[300]',
+        'height_cm'  => 'permit_empty|numeric|greater_than[49]|less_than_equal_to[250]',
     ];
 
     public $actualizarPerfil_errors = [
@@ -119,13 +119,31 @@ class Validation extends BaseConfig
         ],
         'weight_kg' => [
             'numeric'              => 'El peso debe ser un valor numérico.',
-            'greater_than'         => 'El peso no puede ser negativo ni cero.',
+            'greater_than'         => 'El peso no puede ser negativo ni inferior que 20kg',
             'less_than_equal_to'   => 'El peso ingresado excede el límite permitido (300kg).'
         ],
         'height_cm' => [
             'numeric'              => 'La altura debe ser un valor numérico.',
-            'greater_than'         => 'La altura no puede ser negativa ni cero.',
+            'greater_than'         => 'La altura no puede ser negativa ni inferior que 50 cm.',
             'less_than_equal_to'   => 'La altura ingresada excede el límite permitido (250cm).'
+        ]
+    ];
+
+    // Reglas para el Cuadro Clinico
+    public $catalogoMedico = [
+        'name' => 'required|min_length[3]|max_length[100]',
+        'type' => 'required|in_list[pathology,allergy]'
+    ];
+
+    public $catalogoMedico_errors = [
+        'name' => [
+            'required'   => 'El nombre de la condición es obligatorio.',
+            'min_length' => 'El nombre debe tener al menos 3 caracteres.',
+            'max_length' => 'El nombre no puede exceder los 100 caracteres.'
+        ],
+        'type' => [
+            'required' => 'Debes seleccionar una clasificación válida (Patología o Alergia).',
+            'in_list'  => 'La clasificación seleccionada ha sido alterada y no es válida.'
         ]
     ];
     

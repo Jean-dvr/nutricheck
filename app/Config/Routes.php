@@ -42,6 +42,9 @@ $routes->get('/logout', 'Authen::logout');
 // --------------------------------------------------------------------
 $routes->get('/perfil', 'Profile::index', ['filter' => 'auth']);
 $routes->post('/perfil/actualizar', 'Profile::actualizar', ['filter' => 'auth']);
+// Rutas para la gestión del cuadro clinico (Exclusivo Admin)
+$routes->post('/perfil/agregar-condicion', 'Profile::agregarCondicion', ['filter' => 'auth']);
+$routes->get('/perfil/eliminar-condicion/(:num)', 'Profile::eliminarCondicion/$1', ['filter' => 'auth']);
 
 // --------------------------------------------------------------------
 // Rutas del registro de comidas
