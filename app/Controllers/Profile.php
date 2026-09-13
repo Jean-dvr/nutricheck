@@ -62,6 +62,7 @@ class Profile extends BaseController
             
             return redirect()->to(base_url('perfil'))->withInput()->with('fail', $primerError);
         }
+        
         $userId = session()->get('loggedUser');
         
         $userModel = new UserModel();
@@ -72,22 +73,21 @@ class Profile extends BaseController
         $db = \Config\Database::connect();
         $db->transStart();
 
-// -----------------------------------------------------------
+        // -----------------------------------------------------------
         // 1. MANEJO DE LA FOTO DE PERFIL (AVATAR)
         // -----------------------------------------------------------
         $archivoFoto = $this->request->getFile('foto_perfil');
         $nombreFoto = $this->request->getPost('foto_actual'); 
         
-        // NUEVO: Evaluamos si el usuario intentó subir un archivo
+        // Evaluamos si el usuario intentó subir un archivo
         if ($archivoFoto && $archivoFoto->getError() !== UPLOAD_ERR_NO_FILE) {
             
-            // NUEVO: Verificamos si la imagen excede el límite de peso de PHP (usualmente 2MB)
-            // Si es así, lanzamos una alerta roja en la vista en lugar de fallar en silencio.
+            // Verificamos si la imagen excede el límite de peso de PHP
             if (!$archivoFoto->isValid()) {
                 return redirect()->to(base_url('perfil'))->with('fail', 'Error al subir: La imagen es muy pesada. Intenta con una que pese menos de 2MB.');
             }
 
-            // NUEVO: Usamos guessExtension() en lugar de getMimeType(). Es mucho más preciso en CodeIgniter 4.
+            // Usamos guessExtension() para precisión
             $extension = $archivoFoto->guessExtension();
             if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
                 
@@ -97,11 +97,9 @@ class Profile extends BaseController
                 $archivoFoto->move(FCPATH . 'assets/avatars', $nombreFoto);
                 
             } else {
-                // Si suben un PDF o un archivo que no es imagen, bloqueamos el proceso
                 return redirect()->to(base_url('perfil'))->with('fail', 'Formato de imagen no permitido. Solo JPG o PNG.');
             }
         }
-        
 
         // -----------------------------------------------------------
         // 2. ACTUALIZACIÓN DE USUARIO (Tabla: users)
@@ -152,10 +150,8 @@ class Profile extends BaseController
         // -----------------------------------------------------------
         // 4. ACTUALIZACIÓN DE CONDICIONES (Tabla: user_conditions)
         // -----------------------------------------------------------
-        // Paso A: Borrar el historial clínico anterior
         $userConditionsModel->where('user_id', $userId)->delete();
         
-        // Paso B: Insertar las nuevas condiciones marcadas
         $condicionesSeleccionadas = $this->request->getPost('conditions');
 
         if (!empty($condicionesSeleccionadas)) {
@@ -176,15 +172,14 @@ class Profile extends BaseController
             return redirect()->to(base_url('perfil'))->with('fail', 'Ocurrió un error al guardar tu perfil. Intenta nuevamente.');
         }
 
-        // Actualizamos el nombre en la sesión en caso de que lo haya cambiado
+        // Actualizamos los datos en la sesión para que se reflejen en todo el sistema
         session()->set('name', $datosUsuario['name']);
+        session()->set('avatar', $datosUsuario['avatar']);
 
         return redirect()->to(base_url('perfil'))->with('success', '¡Perfil y cuadro clínico actualizados correctamente!');
     }
 
-   
     // MÓDULO DE Cuadro Clinico (Solo Admin)
- 
     
     public function agregarCondicion()
     {
@@ -193,20 +188,16 @@ class Profile extends BaseController
             return redirect()->back()->with('fail', 'No tienes permisos para alterar el catálogo médico.');
         }
 
-        // Extraemos las reglas y mensajes de nuestro archivo central Validation.php
         $reglas = config('Validation')->catalogoMedico;
         $mensajes = config('Validation')->catalogoMedico_errors;
 
-        // Ejecutamos la validación
         if (!$this->validate($reglas, $mensajes)) {
-            // Si falla, tomamos el primer mensaje de error y lo enviamos a la vista
             $errores = $this->validator->getErrors();
             $primerError = reset($errores);
             
             return redirect()->back()->with('fail', $primerError);
         }
 
-        // Si pasa la validación, procedemos a guardar en la base de datos
         $conditionsModel = new HealthConditionsModel();
         
         $conditionsModel->insert([
@@ -227,10 +218,7 @@ class Profile extends BaseController
         $userConditionsModel = new UserConditionsModel();
 
         if ($conditionsModel->find($id)) {
-            // 1. Eliminamos primero las referencias en los cuadros clínicos de los pacientes (Evita errores de llave foránea)
             $userConditionsModel->where('condition_id', $id)->delete();
-            
-            // 2. Eliminamos la condición global del sistema
             $conditionsModel->delete($id);
             
             return redirect()->back()->with('success', '🗑️ Condición médica eliminada permanentemente del sistema.');

@@ -1,116 +1,304 @@
-<<?= view('template/cabecera') ?>
+<?= view('Dashboard/cabecera') ?>
 
-<div class="container mt-5">
+<link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=9999') ?>">
+<link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=1.0') ?>">
+
+<main class="dashboard-layout">
     
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h1 class="font-weight-bold text-dark">Bienvenido, <?= session()->get('name') ?> 👋</h1>
-            <p class="text-muted">¿Qué deseas gestionar hoy en NutriCheck?</p>
+    <!-- Panel Izquierdo: Herramientas -->
+    <section class="tools-grid">
+        <div class="dash-card">
+            <div class="card-info">
+                <img src="<?= base_url('/assets/imagenes/iconcalculadoranaranja.png') ?>" alt="IMC" class="card-icon">
+                <div class="text-group">
+                    <h2>Calculadora IMC</h2>
+                    <p>Calcula tu Índice de Masa Corporal y conoce tu estado actual.</p>
+                </div>
+            </div>
+            <a href="<?= base_url('imc') ?>" class="btn-probar">PROBAR</a>
         </div>
-        <div class="d-flex align-items-center">
+
+        <div class="dash-card">
+            <div class="card-info">
+                <img src="<?= base_url('/assets/imagenes/iconlupanaranja.png') ?>" alt="Recetas" class="card-icon">
+                <div class="text-group">
+                    <h2>Recetas</h2>
+                    <p>Encuentra recetas filtradas según tu perfil clínico y patologías.</p>
+                </div>
+            </div>
+            <a href="<?= base_url('recetas') ?>" class="btn-probar">PROBAR</a>
+        </div>
+
+        <div class="dash-card">
+            <div class="card-info">
+                <img src="<?= base_url('/assets/imagenes/megafononaranja.png') ?>" alt="Noticias" class="card-icon">
+                <div class="text-group">
+                    <h2>Noticias</h2>
+                    <p>Mantente al día con artículos médicos, jornadas y consejos nutricionales.</p>
+                </div>
+            </div>
+            <?php if(session()->get('rol') !== 'premium' && session()->get('rol') !== 'pro'): ?>
+                <a href="<?= base_url('premium/checkout') ?>" class="btn-probar btn-locked">PROBAR</a>
+            <?php else: ?>
+                <a href="<?= base_url('newspaper') ?>" class="btn-probar">PROBAR</a>
+            <?php endif; ?>
+        </div>
+
+        <div class="dash-card">
+            <div class="card-info">
+                <img src="<?= base_url('/assets/imagenes/fuegonaranja.png') ?>" alt="Diario" class="card-icon">
+                <div class="text-group">
+                    <h2>Racha de Comidas</h2>
+                    <p>Registra y monitorea tus alimentos consumidos día a día.</p>
+                </div>
+            </div>
+            <a href="<?= base_url('comidas') ?>" class="btn-probar">PROBAR</a>
+        </div>
+    </section>
+
+    <!-- Panel Derecho: Calendario y Comidas -->
+    <aside class="sidebar-panel">
+        <div class="calendar-widget">
+            <div class="calendar-header">
+                <span class="month-title" id="monthYearTitle"></span>
+                <div class="calendar-nav">
+                    <button type="button" id="prevWeekBtn">‹</button>
+                    <button type="button" id="nextWeekBtn">›</button>
+                </div>
+            </div>
+            <div class="calendar-days" id="calendarDaysContainer"></div>
+        </div>
+
+        <!-- Comidas del Día Dinámicas -->
+        <div class="daily-meals">
+            <h3>Comidas del día</h3>
+            <div id="mealsContainer"></div>
+        </div>
+    </aside>
+
+</main>
+
+<!-- Banner Publicitario Horizontal con Tiempo e Interacción Pro -->
+<?php if(session()->get('rol') !== 'premium' && session()->get('rol') !== 'pro'): ?>
+<aside class="ad-banner-horizontal" id="adBannerHorizontal">
+    <div class="ad-header">
+        <span class="ad-tag">Publicidad</span>
+        <div class="ad-controls">
+            <span id="adTimerBadge" class="ad-timer">Cambia en 30s</span>
+            <button type="button" id="closeAdBtn" class="ad-close-btn" aria-label="Cerrar publicidad">×</button>
+        </div>
+    </div>
+    <a href="<?= base_url('premium/checkout') ?>" class="ad-link">
+        <img id="adBannerImage" src="<?= base_url('/assets/imagenes/promooreo.jpg') ?>" alt="NutriCheck Pro Banner" class="ad-image">
+    </a>
+</aside>
+<?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Dropdown del usuario
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdownContent = document.getElementById('userDropdownContent');
+
+    if(userMenuBtn && userDropdownContent) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdownContent.classList.toggle('show');
+        });
+
+        window.addEventListener('click', () => {
+            if (userDropdownContent.classList.contains('show')) {
+                userDropdownContent.classList.remove('show');
+            }
+        });
+    }
+
+    const baseAssetsUrl = "<?= base_url('/assets/imagenes/') ?>/";
+
+    // Arreglo con la data real traída de meal_logs
+    const comidasDB = <?= json_encode($comidas ?? []) ?>;
+
+    let currentDate = new Date(); 
+
+    const monthYearTitle = document.getElementById('monthYearTitle');
+    const calendarDaysContainer = document.getElementById('calendarDaysContainer');
+    const mealsContainer = document.getElementById('mealsContainer');
+    const prevBtn = document.getElementById('prevWeekBtn');
+    const nextBtn = document.getElementById('nextWeekBtn');
+
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const dayNames = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+
+    function getFormattedDate(date) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function renderMeals(selectedDate) {
+        const dateKey = getFormattedDate(selectedDate);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const selDateObj = new Date(selectedDate);
+        selDateObj.setHours(0, 0, 0, 0);
+
+        const isPast = selDateObj < today;
+
+        // Comidas registradas en este día específico
+        const mealsOfDay = comidasDB.filter(c => {
+            let fechaComida = c.meal_date || c.fecha || c.date || (c.created_at ? c.created_at.substring(0, 10) : '');
+            return fechaComida === dateKey;
+        });
+
+        mealsContainer.innerHTML = '';
+
+        // CASO 1: Es un día pasado Y NO SE REGISTRÓ ABSOLUTAMENTE NADA
+        if (isPast && mealsOfDay.length === 0) {
+            mealsContainer.innerHTML = `
+                <div class="meal-item">
+                    <img src="${baseAssetsUrl}iconno.jpg" alt="Sin registro" class="status-icon">
+                    <div class="meal-details">
+                        <h4>Sin registro</h4>
+                        <p>Día completo</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Estructura base de las 3 comidas reconociendo los IDs numéricos (1, 2, 3, 4) y los nombres en texto
+        const tresComidasBase = [
+            { ids: ['1', 'breakfast', 'desayuno'], nombre: 'Desayuno' },
+            { ids: ['2', 'lunch', 'almuerzo'], nombre: 'Almuerzo' },
+            { ids: ['3', '4', 'dinner', 'snack', 'cena', 'merienda'], nombre: 'Cena' }
+        ];
+
+        tresComidasBase.forEach(base => {
+            // Buscamos si existe registro coincidente en meal_type
+            const registrada = mealsOfDay.find(m => {
+                const tipo = String(m.meal_type || m.tipo || '').toLowerCase();
+                return base.ids.includes(tipo);
+            });
+
+            let iconName = 'iconpendiente.jpg';
+            let titulo = base.nombre;
+            let subtexto = 'Por registrar';
+            let mostrarAcciones = false;
+
+            if (registrada) {
+                // Se registró la comida
+                iconName = 'iconlisto.jpg';
+                titulo = registrada.description || registrada.nombre || base.nombre;
+                subtexto = base.nombre;
+                mostrarAcciones = true;
+            } else if (isPast) {
+                // Día pasado donde faltó registrar esta comida específica
+                iconName = 'iconno.jpg';
+                subtexto = 'No registrado';
+            }
+
+            const mealDiv = document.createElement('div');
+            mealDiv.className = 'meal-item';
+            mealDiv.innerHTML = `
+                <img src="${baseAssetsUrl}${iconName}" alt="${subtexto}" class="status-icon">
+                <div class="meal-details">
+                    <h4>${titulo}</h4>
+                    <p>${subtexto}</p>
+                </div>
+                ${mostrarAcciones ? `
+                    <div class="meal-actions">
+                        <a href="<?= base_url('comidas') ?>" class="btn-action">Editar</a>
+                        <a href="<?= base_url('comidas') ?>" class="btn-action">Eliminar</a>
+                    </div>
+                ` : ''}
+            `;
+            mealsContainer.appendChild(mealDiv);
+        });
+    }
+
+    function renderWeek(date) {
+        calendarDaysContainer.innerHTML = '';
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay());
+
+        monthYearTitle.textContent = `${months[startOfWeek.getMonth()]} ${startOfWeek.getFullYear()}`;
+
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(startOfWeek);
+            day.setDate(startOfWeek.getDate() + i);
             
-            <!--  Botón de Auditoría de Pagos (Exclusivo para la cuenta Admin) -->
-            <?php if(session()->get('rol') === 'admin'): ?>
-                <a href="<?= base_url('dashboard/pagos') ?>" class="btn btn-danger shadow-sm font-weight-bold text-white mr-3">
-                    💳 Validar Pagos
-                </a>
-            <?php endif; ?>
+            const isSelected = day.toDateString() === date.toDateString();
 
-            <!-- Botón Superior de Premium (Solo para usuarios Free) -->
-            <?php if(session()->get('rol') === 'free'): ?>
-                <a href="<?= base_url('premium/checkout') ?>" class="btn btn-warning shadow-sm font-weight-bold text-dark mr-3" style="border: 1px solid #e0a800;">
-                    ⭐ Hazte Premium
-                </a>
-            <?php endif; ?>
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `day-col ${isSelected ? 'current-day' : ''}`;
+            dayDiv.innerHTML = `
+                <span class="day-name">${dayNames[day.getDay()]}</span>
+                <span class="day-num">${day.getDate()}</span>
+                ${isSelected ? '<span class="active-dot"></span>' : ''}
+            `;
+            
+            dayDiv.addEventListener('click', () => {
+                currentDate = day;
+                renderWeek(currentDate);
+            });
 
-            <a href="<?= base_url('perfil') ?>" class="btn btn-outline-secondary shadow-sm">
-                ⚙️ Configuración de Perfil
-            </a>
-        </div>
-    </div>
+            calendarDaysContainer.appendChild(dayDiv);
+        }
 
-    <div class="row">
-        
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center mt-3">
-                    <h1 class="mb-3">⚖️</h1>
-                    <h5 class="card-title font-weight-bold">Calculadora IMC</h5>
-                    <p class="card-text text-muted">Calcula tu Índice de Masa Corporal y conoce tu estado actual.</p>
-                </div>
-                <div class="card-footer bg-white border-0 text-center mb-3">
-                    <a href="<?= base_url('imc') ?>" class="btn btn-primary btn-block rounded-pill">Calcular IMC</a>
-                </div>
-            </div>
-        </div>
+        renderMeals(date);
+    }
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center mt-3">
-                    <h1 class="mb-3">🥗</h1>
-                    <h5 class="card-title font-weight-bold">Diario de Comidas</h5>
-                    <p class="card-text text-muted">Registra y monitorea tus alimentos consumidos día a día.</p>
-                </div>
-                <div class="card-footer bg-white border-0 text-center mb-3">
-                    <a href="<?= base_url('comidas') ?>" class="btn btn-success btn-block rounded-pill">Registrar Comida</a>
-                </div>
-            </div>
-        </div>
+    if(prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() - 7);
+            renderWeek(currentDate);
+        });
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center mt-3">
-                    <h1 class="mb-3">📖</h1>
-                    <h5 class="card-title font-weight-bold">Buscador de Recetas</h5>
-                    <p class="card-text text-muted">Encuentra recetas filtradas según tu perfil clínico y patologías.</p>
-                </div>
-                <div class="card-footer bg-white border-0 text-center mb-3">
-                    <a href="<?= base_url('recetas') ?>" class="btn btn-warning btn-block rounded-pill text-white">Buscar Recetas</a>
-                </div>
-            </div>
-        </div>
+        nextBtn.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() + 7);
+            renderWeek(currentDate);
+        });
+    }
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center mt-3">
-                    <h1 class="mb-3">📰</h1>
-                    <h5 class="card-title font-weight-bold">NutriCheck News</h5>
-                    <p class="card-text text-muted">Mantente al día con artículos médicos, jornadas y consejos nutricionales.</p>
-                </div>
-                <div class="card-footer bg-white border-0 text-center mb-3">
-                    
-                    <?php if(session()->get('rol') === 'free'): ?>
-                        <a href="<?= base_url('newspaper') ?>" class="btn btn-secondary btn-block rounded-pill text-white">
-                            🔒 Exclusivo Premium
-                        </a>
-                    <?php else: ?>
-                        <a href="<?= base_url('newspaper') ?>" class="btn btn-info btn-block rounded-pill text-white">
-                            Leer Artículos
-                        </a>
-                    <?php endif; ?>
+    renderWeek(currentDate);
 
-                </div>
-            </div>
-        </div>
+    // Lógica de Banner Publicitario Horizontal con rotación entre Oreo y Pepsi
+    const adBanner = document.getElementById('adBannerHorizontal');
+    const closeAdBtn = document.getElementById('closeAdBtn');
+    const adTimerBadge = document.getElementById('adTimerBadge');
+    const adBannerImage = document.getElementById('adBannerImage');
 
-        <?php if(session()->get('rol') === 'free'): ?>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(145deg, #fffcf5, #fff8e1); border: 1px solid #ffeeba !important;">
-                <div class="card-body text-center mt-3">
-                    <h1 class="mb-3">⭐</h1>
-                    <h5 class="card-title font-weight-bold text-warning" style="text-shadow: 0px 0px 1px #ffc107;">Desbloquea Premium</h5>
-                    <p class="card-text text-muted">Elimina la publicidad y accede a todo el contenido exclusivo de salud.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 text-center mb-3">
-                    <a href="<?= base_url('premium/checkout') ?>" class="btn btn-warning btn-block rounded-pill font-weight-bold text-dark shadow-sm">
-                        Ver Planes de Pago
-                    </a>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
+    const adImages = [
+        baseAssetsUrl + 'promooreo.jpg',
+        baseAssetsUrl + 'promopepsi.jpg'
+    ];
+    let currentAdIndex = 0;
 
-    </div>
-</div>
+    if(adBanner && closeAdBtn && adTimerBadge && adBannerImage) {
+        let timeLeft = 30;
+        const timerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                timeLeft = 30;
+                currentAdIndex = (currentAdIndex + 1) % adImages.length;
+                adBannerImage.src = adImages[currentAdIndex];
+            }
+            adTimerBadge.textContent = `Cambia en ${timeLeft}s`;
+        }, 1000);
 
-<?= view('template/piepagina') ?>
+        closeAdBtn.addEventListener('click', () => {
+            adBanner.style.display = 'none';
+            clearInterval(timerInterval);
+        });
+    }
+});
+</script>
+
+<?php 
+if(file_exists(APPPATH . 'Views/Dashboard/piepagina.php')) {
+    echo view('Dashboard/piepagina');
+}
+?>
