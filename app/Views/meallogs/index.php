@@ -1,126 +1,357 @@
-<?php
-/**
- * Variables inyectadas por el Controlador MealLogs
- * @var array $historial_comidas
- */
-?>
-<?= view('template/cabecera') ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriCheck - Racha de Comidas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=1.0') ?>">
+</head>
+<body>
 
-<div class="container mt-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="color: #f1682d; font-weight: 700;">🥗 Mi Diario de Comidas</h2>
-        <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary btn-sm">Volver al Inicio</a>
+<!-- Cabecera Integrada -->
+<header class="dash-navbar">
+    <div class="logo-container">
+        <!-- Retorno al Dashboard mediante clic en el Logo -->
+        <a href="<?= base_url('dashboard') ?>" class="logo-wrapper">
+            <img src="<?= base_url('/assets/imagenes/logo_naranja.png') ?>" alt="NutriCheck" class="dash-logo">
+        </a>
     </div>
 
+    <div class="user-menu-wrapper">
+        <?php if(session()->get('rol') === 'admin'): ?>
+            <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin">💳 Validar Pagos</a>
+        <?php endif; ?>
 
-    <div class="row">
-        <div class="col-md-5 mb-4">
-            <div class="card shadow-sm border-0" style="border-radius: 15px; background-color: #fcfcfc;">
-                <div class="card-body">
-                    <h5 class="font-weight-bold mb-3">Registrar Nueva Comida</h5>
-                    
-                    <form action="<?= base_url('comidas/guardar') ?>" method="POST" enctype="multipart/form-data">
-                        <?= csrf_field() ?>
-                        
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="font-weight-bold small text-muted">Fecha</label>
-                                <input type="date" class="form-control" name="meal_date" value="<?= date('Y-m-d') ?>" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="font-weight-bold small text-muted">Hora</label>
-                                <input type="time" class="form-control" name="meal_time" value="<?= date('H:i') ?>" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="font-weight-bold small text-muted">Tipo de Comida</label>
-                            <select class="form-control" name="meal_type" required>
-                                <option value="" disabled selected>Selecciona el tipo...</option>
-                                <option value="desayuno">☕ Desayuno</option>
-                                <option value="media_manana">🍎 Media Mañana</option>
-                                <option value="almuerzo">🍲 Almuerzo</option>
-                                <option value="merienda">🥪 Merienda</option>
-                                <option value="cena">🥗 Cena</option>
-                                <option value="antojo">🍪 Antojo Nocturno</option>
-                                <option value="bebida">🥤 Bebida / Hidratación</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="font-weight-bold small text-muted">¿Qué comiste? (Descripción)</label>
-                            <textarea class="form-control" name="description" rows="3" placeholder="Ej: 2 huevos revueltos, 1 arepa..." required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="font-weight-bold small text-muted">Foto del Plato (Opcional)</label>
-                            <input type="file" class="form-control-file border p-1 rounded bg-white" name="foto_comida" accept="image/png, image/jpeg, image/jpg" id="foto_comida_input">
-                        </div>
-
-                        <div class="text-center mt-2 mb-3">
-                            <img id="preview_comida" src="" class="img-fluid rounded shadow-sm d-none" style="max-height: 150px; object-fit: cover;">
-                        </div>
-
-                        <button type="submit" class="btn btn-block text-white font-weight-bold shadow-sm" style="background-color: #28a745; border-radius: 10px; padding: 12px;">
-                            ➕ Añadir al Diario
-                        </button>
-                    </form>
-                </div>
+        <div class="user-dropdown">
+            <button type="button" class="dropdown-trigger" id="userMenuBtn">
+                <?php 
+                    $userId = session()->get('loggedUser');
+                    $avatarFile = null;
+                    if ($userId) {
+                        $db = \Config\Database::connect();
+                        $userQuery = $db->table('users')->select('avatar')->where('id', $userId)->get()->getRow();
+                        if ($userQuery && !empty($userQuery->avatar)) {
+                            $avatarFile = $userQuery->avatar;
+                        }
+                    }
+                    $fotoPerfil = ($avatarFile && file_exists(FCPATH . 'assets/avatars/' . $avatarFile))
+                        ? base_url('assets/avatars/' . $avatarFile) 
+                        : base_url('assets/imagenes/iconusuario.png');
+                ?>
+                <img src="<?= $fotoPerfil ?>" alt="Avatar" class="user-avatar">
+                <span class="user-name"><?= session()->get('name') ?? 'Usuario' ?></span>
+                <span class="arrow-down">▼</span>
+            </button>
+            <div class="dropdown-content" id="userDropdownContent">
+                <a href="<?= base_url('perfil') ?>">Configuración</a>
+                <?php if(session()->get('rol') !== 'premium' && session()->get('rol') !== 'pro'): ?>
+                    <a href="<?= base_url('premium/checkout') ?>" class="text-orange">NutricheckPro</a>
+                <?php endif; ?>
+                <hr>
+                <a href="<?= base_url('logout') ?>" class="text-danger">Cerrar sesión</a>
             </div>
         </div>
+    </div>
+</header>
 
-        <div class="col-md-7">
-            <h5 class="font-weight-bold mb-3 text-muted">Historial Reciente</h5>
+<main class="meallogs-container">
+    
+    <!-- Título Principal de la Sección -->
+    <div class="section-header">
+        <img src="<?= base_url('/assets/imagenes/fuegonaranja.png') ?>" alt="Fuego" class="header-icon">
+        <h1>Racha de Comidas</h1>
+    </div>
+
+    <div class="meallogs-grid">
+        
+        <!-- Columna Izquierda: Formulario de Registro -->
+        <section class="form-card">
+            <h2>Registrar Nueva Comida</h2>
             
-            <?php if(empty($historial_comidas)): ?>
-                <div class="alert alert-info text-center border-0 shadow-sm" style="border-radius: 15px;">
-                    Aún no has registrado ninguna comida. ¡Empieza tu diario hoy mismo!
-                </div>
-            <?php else: ?>
-                <?php foreach($historial_comidas as $comida): ?>
-                    <div class="card shadow-sm border-0 mb-3" style="border-radius: 15px;">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 text-center">
-                                    <?php if(!empty($comida['image_path'])): ?>
-                                        <img src="<?= base_url('assets/meallogsimg/' . $comida['image_path']) ?>" class="img-fluid rounded shadow-sm" style="height: 120px; width: 100%; object-fit: cover;" alt="Foto de comida">
-                                    <?php else: ?>
-                                        <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted shadow-sm" style="height: 120px; width: 100%;">
-                                            <small>🚫 Sin foto</small>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                
-                                <div class="col-md-8">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 mt-2 mt-md-0">
-                                        <span class="badge badge-warning text-uppercase px-3 py-1"><?= str_replace('_', ' ', $comida['meal_type']) ?></span>
-                                        <small class="text-muted font-weight-bold">
-                                            📅 <?= date('d/m/Y', strtotime($comida['meal_date'])) ?> | 🕒 <?= date('h:i A', strtotime($comida['meal_time'])) ?>
-                                        </small>
-                                    </div>
-                                    <p class="mb-0 text-dark"><?= nl2br(esc($comida['description'])) ?></p>
-                                </div>
-                            </div>
-                        </div>
+            <form action="<?= base_url('comidas/guardar') ?>" method="POST" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" name="meal_date" id="meal_date" value="<?= date('Y-m-d') ?>" required>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                    <div class="form-group">
+                        <label>Hora</label>
+                        <input type="time" name="meal_time" value="<?= date('H:i') ?>" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Comida</label>
+                    <select name="meal_type" required>
+                        <option value="" disabled selected>Selecciona el tipo...</option>
+                        <option value="breakfast">☕ Desayuno</option>
+                        <option value="lunch">🍲 Almuerzo</option>
+                        <option value="dinner">🥗 Cena</option>
+                        <option value="snack">🍎 Snack / Merienda / Antojo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>¿Qué comiste? (Descripción)</label>
+                    <textarea name="description" rows="3" placeholder="Ej: 2 huevos revueltos, 1 arepa..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Foto del Plato (Opcional)</label>
+                    <input type="file" name="foto_comida" accept="image/png, image/jpeg, image/jpg" id="foto_comida_input">
+                </div>
+
+                <div class="image-preview-container">
+                    <img id="preview_comida" src="" class="d-none">
+                </div>
+
+                <button type="submit" class="btn-submit">REGISTRAR</button>
+            </form>
+        </section>
+
+        <!-- Columna Derecha: Calendario e Historial -->
+        <section class="history-section">
+            
+            <!-- Widget Calendario Semanal Interactivo -->
+            <div class="calendar-widget">
+                <div class="calendar-header">
+                    <span class="month-title" id="monthYearTitle"></span>
+                    <div class="calendar-nav">
+                        <button type="button" id="prevWeekBtn">‹</button>
+                        <button type="button" id="nextWeekBtn">›</button>
+                    </div>
+                </div>
+                <div class="calendar-days" id="calendarDaysContainer"></div>
+            </div>
+
+            <h3 class="history-title">Historial Reciente</h3>
+            
+            <!-- Contenedor Dinámico de Comidas del Día Selección -->
+            <div id="historyMealsContainer" class="history-list"></div>
+
+        </section>
+    </div>
+</main>
+
+<!-- Banner Publicitario Horizontal con Rotación y Tiempo -->
+<?php if(session()->get('rol') !== 'premium' && session()->get('rol') !== 'pro'): ?>
+<aside class="ad-banner-horizontal" id="adBannerHorizontal">
+    <div class="ad-header">
+        <span class="ad-tag">Publicidad</span>
+        <div class="ad-controls">
+            <span id="adTimerBadge" class="ad-timer">Cambia en 30s</span>
+            <button type="button" id="closeAdBtn" class="ad-close-btn" aria-label="Cerrar publicidad">×</button>
         </div>
     </div>
-</div>
+    <a href="<?= base_url('premium/checkout') ?>" class="ad-link">
+        <img id="adBannerImage" src="<?= base_url('/assets/imagenes/promooreo.jpg') ?>" alt="NutriCheck Pro Banner" class="ad-image">
+    </a>
+</aside>
+<?php endif; ?>
 
 <script>
-    document.getElementById('foto_comida_input').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('preview_comida');
-        if (file) {
-            preview.src = URL.createObjectURL(file);
-            preview.classList.remove('d-none');
-        } else {
-            preview.src = "";
-            preview.classList.add('d-none');
+document.addEventListener('DOMContentLoaded', () => {
+    // Dropdown Usuario
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdownContent = document.getElementById('userDropdownContent');
+    if(userMenuBtn && userDropdownContent) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdownContent.classList.toggle('show');
+        });
+        window.addEventListener('click', () => {
+            userDropdownContent.classList.remove('show');
+        });
+    }
+
+    // Previsualización de Imagen
+    const fotoInput = document.getElementById('foto_comida_input');
+    const preview = document.getElementById('preview_comida');
+    if(fotoInput && preview) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('d-none');
+            } else {
+                preview.src = "";
+                preview.classList.add('d-none');
+            }
+        });
+    }
+
+    // Data de Comidas desde BD
+    const comidasDB = <?= json_encode($historial_comidas ?? []) ?>;
+    const baseAssetUrl = "<?= base_url('assets/meallogsimg/') ?>/";
+    let currentDate = new Date(); 
+
+    const monthYearTitle = document.getElementById('monthYearTitle');
+    const calendarDaysContainer = document.getElementById('calendarDaysContainer');
+    const historyMealsContainer = document.getElementById('historyMealsContainer');
+    const prevBtn = document.getElementById('prevWeekBtn');
+    const nextBtn = document.getElementById('nextWeekBtn');
+
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const dayNames = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+
+    function getFormattedDate(date) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function formatAMPM(timeString) {
+        if(!timeString) return '';
+        let [hours, minutes] = timeString.split(':');
+        hours = parseInt(hours, 10);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
+    function renderMealsForDate(selectedDate) {
+        const dateKey = getFormattedDate(selectedDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const selDateObj = new Date(selectedDate);
+        selDateObj.setHours(0, 0, 0, 0);
+        const isPast = selDateObj < today;
+
+        const mealsOfDay = comidasDB.filter(c => c.meal_date === dateKey);
+        historyMealsContainer.innerHTML = '';
+
+        if (mealsOfDay.length === 0) {
+            historyMealsContainer.innerHTML = `
+                <div class="empty-history-card">
+                    <p>${isPast ? 'Sin registros para este día' : 'No has registrado ninguna comida hoy.'}</p>
+                </div>
+            `;
+            return;
         }
-    });
+
+        mealsOfDay.forEach(comida => {
+            const dateParts = comida.meal_date.split('-');
+            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+            const formattedTime = formatAMPM(comida.meal_time);
+
+            let badgeClass = 'badge-snack';
+            let badgeText = 'SNACK';
+            
+            const typeLower = (comida.meal_type || '').toLowerCase();
+            if (typeLower === 'breakfast' || typeLower === 'desayuno') {
+                badgeClass = 'badge-desayuno';
+                badgeText = 'DESAYUNO';
+            } else if (typeLower === 'lunch' || typeLower === 'almuerzo') {
+                badgeClass = 'badge-almuerzo';
+                badgeText = 'ALMUERZO';
+            } else if (typeLower === 'dinner' || typeLower === 'cena') {
+                badgeClass = 'badge-cena';
+                badgeText = 'CENA';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'history-card';
+            
+            const photoBlock = comida.image_path 
+                ? `<img src="${baseAssetUrl}${comida.image_path}" class="meal-photo" alt="Plato">` 
+                : `<div class="no-photo"><span>Sin foto</span></div>`;
+
+            card.innerHTML = `
+                <div class="photo-container">${photoBlock}</div>
+                <div class="info-container">
+                    <div class="card-top-row">
+                        <span class="meal-badge ${badgeClass}">${badgeText}</span>
+                        <span class="meal-datetime">${formattedDate} | ${formattedTime}</span>
+                    </div>
+                    <p class="meal-description">${comida.description}</p>
+                </div>
+            `;
+            historyMealsContainer.appendChild(card);
+        });
+    }
+
+    function renderWeek(date) {
+        calendarDaysContainer.innerHTML = '';
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay());
+
+        monthYearTitle.textContent = `${months[startOfWeek.getMonth()]} ${startOfWeek.getFullYear()}`;
+
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(startOfWeek);
+            day.setDate(startOfWeek.getDate() + i);
+            const isSelected = day.toDateString() === date.toDateString();
+
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `day-col ${isSelected ? 'current-day' : ''}`;
+            dayDiv.innerHTML = `
+                <span class="day-name">${dayNames[day.getDay()]}</span>
+                <span class="day-num">${day.getDate()}</span>
+                ${isSelected ? '<span class="active-dot"></span>' : ''}
+            `;
+            
+            dayDiv.addEventListener('click', () => {
+                currentDate = day;
+                renderWeek(currentDate);
+            });
+
+            calendarDaysContainer.appendChild(dayDiv);
+        }
+
+        renderMealsForDate(date);
+    }
+
+    if(prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() - 7);
+            renderWeek(currentDate);
+        });
+        nextBtn.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() + 7);
+            renderWeek(currentDate);
+        });
+    }
+
+    renderWeek(currentDate);
+
+    // Lógica de Banner Publicitario Horizontal con Rotación
+    const adBanner = document.getElementById('adBannerHorizontal');
+    const closeAdBtn = document.getElementById('closeAdBtn');
+    const adTimerBadge = document.getElementById('adTimerBadge');
+    const adBannerImage = document.getElementById('adBannerImage');
+
+    const baseImagesUrl = "<?= base_url('/assets/imagenes/') ?>/";
+    const adImages = [
+        baseImagesUrl + 'promooreo.jpg',
+        baseImagesUrl + 'promopepsi.jpg'
+    ];
+    let currentAdIndex = 0;
+
+    if(adBanner && closeAdBtn && adTimerBadge && adBannerImage) {
+        let timeLeft = 30;
+        const timerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                timeLeft = 30;
+                currentAdIndex = (currentAdIndex + 1) % adImages.length;
+                adBannerImage.src = adImages[currentAdIndex];
+            }
+            adTimerBadge.textContent = `Cambia en ${timeLeft}s`;
+        }, 1000);
+
+        closeAdBtn.addEventListener('click', () => {
+            adBanner.style.display = 'none';
+            clearInterval(timerInterval);
+        });
+    }
+});
 </script>
 
-<?= view('template/piepagina') ?>
+</body>
+</html>
