@@ -38,8 +38,19 @@ class UsersSeeder extends Seeder
                 'birth_date' => '1990-08-20',  
                 'avatar'        => 'default-avatar.png',   
                 'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'name'       => 'Usuario Cuatro',
+                'email'      => 'usuario4@gmail.com',
+                'password'   => password_hash('123456', PASSWORD_BCRYPT),
+                'rol'        => 'user',
+                'sex'        => 'female',          
+                'birth_date' => '1999-03-12',  
+                'avatar'     => 'default-avatar.png',   
+                'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
+        
         $this->db->table('users')->insertBatch($data);
     }
 }

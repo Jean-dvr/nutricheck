@@ -9,9 +9,22 @@ class CreateRecipeTagsTable extends Migration
     public function up() 
     {
         $this->forge->addField([
-            'id' => ['type' => 'INT','unsigned' => true,'auto_increment' => true],
-            'recipe_id' => ['type' => 'INT'],
-            'tag_id'    => ['type' => 'INT', 'unsigned' => true],
+            'id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'auto_increment' => true
+            ],
+            'recipe_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true
+            ],
+            'tag_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true
+            ],
         ]);
 
         $this->forge->addKey('id', true);
@@ -22,6 +35,5 @@ class CreateRecipeTagsTable extends Migration
         
         $this->forge->createTable('recipe_tags');
     }
-
     public function down() { $this->forge->dropTable('recipe_tags'); }
 }

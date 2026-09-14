@@ -12,11 +12,7 @@ class UserPantriesModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'user_id',
-        'ingredient_id',
-        'quantity'
-    ];
+    protected $allowedFields    = ['user_id','ingredient_id','quantity'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

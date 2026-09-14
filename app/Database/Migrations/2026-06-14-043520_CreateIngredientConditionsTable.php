@@ -11,11 +11,20 @@ class CreateIngredientConditionsTable extends Migration
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
+                'constraint'     => 11,
                 'unsigned'       => true,
-                'auto_increment' => true
+                'auto_increment' => true,
             ],
-            'ingredient_id' => ['type' => 'INT'],
-            'condition_id'  => ['type' => 'INT'],
+            'ingredient_id' => [ // FK: ajustado
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
+            'condition_id' => [ // FK: ajustado
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
         ]);
 
         // 1. Llave primaria simple
@@ -35,8 +44,5 @@ class CreateIngredientConditionsTable extends Migration
         $this->forge->createTable('ingredient_conditions');
     }
 
-    public function down() 
-    { 
-        $this->forge->dropTable('ingredient_conditions'); 
-    }
+    public function down() { $this->forge->dropTable('ingredient_conditions');}
 }
