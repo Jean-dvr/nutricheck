@@ -9,9 +9,22 @@ class CreateUserConditionsTable extends Migration
     public function up() 
     {
         $this->forge->addField([
-            'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'user_id'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
-            'condition_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'auto_increment' => true,
+            ],
+            'user_id' => [ // FK: ajustado
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
+            'condition_id' => [ // FK: ajustado
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
         ]);
 
         $this->forge->addKey('id', true);
@@ -23,6 +36,5 @@ class CreateUserConditionsTable extends Migration
         
         $this->forge->createTable('user_conditions');
     }
-
     public function down() { $this->forge->dropTable('user_conditions'); }
 }

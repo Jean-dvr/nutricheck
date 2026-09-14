@@ -12,10 +12,7 @@ class TagsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'name',
-        'color_hex',
-    ];
+    protected $allowedFields    = ['name','color_hex',];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

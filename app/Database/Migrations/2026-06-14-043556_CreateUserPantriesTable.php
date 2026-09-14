@@ -13,19 +13,23 @@ class CreateUserPantriesTable extends Migration
                 'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
-                'auto_increment' => true
+                'auto_increment' => true,
             ],
-            'user_id' => [
-                'type'       => 'INT', 
-                'constraint' => 11, 
-                'unsigned'   => true
+            'user_id' => [ // FK: ajustado
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
             ],
-            'ingredient_id' => [
-                'type'       => 'INT', 
-                'constraint' => 11, 
-                'unsigned'   => true
+            'ingredient_id' => [ // FK: ajustado
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
             ],
-            'quantity' => ['type' => 'DECIMAL', 'constraint' => '6,2', 'null' => true],
+            'quantity' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '6,2',
+                'null'       => true,
+            ],
         ]);
 
         $this->forge->addKey('id', true);
@@ -36,6 +40,5 @@ class CreateUserPantriesTable extends Migration
         
         $this->forge->createTable('user_pantries');
     }
-
     public function down() { $this->forge->dropTable('user_pantries'); }
 }

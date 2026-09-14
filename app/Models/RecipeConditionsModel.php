@@ -12,10 +12,7 @@ class RecipeConditionsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'recipe_id',
-        'condition_id'
-    ];
+    protected $allowedFields    = ['recipe_id','condition_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

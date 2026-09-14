@@ -12,10 +12,7 @@ class RecipeTagsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'recipe_id',
-        'tag_id',
-    ];
+    protected $allowedFields    = ['recipe_id','tag_id',];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
