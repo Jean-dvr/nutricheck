@@ -89,7 +89,7 @@
         </div>
     </div>
     <a href="<?= base_url('premium/checkout') ?>" class="ad-link">
-        <img id="adBannerImage" src="<?= base_url('/assets/imagenes/promooreo.jpg') ?>" alt="NutriCheck Pro Banner" class="ad-image">
+        <img id="adBannerImage" src="<?= base_url('/assets/ads/promooreo.jpg') ?>" alt="NutriCheck Pro Banner" class="ad-image">
     </a>
 </aside>
 <?php endif; ?>
