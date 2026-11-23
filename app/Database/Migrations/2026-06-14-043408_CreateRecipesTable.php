@@ -41,7 +41,7 @@ class CreateRecipesTable extends Migration
             'is_approved' => [
                 'type'       => 'TINYINT',
                 'constraint' => '1',
-                'default'    => 0,
+                'default'    => 1,
             ],
             'image_url' => [
                 'type'       => 'VARCHAR',

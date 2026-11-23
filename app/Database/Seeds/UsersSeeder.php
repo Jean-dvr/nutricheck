@@ -43,7 +43,7 @@ class UsersSeeder extends Seeder
                 'name'       => 'Usuario Cuatro',
                 'email'      => 'usuario4@gmail.com',
                 'password'   => password_hash('123456', PASSWORD_BCRYPT),
-                'rol'        => 'user',
+                'rol'        => 'free',
                 'sex'        => 'female',          
                 'birth_date' => '1999-03-12',  
                 'avatar'     => 'default-avatar.png',   
