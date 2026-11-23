@@ -37,7 +37,7 @@
                     <p>Mantente al día con artículos médicos, jornadas y consejos nutricionales.</p>
                 </div>
             </div>
-            <?php if(session()->get('rol') !== 'premium' && session()->get('rol') !== 'pro'): ?>
+            <?php if(!in_array(session()->get('rol'), ['premium', 'pro', 'nutricionista', 'admin'])): ?>
                 <a href="<?= base_url('premium/checkout') ?>" class="btn-probar btn-locked">PROBAR</a>
             <?php else: ?>
                 <a href="<?= base_url('newspaper') ?>" class="btn-probar">PROBAR</a>
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Arreglo con la data real traída de meal_logs
     const comidasDB = <?= json_encode($comidas ?? []) ?>;
 
-    let currentDate = new Date(); 
+    let currentDate = new window.Date(); 
 
     const monthYearTitle = document.getElementById('monthYearTitle');
     const calendarDaysContainer = document.getElementById('calendarDaysContainer');
@@ -139,10 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMeals(selectedDate) {
         const dateKey = getFormattedDate(selectedDate);
 
-        const today = new Date();
+        const today = new window.Date();
         today.setHours(0, 0, 0, 0);
 
-        const selDateObj = new Date(selectedDate);
+        const selDateObj = new window.Date(selectedDate);
         selDateObj.setHours(0, 0, 0, 0);
 
         const isPast = selDateObj < today;
@@ -221,13 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderWeek(date) {
         calendarDaysContainer.innerHTML = '';
-        const startOfWeek = new Date(date);
+        const startOfWeek = new window.Date(date);
         startOfWeek.setDate(date.getDate() - date.getDay());
 
         monthYearTitle.textContent = `${months[startOfWeek.getMonth()]} ${startOfWeek.getFullYear()}`;
 
         for (let i = 0; i < 7; i++) {
-            const day = new Date(startOfWeek);
+            const day = new window.Date(startOfWeek);
             day.setDate(startOfWeek.getDate() + i);
             
             const isSelected = day.toDateString() === date.toDateString();
