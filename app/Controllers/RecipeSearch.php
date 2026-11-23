@@ -13,101 +13,145 @@ class RecipeSearch extends BaseController
     public function index()
     {
         $ingModel = new IngredientsModel();
-        
-        $data['ingredientes_disponibles'] = $ingModel->orderBy('name', 'ASC')->findAll();
-        $data['recetas_encontradas'] = [];
-        $data['busqueda_realizada'] = false;
 
-        if ($this->request->getMethod() === 'POST' || $this->request->getMethod() === 'post') {
+        $data = [
+            'ingredientes_disponibles' => $ingModel->orderBy('name', 'ASC')->findAll(),
+            'recetas_encontradas'      => [],
+            'busqueda_realizada'       => false,
+        ];
+
+        $metodo = strtolower($this->request->getMethod());
+
+        if ($metodo === 'post') {
             $data['busqueda_realizada'] = true;
-            $ingredientesSeleccionados = $this->request->getPost('ingredientes');
 
-            if (!empty($ingredientesSeleccionados)) {
-                
-                $userId = session()->get('loggedUser');
-                
-                $userCondModel  = new UserConditionsModel();
-                $ingCondModel   = new IngredientConditionsModel();
-                $recipeIngModel = new RecipeIngredientsModel();
-                $recipesModel   = new RecipesModel();
+            // 1. Validar texto del buscador rápido (solo letras y espacios)
+            $reglas = config('Validation')->buscarRecetas;
+            if (!$this->validate($reglas)) {
+                $errores = $this->validator->getErrors();
+                session()->setFlashdata('fail', reset($errores));
+                return view('recipesearch/index', $data);
+            }
 
-                $misCondiciones = $userCondModel->where('user_id', $userId)->findAll();
+            // 2. Normalizar y validar IDs de ingredientes seleccionados
+            $rawIngredientes = $this->request->getPost('ingredientes');
+            $ingredientesSeleccionados = is_array($rawIngredientes)
+                ? array_values(array_unique(array_filter(array_map('intval', $rawIngredientes), fn($id) => $id > 0)))
+                : [];
+
+            if (empty($ingredientesSeleccionados)) {
+                session()->setFlashdata('fail', 'Por favor, selecciona al menos un ingrediente de tu despensa.');
+                return view('recipesearch/index', $data);
+            }
+
+            $userId         = session()->get('loggedUser');
+            $userCondModel  = new UserConditionsModel();
+            $ingCondModel   = new IngredientConditionsModel();
+            $recipeIngModel = new RecipeIngredientsModel();
+            $recipesModel   = new RecipesModel();
+
+            // 3. Obtener recetas prohibidas según condiciones médicas del usuario
+            $recetasProhibidas = [];
+            if (!empty($userId)) {
+                $misCondiciones    = $userCondModel->where('user_id', $userId)->findAll();
                 $idsMisCondiciones = array_column($misCondiciones, 'condition_id');
 
-                $recetasProhibidas = [];
-
                 if (!empty($idsMisCondiciones)) {
-                    $ingDañinos = $ingCondModel->whereIn('condition_id', $idsMisCondiciones)->findAll();
-                    $ingredientesProhibidos = array_column($ingDañinos, 'ingredient_id');
+                    $ingDaninos = $ingCondModel->whereIn('condition_id', $idsMisCondiciones)->findAll();
+                    $idsIngProhibidos = array_column($ingDaninos, 'ingredient_id');
 
-                    if (!empty($ingredientesProhibidos)) {
-                        $recetasMalas = $recipeIngModel->whereIn('ingredient_id', $ingredientesProhibidos)->findAll();
+                    if (!empty($idsIngProhibidos)) {
+                        $recetasMalas = $recipeIngModel->whereIn('ingredient_id', $idsIngProhibidos)->findAll();
                         $recetasProhibidas = array_unique(array_column($recetasMalas, 'recipe_id'));
                     }
                 }
+            }
 
-                if (!empty($recetasProhibidas)) {
-                    $recipeIngModel->whereNotIn('recipe_id', $recetasProhibidas);
-                }
-                $todosLosRequisitos = $recipeIngModel->findAll();
+            // 4. Evaluar coherencia de cada receta respecto a los ingredientes elegidos
+            $todosLosRequisitos = $recipeIngModel->findAll();
+            $estadisticasRecetas = [];
 
-                $puntuacionRecetas = [];
+            foreach ($todosLosRequisitos as $req) {
+                $idReceta      = (int) $req['recipe_id'];
+                $idIngrediente = (int) $req['ingredient_id'];
 
-                foreach ($todosLosRequisitos as $req) {
-                    $idReceta = $req['recipe_id'];
-                    $idIngrediente = $req['ingredient_id'];
-
-                    if (!isset($puntuacionRecetas[$idReceta])) {
-                        $puntuacionRecetas[$idReceta] = ['pide' => 0, 'tengo' => 0];
-                    }
-
-                    $puntuacionRecetas[$idReceta]['pide']++;
-
-                    if (in_array($idIngrediente, $ingredientesSeleccionados)) {
-                        $puntuacionRecetas[$idReceta]['tengo']++;
-                    }
+                if (in_array($idReceta, $recetasProhibidas, true)) {
+                    continue;
                 }
 
-                $recetasAprobadasIds = [];
-                foreach ($puntuacionRecetas as $idReceta => $datos) {
-                    $porcentaje = ($datos['tengo'] / $datos['pide']) * 100;
-                    if ($porcentaje >= 50) { 
-                        $recetasAprobadasIds[] = $idReceta;
-                    }
+                if (!isset($estadisticasRecetas[$idReceta])) {
+                    $estadisticasRecetas[$idReceta] = [
+                        'total_ingredientes' => 0,
+                        'coincidencias'      => 0,
+                    ];
                 }
 
-                $recetasSegurasIds = array_diff($recetasAprobadasIds, $recetasProhibidas);
+                $estadisticasRecetas[$idReceta]['total_ingredientes']++;
 
-                if (!empty($recetasSegurasIds)) {
-                    // MODIFICACIÓN IMPORTANTE AQUÍ: Solo traemos las recetas que están aprobadas (is_approved = 1)
-                    $recetas = $recipesModel->whereIn('id', $recetasSegurasIds)
-                                            ->where('is_approved', 1)
-                                            ->findAll();
-                    
-                    if(!empty($recetas)) {
-                        $db = \Config\Database::connect();
-                        $tagsData = $db->table('tags')
-                            ->select('tags.*, recipe_tags.recipe_id')
-                            ->join('recipe_tags', 'recipe_tags.tag_id = tags.id')
-                            ->whereIn('recipe_tags.recipe_id', $recetasSegurasIds)
-                            ->get()->getResultArray();
-                        
-                        foreach ($recetas as &$receta) {
-                            $receta['tags'] = array_filter($tagsData, function($tag) use ($receta) {
-                                return $tag['recipe_id'] == $receta['id'];
-                            });
+                if (in_array($idIngrediente, $ingredientesSeleccionados, true)) {
+                    $estadisticasRecetas[$idReceta]['coincidencias']++;
+                }
+            }
+
+            // 5. Filtrar recetas coherentes:
+            // - Al menos 1 ingrediente seleccionado debe formar parte de la receta
+            // - Cobertura mínima del 50% de los ingredientes de la receta
+            $recetasCandidatas = [];
+            foreach ($estadisticasRecetas as $idReceta => $stat) {
+                if ($stat['coincidencias'] < 1 || $stat['total_ingredientes'] < 1) {
+                    continue;
+                }
+
+                $cobertura = ($stat['coincidencias'] / $stat['total_ingredientes']) * 100;
+                if ($cobertura >= 50) {
+                    $recetasCandidatas[$idReceta] = [
+                        'coincidencias' => $stat['coincidencias'],
+                        'cobertura'     => $cobertura,
+                    ];
+                }
+            }
+
+            if (!empty($recetasCandidatas)) {
+                $idsAprobados = array_keys($recetasCandidatas);
+
+                $recetas = $recipesModel
+                    ->whereIn('id', $idsAprobados)
+                    ->where('is_approved', 1)
+                    ->findAll();
+
+                if (!empty($recetas)) {
+                    // Ordenar por mayor número de ingredientes coincidentes y mayor cobertura
+                    usort($recetas, function ($a, $b) use ($recetasCandidatas) {
+                        $statA = $recetasCandidatas[(int) $a['id']];
+                        $statB = $recetasCandidatas[(int) $b['id']];
+
+                        if ($statB['coincidencias'] !== $statA['coincidencias']) {
+                            return $statB['coincidencias'] <=> $statA['coincidencias'];
                         }
-                        
-                        $data['recetas_encontradas'] = $recetas;
-                    } else {
-                        $data['recetas_encontradas'] = [];
-                    }
-                } else {
-                    $data['recetas_encontradas'] = [];
-                }
+                        return $statB['cobertura'] <=> $statA['cobertura'];
+                    });
 
-            } else {
-                session()->setFlashdata('fail', 'Por favor, selecciona al menos un ingrediente de tu despensa.');
+                    $idsFinales = array_column($recetas, 'id');
+                    $db = \Config\Database::connect();
+                    $tagsData = $db->table('tags')
+                        ->select('tags.*, recipe_tags.recipe_id')
+                        ->join('recipe_tags', 'recipe_tags.tag_id = tags.id')
+                        ->whereIn('recipe_tags.recipe_id', $idsFinales)
+                        ->get()
+                        ->getResultArray();
+
+                    foreach ($recetas as &$receta) {
+                        $receta['coincidencias'] = $recetasCandidatas[(int) $receta['id']]['coincidencias'];
+                        $receta['cobertura']     = round($recetasCandidatas[(int) $receta['id']]['cobertura']);
+                        $receta['tags']          = array_filter(
+                            $tagsData,
+                            fn($tag) => (int) $tag['recipe_id'] === (int) $receta['id']
+                        );
+                    }
+                    unset($receta);
+
+                    $data['recetas_encontradas'] = $recetas;
+                }
             }
         }
 

@@ -209,6 +209,17 @@ class Validation extends BaseConfig
             'min_length' => 'La referencia debe tener al menos los últimos 4 dígitos.'
         ]
     ];
-
+    
+// --------------------------------------------------------------------
+// Reglas para Buscador de Recetas
+// --------------------------------------------------------------------
+public $buscarRecetas = [
+    'filtro_ingrediente' => [
+        'rules'  => 'permit_empty|regex_match[/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/u]',
+        'errors' => [
+            'regex_match' => 'El buscador de ingredientes solo permite letras y espacios.'
+        ]
+    ]
+];
 
 }
