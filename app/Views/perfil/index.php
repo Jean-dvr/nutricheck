@@ -15,7 +15,7 @@
         <div class="col-md-10">
             <h2 class="mb-4" style="color: #f1682d; font-weight: 700;">Configuración de Perfil</h2>
 
-            <form action="<?= base_url('perfil/actualizar') ?>" method="POST" enctype="multipart/form-data">
+            <form action="<?= base_url('perfil/actualizar') ?>" method="POST" enctype="multipart/form-data" autocomplete="off">
                 <?= csrf_field() ?>
                 
                 <div class="row">
@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="form-group text-left">
                                     <label class="font-weight-bold text-muted small">Actualizar Contraseña</label>
-                                    <input type="password" class="form-control" name="password" placeholder="Dejar en blanco para mantener actual">
+                                    <input type="password" class="form-control bg-white" name="password" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" placeholder="Dejar en blanco para mantener actual">
                                 </div>
                             </div>
                         </div>

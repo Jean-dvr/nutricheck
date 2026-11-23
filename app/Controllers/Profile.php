@@ -79,6 +79,13 @@ class Profile extends BaseController
             $mensajes['name']['alpha_space'] = 'Tu nombre solo debe contener letras y espacios. El uso de puntos y títulos (Dr., Dra.) es exclusivo para los Nutricionistas de la plataforma.';
         }
 
+        $passwordPost = (string) $this->request->getPost('password');
+        $esMismaPassword = ($passwordPost !== '' && !empty($usuarioActual['password']) && password_verify($passwordPost, $usuarioActual['password']));
+
+        if ($passwordPost === '' || $esMismaPassword) {
+            unset($reglas['password']);
+        }
+
         if (!$this->validate($reglas, $mensajes)) {
             $errores = $this->validator->getErrors();
             return redirect()->to(base_url('perfil'))->withInput()->with('fail', reset($errores));
@@ -87,7 +94,6 @@ class Profile extends BaseController
         $nombreLimpio = trim((string) $this->request->getPost('name'));
         $sexoPost = $this->request->getPost('sex');
         $fechaNacPost = $this->request->getPost('birth_date');
-        $passwordPost = (string) $this->request->getPost('password');
 
         $datosUsuario = [
             'name'       => $nombreLimpio,
@@ -95,7 +101,7 @@ class Profile extends BaseController
             'birth_date' => !empty($fechaNacPost) ? $fechaNacPost : $usuarioActual['birth_date'],
         ];
 
-        if ($passwordPost !== '') {
+        if ($passwordPost !== '' && !$esMismaPassword) {
             $datosUsuario['password'] = Hash::make($passwordPost);
         }
 
@@ -278,6 +284,10 @@ class Profile extends BaseController
     // --------------------------------------------------------------------
     public function actualizar()
     {
+        $userId = session()->get('loggedUser');
+        $userModel = new UserModel();
+        $usuarioActual = $userModel->find($userId);
+
         $reglas = config('Validation')->actualizarPerfil;
         $mensajes = config('Validation')->actualizarPerfil_errors;
 
@@ -287,17 +297,22 @@ class Profile extends BaseController
             $mensajes['name']['alpha_space'] = 'Tu nombre solo debe contener letras y espacios. El uso de puntos y títulos (Dr., Dra.) es exclusivo para los Nutricionistas de la plataforma.';
         }
 
+        // Si la contraseña viene vacía o es idéntica a la actual (ej. autocompletada por el navegador), omitimos su validación
+        $password = (string) $this->request->getPost('password');
+        $esMismaPassword = ($password !== '' && !empty($usuarioActual['password']) && password_verify($password, $usuarioActual['password']));
+
+        if ($password === '' || $esMismaPassword) {
+            unset($reglas['password']);
+        }
+
         if (!$this->validate($reglas, $mensajes)) {
             $errores = $this->validator->getErrors();
             return redirect()->to(base_url('perfil'))->withInput()->with('fail', reset($errores));
         }
 
-        $userId = session()->get('loggedUser');
-        $userModel = new UserModel();
         $healthModel = new HealthProfilesModel();
         $userConditionsModel = new UserConditionsModel();
 
-        $usuarioActual = $userModel->find($userId);
         $perfilActual = $healthModel->where('user_id', $userId)->first();
 
         $db = \Config\Database::connect();
@@ -338,8 +353,7 @@ class Profile extends BaseController
             'avatar'     => $nombreFoto,
         ];
 
-        $password = (string) $this->request->getPost('password');
-        if ($password !== '') {
+        if ($password !== '' && !$esMismaPassword) {
             $datosUsuario['password'] = Hash::make($password);
         }
 
