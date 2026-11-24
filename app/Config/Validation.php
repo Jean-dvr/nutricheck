@@ -211,15 +211,51 @@ class Validation extends BaseConfig
     ];
     
 // --------------------------------------------------------------------
-// Reglas para Buscador de Recetas
-// --------------------------------------------------------------------
-public $buscarRecetas = [
-    'filtro_ingrediente' => [
-        'rules'  => 'permit_empty|regex_match[/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/u]',
-        'errors' => [
-            'regex_match' => 'El buscador de ingredientes solo permite letras y espacios.'
+    // Reglas para Buscador de Recetas
+    // --------------------------------------------------------------------
+    public $buscarRecetas = [
+        'filtro_ingrediente' => [
+            'rules'  => 'permit_empty|regex_match[/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/u]',
+            'errors' => [
+                'regex_match' => 'El buscador de ingredientes solo permite letras y espacios.'
+            ]
         ]
-    ]
-];
+    ];
+
+    // --------------------------------------------------------------------
+    // Reglas para Racha de Comidas (MealLogs)
+    // --------------------------------------------------------------------
+    public $registroComida = [
+        'meal_date' => [
+            'rules'  => 'required|valid_date[Y-m-d]',
+            'errors' => [
+                'required'   => 'La fecha es obligatoria.',
+                'valid_date' => 'La fecha ingresada no es válida.'
+            ]
+        ],
+        'meal_time' => [
+            'rules'  => 'required',
+            'errors' => [
+                'required' => 'La hora es obligatoria.'
+            ]
+        ],
+        'meal_type' => [
+            'rules'  => 'required|in_list[breakfast,lunch,dinner,snack]',
+            'errors' => [
+                'required' => 'Selecciona un tipo de comida.',
+                'in_list'  => 'El tipo de comida seleccionado no es válido.'
+            ]
+        ],
+        'description' => [
+            // Permite letras (con tildes y ñ), números y espacios; bloquea símbolos/caracteres especiales
+            'rules'  => 'required|min_length[2]|max_length[255]|regex_match[/^[a-zA-Z0-9ÁÉÍÓÚÜÑáéíóúüñ\s]+$/u]',
+            'errors' => [
+                'required'    => 'La descripción de la comida es obligatoria.',
+                'min_length'  => 'Escribe al menos 2 caracteres en la descripción.',
+                'max_length'  => 'La descripción no puede superar los 255 caracteres.',
+                'regex_match' => 'La descripción solo puede contener letras, números y espacios (sin símbolos ni caracteres especiales).'
+            ]
+        ]
+    ];
 
 }

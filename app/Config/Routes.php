@@ -51,6 +51,12 @@ $routes->get('/perfil/eliminar-condicion/(:num)', 'Profile::eliminarCondicion/$1
 // --------------------------------------------------------------------
 $routes->get('/comidas', 'MealLogs::index', ['filter' => 'auth']);
 $routes->post('/comidas/guardar', 'MealLogs::guardar', ['filter' => 'auth']);
+$routes->get('/comidas', 'MealLogs::index', ['filter' => 'auth']);
+$routes->post('/comidas/guardar', 'MealLogs::guardar', ['filter' => 'auth']);
+$routes->post('/comidas/editar', 'MealLogs::editar', ['filter' => 'auth']);
+$routes->post('/comidas/editar/(:num)', 'MealLogs::editar/$1', ['filter' => 'auth']);
+$routes->post('/comidas/eliminar', 'MealLogs::eliminar', ['filter' => 'auth']);
+$routes->post('/comidas/eliminar/(:num)', 'MealLogs::eliminar/$1', ['filter' => 'auth']);
 
 //--------------------------------------------------------------------
 // Rutas del Buscador de Recetas
