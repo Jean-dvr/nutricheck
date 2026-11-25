@@ -8,7 +8,7 @@ class BannersModel extends Model
 {
     protected $table            = 'banners';
     protected $primaryKey       = 'id';
-    protected $allowedFields    = ['image_url', 'created_at'];
+    protected $allowedFields    = ['image_url', 'orientation', 'created_at'];
     
     protected $useTimestamps    = true;
     protected $createdField     = 'created_at';

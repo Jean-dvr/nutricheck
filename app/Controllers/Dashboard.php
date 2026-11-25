@@ -75,22 +75,36 @@ class Dashboard extends BaseController
         $archivo = $this->request->getFile('nuevo_anuncio');
         
         if ($archivo && $archivo->isValid() && !$archivo->hasMoved()) {
+            $extension = strtolower((string) $archivo->guessExtension());
+            if (!in_array($extension, ['png', 'jpg', 'jpeg'], true)) {
+                return redirect()->back()->with('fail', 'Formato no permitido. Solo imágenes JPG o PNG.');
+            }
+
             $nombreFoto = $archivo->getRandomName(); 
             
             $rutaDestino = FCPATH . 'assets/ads';
             if (!is_dir($rutaDestino)) { mkdir($rutaDestino, 0777, true); }
 
             $archivo->move($rutaDestino, $nombreFoto);
+
+            $orientacion = ($this->request->getPost('orientation') === 'horizontal') ? 'horizontal' : 'vertical';
             
             $bannersModel = new BannersModel();
-            $bannersModel->insert(['image_url' => $nombreFoto]);
+            $datosBanner = ['image_url' => $nombreFoto];
+
+            $db = \Config\Database::connect();
+            if ($db->fieldExists('orientation', 'banners')) {
+                $datosBanner['orientation'] = $orientacion;
+            }
+
+            $bannersModel->insert($datosBanner);
 
             // Notificar cambio en el sistema al personal
             $notifModel = new NotificationsModel();
             $notifModel->notificarPorRoles(
                 ['nutricionista', 'admin'],
                 'Cambio en el sistema',
-                'Se ha añadido un nuevo banner publicitario a la rotación de NutriCheck.',
+                "Se ha añadido un nuevo banner {$orientacion} a la rotación de NutriCheck.",
                 'dashboard',
                 'sistema',
                 (int) session()->get('loggedUser')

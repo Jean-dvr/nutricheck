@@ -1,71 +1,217 @@
-  </div> 
+</div> 
   <?php 
 $rolActual = session()->get('rol');
 
-// Mostramos a Free, Nutricionista y Admin (Premium no ve esto)
-if(in_array($rolActual, ['free', 'nutricionista', 'admin'])): 
+// Mostramos a Free y Admin (Premium y Nutricionista no ven esto)
+if(in_array($rolActual, ['free', 'admin'])): 
     
-    $bannersModel = new \App\Models\BannersModel();
-    $listaBanners = $bannersModel->orderBy('created_at', 'DESC')->findAll();
+    $bannersModel = new \App\Models\BannersModel();$dbBanners = \Config\Database::connect();
+    if ($dbBanners->fieldExists('orientation', 'banners')) {
+        $listaBanners =$bannersModel->where('orientation', 'vertical')->orderBy('created_at', 'DESC')->findAll();
+    } else {
+        $listaBanners =$bannersModel->orderBy('created_at', 'DESC')->findAll();
+    }
     
     // TRUCO LÓGICO para la rotación
-    if(empty($listaBanners)) {
-        $nombresBanners = ['placeholder', 'placeholder'];
-    } elseif(count($listaBanners) === 1) {
-        $nombresBanners = [$listaBanners[0]['image_url'], $listaBanners[0]['image_url']];
+    if(empty($listaBanners)) {$nombresBanners = ['placeholder', 'placeholder'];
+    } elseif(count($listaBanners) === 1) {$nombresBanners = [$listaBanners[0]['image_url'],$listaBanners[0]['image_url']];
     } else {
         $nombresBanners = array_column($listaBanners, 'image_url');
     }
 ?>
-    <div id="freemium-ad-izq" class="d-none d-xl-block shadow" style="position: fixed; left: 20px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background-color: #f8f9fa; border: 1px solid #ddd; z-index: 1050; border-radius: 8px; overflow: hidden; text-align: center;">
-        <div style="background-color: #e9ecef; padding: 5px; font-size: 0.75rem; color: #6c757d; display: flex; justify-content: space-between; align-items: center;">
-            <span class="font-weight-bold"><?= $rolActual === 'admin' ? '📊 Estadísticas' : 'Publicidad' ?></span>
-            <?php if($rolActual !== 'admin'): ?>
-                <button type="button" class="close" aria-label="Close" onclick="cerrarAnuncios()" style="font-size: 1rem; line-height: 1;">&times;</button>
+    <style>
+        /* Estética suave para los banners publicitarios laterales */
+        .nc-side-ad {
+            position: fixed;
+            top: calc(50% + 32px);
+            transform: translateY(-50%);
+            width: 170px;
+            height: min(540px, calc(100vh - 125px));
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+            padding: 8px;
+            z-index: 1050;
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .nc-side-ad:hover {
+            box-shadow: 0 16px 38px rgba(0, 0, 0, 0.12);
+        }
+        .nc-side-ad-header {
+            height: 26px;
+            padding: 0 6px 6px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nc-side-ad-header.nc-centered {
+            justify-content: center;
+        }
+        .nc-side-ad-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #8c939a;
+        }
+        .nc-side-ad-close {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background-color: #f1f3f5;
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .nc-side-ad-close:hover {
+            background-color: #ffe3e3;
+            color: #dc3545;
+        }
+        .nc-side-ad-canvas {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 26px);
+            border-radius: 14px;
+            overflow: hidden;
+            background-color: #f4f6f9;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.4s ease;
+        }
+        .nc-side-ad-link {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: block;
+        }
+        .nc-side-ad-overlay {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 26px 8px 10px 8px;
+            background: linear-gradient(to top, rgba(20, 20, 24, 0.72) 0%, rgba(20, 20, 24, 0) 100%);
+            z-index: 2;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .nc-side-ad-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50rem;
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+        .nc-side-ad-pro-link {
+            pointer-events: auto;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50rem;
+            background: rgba(248, 177, 51, 0.92);
+            color: #212529 !important;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+            transition: transform 0.18s ease, background-color 0.18s ease;
+        }
+        .nc-side-ad-pro-link:hover {
+            background: #ff9f1c;
+            transform: translateY(-1px);
+        }
+        .nc-side-ad-admin-panel {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            background: rgba(24, 24, 28, 0.82);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 12px 10px;
+            color: #ffffff;
+            z-index: 3;
+        }
+        .nc-side-ad-file {
+            width: 100%;
+            font-size: 0.68rem;
+            color: #e9ecef;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <div id="freemium-ad-izq" class="d-none d-xl-block nc-side-ad" style="left: 18px;">
+        <div class="nc-side-ad-header <?= $rolActual !== 'admin' ? 'nc-centered' : '' ?>">
+            <span class="nc-side-ad-label"><?= $rolActual === 'admin' ? '📊 Estadísticas' : 'Publicidad' ?></span>
+            <?php if($rolActual === 'admin'): ?>
+                <button type="button" class="nc-side-ad-close" aria-label="Cerrar anuncios" title="Ocultar anuncios temporalmente" onclick="cerrarAnuncios()">&times;</button>
             <?php endif; ?>
         </div>
         
-        <div id="banner-img-izq" style="position: relative; width: 100%; height: calc(100% - 28px); background-size: cover; background-position: center; transition: opacity 0.4s ease;">
+        <div id="banner-img-izq" class="nc-side-ad-canvas">
             
             <?php if($rolActual !== 'admin'): ?>
-                <div class="badge badge-warning p-2 shadow-sm text-dark font-weight-bold ad-timer-badge" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 90%;">
-                    Cambia en <span class="time-left-span">30</span>s
+                <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-link" aria-label="Mejorar a NutriCheckPro"></a>
+                <div class="nc-side-ad-overlay">
+                    <span class="nc-side-ad-pill ad-timer-badge">Cambia en <span class="time-left-span">30</span>s</span>
+                    <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-pro-link">✨ Quitar anuncios</a>
                 </div>
             <?php endif; ?>
 
             <?php if($rolActual === 'admin'): ?>
-                <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 15px 10px; color: white; text-align: center;">
-                    <p class="small font-weight-bold mb-1 text-warning">Anuncios Activos</p>
-                    <h3 class="mb-2 text-white"><?= count($listaBanners) ?></h3>
-                    <button class="btn btn-danger btn-sm btn-block font-weight-bold shadow-sm" data-toggle="modal" data-target="#modalGestionarBanners">🗑️ Gestionar</button>
+                <div class="nc-side-ad-admin-panel text-center">
+                    <p class="small font-weight-bold mb-1 text-warning" style="font-size: 0.72rem;">Anuncios Activos</p>
+                    <h3 class="mb-2 text-white font-weight-bold"><?= count($listaBanners) ?></h3>
+                    <button class="btn btn-danger btn-sm btn-block font-weight-bold rounded-pill shadow-sm" data-toggle="modal" data-target="#modalGestionarBanners">🗑️ Gestionar</button>
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
-    <div id="freemium-ad-der" class="d-none d-xl-block shadow" style="position: fixed; right: 20px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background-color: #f8f9fa; border: 1px solid #ddd; z-index: 1050; border-radius: 8px; overflow: hidden; text-align: center;">
-        <div style="background-color: #e9ecef; padding: 5px; font-size: 0.75rem; color: #6c757d; display: flex; justify-content: space-between; align-items: center;">
-            <span class="font-weight-bold"><?= $rolActual === 'admin' ? '⚙️ Nuevo Anuncio' : 'Publicidad' ?></span>
-            <?php if($rolActual !== 'admin'): ?>
-                <button type="button" class="close" aria-label="Close" onclick="cerrarAnuncios()" style="font-size: 1rem; line-height: 1;">&times;</button>
+    <div id="freemium-ad-der" class="d-none d-xl-block nc-side-ad" style="right: 18px;">
+        <div class="nc-side-ad-header <?= $rolActual !== 'admin' ? 'nc-centered' : '' ?>">
+            <span class="nc-side-ad-label"><?= $rolActual === 'admin' ? '⚙️ Nuevo Anuncio' : 'Publicidad' ?></span>
+            <?php if($rolActual === 'admin'): ?>
+                <button type="button" class="nc-side-ad-close" aria-label="Cerrar anuncios" title="Ocultar anuncios temporalmente" onclick="cerrarAnuncios()">&times;</button>
             <?php endif; ?>
         </div>
         
-        <div id="banner-img-der" style="position: relative; width: 100%; height: calc(100% - 28px); background-size: cover; background-position: center; transition: opacity 0.4s ease;">
+        <div id="banner-img-der" class="nc-side-ad-canvas">
             
             <?php if($rolActual !== 'admin'): ?>
-                <div class="badge badge-warning p-2 shadow-sm text-dark font-weight-bold ad-timer-badge" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 90%;">
-                    Cambia en <span class="time-left-span">30</span>s
+                <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-link" aria-label="Mejorar a NutriCheckPro"></a>
+                <div class="nc-side-ad-overlay">
+                    <span class="nc-side-ad-pill ad-timer-badge">Cambia en <span class="time-left-span">30</span>s</span>
+                    <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-pro-link">✨ Quitar anuncios</a>
                 </div>
             <?php endif; ?>
 
             <?php if($rolActual === 'admin'): ?>
-                <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 15px 10px; color: white; text-align: left;">
+                <div class="nc-side-ad-admin-panel text-left">
                     <form action="<?= base_url('dashboard/actualizarAnuncio') ?>" method="POST" enctype="multipart/form-data">
                         <?= csrf_field() ?>
-                        <label class="small font-weight-bold mb-2 text-warning">Añadir rotación (160x600px)</label>
-                        <input type="file" name="nuevo_anuncio" class="form-control-file form-control-sm mb-3 text-white" accept="image/png, image/jpeg, image/jpg" required style="font-size: 0.75rem;">
-                        <button type="submit" class="btn btn-success btn-sm btn-block font-weight-bold shadow-sm">➕ Subir</button>
+                        <input type="hidden" name="orientation" value="vertical">
+                        <label class="small font-weight-bold mb-2 text-warning d-block" style="font-size: 0.72rem;">Añadir rotación (160x600px)</label>
+                        <input type="file" name="nuevo_anuncio" class="nc-side-ad-file" accept="image/png, image/jpeg, image/jpg" required>
+                        <button type="submit" class="btn btn-success btn-sm btn-block font-weight-bold rounded-pill shadow-sm">➕ Subir</button>
                     </form>
                 </div>
             <?php endif; ?>
@@ -90,12 +236,12 @@ if(in_array($rolActual, ['free', 'nutricionista', 'admin'])):
                         </div>
                     <?php else: ?>
                         <div class="row">
-                            <?php foreach($listaBanners as $banner): ?>
+                            <?php foreach($listaBanners as$banner): ?>
                                 <div class="col-6 col-md-3 mb-4">
                                     <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 10px;">
                                         <img src="<?= base_url('assets/ads/' . $banner['image_url']) ?>" class="card-img-top bg-dark" style="height: 250px; object-fit: contain;" alt="Banner">
                                         <div class="card-body p-2">
-                                            <a href="<?= base_url('dashboard/eliminarAnuncio/' . $banner['id']) ?>" onclick="return confirm('¿Seguro que deseas eliminar este banner de la base de datos permanentemente?')" class="btn btn-outline-danger btn-sm btn-block font-weight-bold">❌ Quitar</a>
+                                            <a href="<?= base_url('dashboard/eliminarAnuncio/' . $banner['id']) ?>" onclick="return confirm('¿Seguro que deseas eliminar este banner de la base de datos permanentemente?')" class="btn btn-outline-danger btn-sm btn-block font-weight-bold rounded-pill">❌ Quitar</a>
                                         </div>
                                     </div>
                                 </div>
@@ -114,7 +260,7 @@ if(in_array($rolActual, ['free', 'nutricionista', 'admin'])):
         
         let indexIzq = 0;
         let indexDer = 1;
-        let rotacionAd;
+        let rotacionAd = null;
 
         const bannerIzq = document.getElementById('banner-img-izq');
         const bannerDer = document.getElementById('banner-img-der');
@@ -126,13 +272,13 @@ if(in_array($rolActual, ['free', 'nutricionista', 'admin'])):
         bannerIzq.style.backgroundImage = "url('" + obtenerUrl(banners[indexIzq]) + "')";
         bannerDer.style.backgroundImage = "url('" + obtenerUrl(banners[indexDer]) + "')";
 
-        <?php if($rolActual !== 'admin'): ?>
+        <?php if($rolActual === 'admin'): ?>
         function cerrarAnuncios() { 
             document.getElementById('freemium-ad-izq').style.display = 'none'; 
             document.getElementById('freemium-ad-der').style.display = 'none'; 
-            clearInterval(rotacionAd);
+            if (rotacionAd) clearInterval(rotacionAd);
         }
-        
+        <?php else: ?>
         let segundosFaltantes = 30;
         const contadores = document.querySelectorAll('.time-left-span');
 

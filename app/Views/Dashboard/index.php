@@ -1,7 +1,7 @@
 <?= view('Dashboard/cabecera') ?>
 
 <link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=9999') ?>">
-<link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=1.0') ?>">
+<link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=1.2') ?>">
 
 <main class="dashboard-layout">
     
@@ -79,19 +79,87 @@
 </main>
 
 <!-- Banner Publicitario Horizontal con Tiempo e Interacción Pro -->
-<?php if(session()->get('rol') !== 'premium' && session()->get('rol') !== 'pro'): ?>
+<?php
+$rolAnuncioH = session()->get('rol');
+$urlsBannersH = [];
+$listaBannersH = [];
+
+if (in_array($rolAnuncioH, ['free', 'admin'], true)):
+    $bannersModelH = new \App\Models\BannersModel();
+    $dbBannersH = \Config\Database::connect();
+    if ($dbBannersH->fieldExists('orientation', 'banners')) {
+        $listaBannersH = $bannersModelH->where('orientation', 'horizontal')->orderBy('created_at', 'DESC')->findAll();
+    }
+
+    if (!empty($listaBannersH)) {
+        foreach ($listaBannersH as $bItem) {
+            $urlsBannersH[] = base_url('assets/ads/' . $bItem['image_url']);
+        }
+    } else {
+        $promoOreo = file_exists(FCPATH . 'assets/imagenes/promooreo.jpg')
+            ? base_url('/assets/imagenes/promooreo.jpg')
+            : base_url('/assets/ads/promooreo.jpg');
+        $promoPepsi = file_exists(FCPATH . 'assets/imagenes/promopepsi.jpg')
+            ? base_url('/assets/imagenes/promopepsi.jpg')
+            : base_url('/assets/ads/promopepsi.jpg');
+        $urlsBannersH = [$promoOreo, $promoPepsi];
+    }
+?>
 <aside class="ad-banner-horizontal" id="adBannerHorizontal">
     <div class="ad-header">
-        <span class="ad-tag">Publicidad</span>
+        <span class="ad-tag"><?= $rolAnuncioH === 'admin' ? '⚙️ Publicidad Horizontal (1160x70px)' : 'Publicidad' ?></span>
         <div class="ad-controls">
-            <span id="adTimerBadge" class="ad-timer">Cambia en 30s</span>
-            <button type="button" id="closeAdBtn" class="ad-close-btn" aria-label="Cerrar publicidad">×</button>
+            <?php if($rolAnuncioH === 'admin'): ?>
+                <span class="ad-admin-count">📊 Activos: <?= count($listaBannersH) ?></span>
+                <button type="button" id="btnAbrirModalBannersH" class="ad-admin-btn ad-btn-manage">🗑️ Gestionar</button>
+                <form action="<?= base_url('dashboard/actualizarAnuncio') ?>" method="POST" enctype="multipart/form-data" class="ad-admin-form">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="orientation" value="horizontal">
+                    <input type="file" name="nuevo_anuncio" class="ad-admin-file" accept="image/png, image/jpeg, image/jpg" required>
+                    <button type="submit" class="ad-admin-btn ad-btn-upload">➕ Subir</button>
+                </form>
+                <button type="button" id="closeAdBtn" class="ad-close-btn" aria-label="Cerrar publicidad" title="Ocultar barra temporalmente">×</button>
+            <?php else: ?>
+                <span id="adTimerBadge" class="ad-timer">Cambia en 30s</span>
+            <?php endif; ?>
         </div>
     </div>
-    <a href="<?= base_url('premium/checkout') ?>" class="ad-link">
-        <img id="adBannerImage" src="<?= base_url('/assets/ads/promooreo.jpg') ?>" alt="NutriCheck Pro Banner" class="ad-image">
-    </a>
+
+    <?php if($rolAnuncioH === 'admin' && empty($listaBannersH)): ?>
+        <div class="ad-placeholder-box">Sube un banner horizontal (JPG/PNG) para personalizar la rotación de esta barra</div>
+    <?php else: ?>
+        <a href="<?= $rolAnuncioH === 'admin' ? 'javascript:void(0)' : base_url('premium/checkout') ?>" class="ad-link">
+            <img id="adBannerImage" src="<?= esc($urlsBannersH[0]) ?>" alt="NutriCheck Pro Banner" class="ad-image">
+        </a>
+    <?php endif; ?>
 </aside>
+
+<?php if($rolAnuncioH === 'admin'): ?>
+<div class="ad-modal-backdrop" id="modalGestionarBannersH" aria-hidden="true">
+    <div class="ad-modal-card">
+        <div class="ad-modal-header">
+            <h3>⚙️ Gestionar Banners Horizontales en Rotación</h3>
+            <button type="button" class="ad-modal-close" id="cerrarModalBannersH" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="ad-modal-body">
+            <?php if(empty($listaBannersH)): ?>
+                <div class="ad-modal-empty">📭 No hay banners horizontales subidos actualmente.</div>
+            <?php else: ?>
+                <div class="ad-modal-grid">
+                    <?php foreach($listaBannersH as $bannerH): ?>
+                        <div class="ad-modal-item">
+                            <img src="<?= base_url('assets/ads/' . $bannerH['image_url']) ?>" alt="Banner Horizontal">
+                            <div class="ad-modal-item-footer">
+                                <a href="<?= base_url('dashboard/eliminarAnuncio/' . $bannerH['id']) ?>" onclick="return confirm('¿Seguro que deseas eliminar este banner horizontal permanentemente?')" class="ad-modal-delete">❌ Quitar</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 <?php endif; ?>
 
 <script>
@@ -265,21 +333,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderWeek(currentDate);
 
-    // Lógica de Banner Publicitario Horizontal con rotación entre Oreo y Pepsi
+    // Lógica de Banner Publicitario Horizontal con rotación dinámica
     const adBanner = document.getElementById('adBannerHorizontal');
     const closeAdBtn = document.getElementById('closeAdBtn');
     const adTimerBadge = document.getElementById('adTimerBadge');
     const adBannerImage = document.getElementById('adBannerImage');
 
-    const adImages = [
-        baseAssetsUrl + 'promooreo.jpg',
-        baseAssetsUrl + 'promopepsi.jpg'
-    ];
+    const adImages = <?= json_encode($urlsBannersH) ?>;
     let currentAdIndex = 0;
+    let timerInterval = null;
 
-    if(adBanner && closeAdBtn && adTimerBadge && adBannerImage) {
+    if(adBanner && adTimerBadge && adBannerImage && adImages.length > 0) {
         let timeLeft = 30;
-        const timerInterval = setInterval(() => {
+        timerInterval = setInterval(() => {
             timeLeft--;
             if (timeLeft <= 0) {
                 timeLeft = 30;
@@ -288,10 +354,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             adTimerBadge.textContent = `Cambia en ${timeLeft}s`;
         }, 1000);
+    }
 
+    if(adBanner && closeAdBtn) {
         closeAdBtn.addEventListener('click', () => {
             adBanner.style.display = 'none';
-            clearInterval(timerInterval);
+            if (timerInterval) clearInterval(timerInterval);
+        });
+    }
+
+    // Modal de gestión de banners horizontales (Admin)
+    const btnAbrirModalH = document.getElementById('btnAbrirModalBannersH');
+    const modalBannersH = document.getElementById('modalGestionarBannersH');
+    const cerrarModalH = document.getElementById('cerrarModalBannersH');
+
+    if (btnAbrirModalH && modalBannersH) {
+        btnAbrirModalH.addEventListener('click', () => {
+            modalBannersH.classList.add('active');
+        });
+        if (cerrarModalH) {
+            cerrarModalH.addEventListener('click', () => {
+                modalBannersH.classList.remove('active');
+            });
+        }
+        modalBannersH.addEventListener('click', (e) => {
+            if (e.target === modalBannersH) {
+                modalBannersH.classList.remove('active');
+            }
         });
     }
 });
