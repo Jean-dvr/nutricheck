@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NutriCheck - Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=999') ?>">
+    <link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=2.0') ?>">
     <style>
         /* Estilos de la campanita de notificaciones en Dashboard */
         .nc-notif-dropdown { position: relative; }
@@ -111,6 +111,16 @@
         .nc-notif-msg { font-size: 0.78rem; color: #666666; line-height: 1.35; margin-bottom: 4px; word-wrap: break-word; }
         .nc-notif-time { font-size: 0.7rem; color: #999999; display: block; }
         .nc-notif-empty { padding: 26px 16px; text-align: center; color: #888888; font-size: 0.84rem; }
+
+        @media (max-width: 576px) {
+            .nc-notif-menu {
+                position: fixed;
+                top: 68px;
+                left: 12px;
+                right: 12px;
+                width: auto;
+            }
+        }
     </style>
 </head>
 <body>

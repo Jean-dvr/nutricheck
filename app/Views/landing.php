@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NutriCheck - Bienvenidos</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('assets/css/landing.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/landing.css?v=2.0') ?>">
 </head>
 <body>
 
@@ -14,7 +14,12 @@
         <div class="logo-container">
             <img src="<?= base_url('assets/imagenes/logo_naranja.png') ?>" alt="NutriCheck Logo" class="nav-logo">
         </div>
-        <nav class="nav-links">
+        <button type="button" class="nav-toggle" id="navToggleBtn" aria-label="Abrir menú" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-links" id="landingNavLinks">
             <a href="#sobre-nosotros">SOBRE NOSOTROS</a>
             <a href="#herramientas">HERRAMIENTAS</a>
             <a href="#asesores">ASESORES</a>
@@ -149,6 +154,26 @@
     </footer>
 
     <script>
+        // Menú desplegable en móviles
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const landingNavLinks = document.getElementById('landingNavLinks');
+
+        if (navToggleBtn && landingNavLinks) {
+            navToggleBtn.addEventListener('click', () => {
+                const isOpen = landingNavLinks.classList.toggle('open');
+                navToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            landingNavLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    landingNavLinks.classList.remove('open');
+                    navToggleBtn.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        // Carrusel adaptable a cualquier tamaño de pantalla y zoom
+        const wrapper = document.querySelector('.carousel-wrapper');
         const track = document.querySelector('.carousel-track');
         const items = document.querySelectorAll('.tool-item');
         const prevBtn = document.getElementById('prevBtn');
@@ -157,6 +182,8 @@
         let currentIndex = 0;
 
         function updateCarousel() {
+            if (!wrapper || !track || items.length === 0) return;
+
             items.forEach((item, index) => {
                 item.classList.remove('active', 'side');
                 if (index === currentIndex) {
@@ -166,7 +193,9 @@
                 }
             });
 
-            const offset = -currentIndex * 230; 
+            const wrapperWidth = wrapper.clientWidth;
+            const itemWidth = items[0].offsetWidth;
+            const offset = (wrapperWidth / 2) - (currentIndex * itemWidth + itemWidth / 2);
             track.style.transform = `translateX(${offset}px)`;
         }
 
@@ -188,6 +217,7 @@
             updateCarousel();
         });
 
+        window.addEventListener('resize', updateCarousel);
         updateCarousel();
     </script>
 

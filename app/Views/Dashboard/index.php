@@ -1,7 +1,7 @@
 <?= view('Dashboard/cabecera') ?>
 
-<link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=9999') ?>">
-<link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=1.2') ?>">
+<link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=2.0') ?>">
+<link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=2.0') ?>">
 
 <main class="dashboard-layout">
     
