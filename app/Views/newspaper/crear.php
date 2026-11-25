@@ -9,9 +9,6 @@
                 <a href="<?= base_url('newspaper') ?>" class="btn btn-outline-secondary btn-sm rounded-pill">Cancelar</a>
             </div>
 
-            <?php if(session()->getFlashdata('fail')): ?>
-                <div class="alert alert-danger shadow-sm rounded"><?= session()->getFlashdata('fail') ?></div>
-            <?php endif; ?>
 
             <div class="card shadow-sm border-0" style="border-radius: 15px;">
                 <div class="card-body p-4">
