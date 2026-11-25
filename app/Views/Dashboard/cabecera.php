@@ -7,6 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('/assets/css/dashboard.css?v=2.0') ?>">
     <style>
+        /* Distintivo de verificación según el tipo de usuario */
+        .dash-navbar .user-verification-badge {
+            width: 23px;
+            height: 23px;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: inline-block;
+        }
+
         /* Estilos de la campanita de notificaciones en Dashboard */
         .nc-notif-dropdown { position: relative; }
         .nc-bell-btn {
@@ -120,6 +129,10 @@
                 right: 12px;
                 width: auto;
             }
+            .dash-navbar .user-verification-badge {
+                width: 20px;
+                height: 20px;
+            }
         }
     </style>
 </head>
@@ -128,8 +141,17 @@
 <?php
     // Consulta segura de notificaciones recientes y contador de no leídas
     $ncUserId   = (int) session()->get('loggedUser');
+    $ncRolMenu  = (string) (session()->get('rol') ?? '');
     $ncNotifs   = [];
     $ncNoLeidas = 0;
+
+    // Distintivo correspondiente al rol del usuario.
+    $ncDistintivos = [
+        'admin'         => 'verificadoadmin.png',
+        'nutricionista' => 'verificadonutricionista.png',
+        'premium'       => 'verificadopremium.png',
+    ];
+    $ncDistintivo = $ncDistintivos[$ncRolMenu] ?? null;
 
     if ($ncUserId > 0) {
         try {
@@ -171,7 +193,7 @@
     </div>
 
     <div class="user-menu-wrapper">
-        <?php if(session()->get('rol') === 'admin'): ?>
+        <?php if($ncRolMenu === 'admin'): ?>
             <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin">💳 Validar Pagos</a>
         <?php endif; ?>
 
@@ -251,6 +273,13 @@
                 <img src="<?= $fotoPerfil ?>" alt="Avatar" class="user-avatar" style="width: 38px; height: 38px; object-fit: cover; border-radius: 50%;">
                 
                 <span class="user-name"><?= session()->get('name') ?? 'Amaranta Montaño' ?></span>
+                <?php if ($ncDistintivo !== null): ?>
+                    <img
+                        src="<?= base_url('assets/imagenes/' . $ncDistintivo) ?>"
+                        alt="Usuario verificado"
+                        class="user-verification-badge"
+                    >
+                <?php endif; ?>
                 <span class="arrow-down">▼</span>
             </button>
             <div class="dropdown-content" id="userDropdownContent">

@@ -44,8 +44,8 @@ class Validation extends BaseConfig
 
     // 1. Grupo: Registro
     public $registro = [
-        // alpha_space: Solo letras y espacios. min_length[8]: Obliga a nombre y apellido.
-        'name'    => 'required|alpha_space|min_length[8]|max_length[20]',
+        // Permite letras (con tildes y ñ), espacios y puntos. min_length[8]: Obliga a nombre y apellido.
+        'name'    => 'required|regex_match[/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ.\s]+$/u]|min_length[8]|max_length[20]',
         
         // valid_email ya verifica el @ y el formato de dominio correctamente.
         'email'    => 'required|valid_email|is_unique[users.email]',
@@ -60,7 +60,7 @@ class Validation extends BaseConfig
     public $registro_errors = [
         'name' => [
             'required'    => 'El nombre y apellido son obligatorios.',
-            'alpha_space' => 'El nombre solo puede contener letras y espacios.',
+            'regex_match' => 'El nombre solo puede contener letras (con acentos y ñ), puntos y espacios.',
             'min_length'  => 'Por favor ingresa tu nombre y apellido (mínimo 8 caracteres).',
             'max_length'  => 'El nombre no puede exceder los 20 caracteres.'
         ],
@@ -101,7 +101,7 @@ class Validation extends BaseConfig
 
     // Reglas para Actualizar el Perfil
     public $actualizarPerfil = [
-        'name'       => 'required|alpha_space|min_length[5]|max_length[50]',
+        'name'       => 'required|regex_match[/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ.\s]+$/u]|min_length[5]|max_length[50]',
         'password'   => 'permit_empty|min_length[6]|regex_match[/^(?=.*[a-zA-Z])(?=.*\d)/]',
         'weight_kg'  => 'permit_empty|numeric|greater_than[19]|less_than_equal_to[300]',
         'height_cm'  => 'permit_empty|numeric|greater_than[49]|less_than_equal_to[250]',
@@ -110,8 +110,9 @@ class Validation extends BaseConfig
     public $actualizarPerfil_errors = [
         'name' => [
             'required'    => 'El nombre es obligatorio.',
-            'alpha_space' => 'El nombre solo debe contener letras y espacios.',
-            'min_length'  => 'El nombre debe tener al menos 5 caracteres.'
+            'regex_match' => 'El nombre solo debe contener letras (con acentos y ñ), puntos y espacios.',
+            'min_length'  => 'El nombre debe tener al menos 5 caracteres.',
+            'max_length'  => 'El nombre no puede superar los 50 caracteres.'
         ],
         'password' => [
             'min_length'  => 'La nueva contraseña debe tener al menos 6 caracteres.',
@@ -205,7 +206,7 @@ class Validation extends BaseConfig
         ]
     ];
     
-// --------------------------------------------------------------------
+    // --------------------------------------------------------------------
     // Reglas para Buscador de Recetas
     // --------------------------------------------------------------------
     public $buscarRecetas = [
@@ -254,33 +255,33 @@ class Validation extends BaseConfig
     ];
     
     // --------------------------------------------------------------------
-// Reglas para el Newspaper
-// --------------------------------------------------------------------
-public $crearPost = [
-    'title' => [
-        // Permite letras (con tildes/ñ), números, espacios y signos básicos; evita símbolos raros
-        'rules'  => 'required|min_length[5]|max_length[150]|regex_match[/^[a-zA-Z0-9ÁÉÍÓÚÜÑáéíóúüñ\s.,:¡!¿?\-()]+$/u]',
-        'errors' => [
-            'required'    => 'El título del artículo es obligatorio.',
-            'min_length'  => 'El título debe tener al menos 5 caracteres.',
-            'max_length'  => 'El título no puede superar los 150 caracteres.',
-            'regex_match' => 'El título solo puede contener letras, números, espacios y puntuación básica.'
+    // Reglas para el Newspaper
+    // --------------------------------------------------------------------
+    public $crearPost = [
+        'title' => [
+            // Permite letras (con tildes/ñ), números, espacios y signos básicos; evita símbolos raros
+            'rules'  => 'required|min_length[5]|max_length[150]|regex_match[/^[a-zA-Z0-9ÁÉÍÓÚÜÑáéíóúüñ\s.,:¡!¿?\-()]+$/u]',
+            'errors' => [
+                'required'    => 'El título del artículo es obligatorio.',
+                'min_length'  => 'El título debe tener al menos 5 caracteres.',
+                'max_length'  => 'El título no puede superar los 150 caracteres.',
+                'regex_match' => 'El título solo puede contener letras, números, espacios y puntuación básica.'
+            ]
+        ],
+        'category' => [
+            'rules'  => 'required|in_list[general,eventos,recetas,novedades]',
+            'errors' => [
+                'required' => 'Debes seleccionar una categoría.',
+                'in_list'  => 'La categoría seleccionada no es válida.'
+            ]
+        ],
+        'contents' => [
+            'rules'  => 'required|min_length[15]',
+            'errors' => [
+                'required'   => 'El contenido de la publicación es obligatorio.',
+                'min_length' => 'El contenido debe tener al menos 15 caracteres.'
+            ]
         ]
-    ],
-    'category' => [
-        'rules'  => 'required|in_list[general,eventos,recetas,novedades]',
-        'errors' => [
-            'required' => 'Debes seleccionar una categoría.',
-            'in_list'  => 'La categoría seleccionada no es válida.'
-        ]
-    ],
-    'contents' => [
-        'rules'  => 'required|min_length[15]',
-        'errors' => [
-            'required'   => 'El contenido de la publicación es obligatorio.',
-            'min_length' => 'El contenido debe tener al menos 15 caracteres.'
-        ]
-    ]
-];
+    ];
 
 }

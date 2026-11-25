@@ -7,15 +7,21 @@
  * @var array $alergias
  * @var array $misCondiciones
  */
+
+$misCondicionesInt = array_map('intval', $misCondiciones ?? []);
+$avatarActual = trim((string) ($usuario['avatar'] ?? ''));
+$rutaAvatar = ($avatarActual !== '' && file_exists(FCPATH . 'assets/avatars/' . $avatarActual))
+    ? base_url('assets/avatars/' . $avatarActual) . '?t=' . time()
+    : base_url('assets/imagenes/iconusuario.png');
 ?>
 <?= view('template/cabecera') ?>
 
 <div class="container mt-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
                 <h2 class="mb-2 mb-sm-0" style="color: #f1682d; font-weight: 700;">Configuración de Perfil</h2>
-                <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm text-nowrap flex-shrink-0">
                     Volver al Inicio
                 </a>
             </div>
@@ -27,15 +33,9 @@
                     <div class="col-md-4 mb-4">
                         <div class="card shadow-sm border-0" style="border-radius: 15px;">
                             <div class="card-body text-center">
-                                <?php 
-                                     $avatarActual = !empty($usuario['avatar']) ? $usuario['avatar'] : 'default-avatar.png';
-                                ?>
                                 <input type="hidden" name="foto_actual" value="<?= esc($avatarActual) ?>">
 
-                                <?php 
-                                    $rutaAvatar = base_url('assets/avatars/' . $avatarActual) . '?t=' . time();
-                                ?>
-                                <img src="<?= $rutaAvatar ?>" id="imagen_preview" class="rounded-circle mb-3 shadow-sm" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #f79c34;" alt="Foto de Perfil">   
+                                <img src="<?= esc($rutaAvatar) ?>" id="imagen_preview" class="rounded-circle mb-3 shadow-sm" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #f79c34;" alt="Foto de Perfil">   
                                 
                                 <div class="form-group">
                                     <label for="foto_perfil" class="btn btn-sm btn-outline-secondary rounded-pill font-weight-bold" style="cursor:pointer;">Subir Nueva Foto</label>
@@ -64,19 +64,19 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label class="font-weight-bold">Nombre y Apellido</label>
-                                        <input type="text" class="form-control" name="name" value="<?= old('name', esc($usuario['name'])) ?>" required>
+                                        <input type="text" class="form-control" name="name" value="<?= esc(old('name', (string) ($usuario['name'] ?? ''))) ?>" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-bold">Sexo Biológico</label>
                                         <select class="form-control" name="sex">
                                             <option value="" disabled <?= empty($usuario['sex']) ? 'selected' : '' ?>>Seleccione...</option>
-                                            <option value="male" <?= ($usuario['sex'] == 'male') ? 'selected' : '' ?>>Masculino</option>
-                                            <option value="female" <?= ($usuario['sex'] == 'female') ? 'selected' : '' ?>>Femenino</option>
+                                            <option value="male" <?= (($usuario['sex'] ?? '') == 'male') ? 'selected' : '' ?>>Masculino</option>
+                                            <option value="female" <?= (($usuario['sex'] ?? '') == 'female') ? 'selected' : '' ?>>Femenino</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-bold">Fecha de Nacimiento</label>
-                                        <input type="date" class="form-control" name="birth_date" value="<?= old('birth_date', esc($usuario['birth_date'])) ?>">
+                                        <input type="date" class="form-control" name="birth_date" value="<?= esc(old('birth_date', (string) ($usuario['birth_date'] ?? ''))) ?>">
                                     </div>
                                 </div>
                             </div>
@@ -88,11 +88,11 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-4">
                                         <label class="font-weight-bold">Peso (kg)</label>
-                                        <input type="number" step="0.1" min="1" max="300" class="form-control" name="weight_kg" value="<?= old('weight_kg', esc($perfil['weight_kg'] ?? '')) ?>">
+                                        <input type="number" step="0.01" min="20" max="300" class="form-control" name="weight_kg" value="<?= esc(old('weight_kg', (string) ($perfil['weight_kg'] ?? ''))) ?>">
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label class="font-weight-bold">Altura (cm)</label>
-                                        <input type="number" min="50" max="250" class="form-control" name="height_cm" value="<?= old('height_cm', esc($perfil['height_cm'] ?? '')) ?>">
+                                        <input type="number" min="50" max="250" class="form-control" name="height_cm" value="<?= esc(old('height_cm', (string) ($perfil['height_cm'] ?? ''))) ?>">
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label class="font-weight-bold">Tu Objetivo</label>
@@ -110,12 +110,14 @@
                         <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                             <div class="card-header bg-white font-weight-bold border-0 pt-4">⚕️ Cuadro Clínico</div>
                             <div class="card-body">
+                                <input type="hidden" name="actualizar_condiciones" value="1">
+
                                 <h6 class="font-weight-bold mt-3 text-danger">Patologías y Enfermedades</h6>
                                 <div class="row px-3">
                                     <?php foreach($patologias as $patologia): ?>
                                         <div class="custom-control custom-checkbox col-md-6 mb-2">
-                                            <input type="checkbox" class="custom-control-input" id="pat_<?= $patologia['id'] ?>" name="conditions[]" value="<?= $patologia['id'] ?>" <?= in_array($patologia['id'], $misCondiciones) ? 'checked' : '' ?>>
-                                            <label class="custom-control-label" for="pat_<?= $patologia['id'] ?>"><?= esc($patologia['name']) ?></label>
+                                            <input type="checkbox" class="custom-control-input" id="pat_<?= (int) $patologia['id'] ?>" name="conditions[]" value="<?= (int) $patologia['id'] ?>" <?= in_array((int) $patologia['id'], $misCondicionesInt, true) ? 'checked' : '' ?>>
+                                            <label class="custom-control-label" for="pat_<?= (int) $patologia['id'] ?>"><?= esc($patologia['name']) ?></label>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -124,8 +126,8 @@
                                 <div class="row px-3">
                                     <?php foreach($alergias as $alergia): ?>
                                         <div class="custom-control custom-checkbox col-md-6 mb-2">
-                                            <input type="checkbox" class="custom-control-input" id="ale_<?= $alergia['id'] ?>" name="conditions[]" value="<?= $alergia['id'] ?>" <?= in_array($alergia['id'], $misCondiciones) ? 'checked' : '' ?>>
-                                            <label class="custom-control-label" for="ale_<?= $alergia['id'] ?>"><?= esc($alergia['name']) ?></label>
+                                            <input type="checkbox" class="custom-control-input" id="ale_<?= (int) $alergia['id'] ?>" name="conditions[]" value="<?= (int) $alergia['id'] ?>" <?= in_array((int) $alergia['id'], $misCondicionesInt, true) ? 'checked' : '' ?>>
+                                            <label class="custom-control-label" for="ale_<?= (int) $alergia['id'] ?>"><?= esc($alergia['name']) ?></label>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -211,7 +213,7 @@
                 </div>
             </div>
             <?php endif; ?>
-            </div>
+        </div>
     </div>
 </div>
 

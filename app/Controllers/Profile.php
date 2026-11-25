@@ -13,7 +13,7 @@ class Profile extends BaseController
 {
     public function index()
     {
-        $userId = session()->get('loggedUser');
+        $userId = (int) session()->get('loggedUser');
 
         $userModel = new UserModel();
         $healthModel = new HealthProfilesModel();
@@ -27,7 +27,7 @@ class Profile extends BaseController
         $listaAlergias = $conditionsModel->whereIn('type', ['allergy', 'intolerance'])->findAll();
 
         $condicionesActuales = $userConditionsModel->where('user_id', $userId)->findAll();
-        $idsCondiciones = array_column($condicionesActuales, 'condition_id');
+        $idsCondiciones = array_map('intval', array_column($condicionesActuales, 'condition_id'));
 
         $data = [
             'usuario'        => $usuario,
@@ -45,7 +45,7 @@ class Profile extends BaseController
     // --------------------------------------------------------------------
     public function actualizarDatosPersonales()
     {
-        $userId = session()->get('loggedUser');
+        $userId = (int) session()->get('loggedUser');
         $userModel = new UserModel();
         $usuarioActual = $userModel->find($userId);
 
@@ -54,17 +54,18 @@ class Profile extends BaseController
         }
 
         $reglas = [
-            'name'       => 'required|min_length[5]|max_length[50]',
-            'sex'        => 'permit_empty|in_list[M,F,Masculino,Femenino,Otro]',
+            'name'       => 'required|regex_match[/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ.\s]+$/u]|min_length[5]|max_length[50]',
+            'sex'        => 'permit_empty|in_list[male,female,M,F,Masculino,Femenino,Otro]',
             'birth_date' => 'permit_empty|valid_date[Y-m-d]',
             'password'   => 'permit_empty|min_length[6]|max_length[255]',
         ];
 
         $mensajes = [
             'name' => [
-                'required'   => 'El nombre y apellido es obligatorio.',
-                'min_length' => 'El nombre debe tener al menos 5 caracteres.',
-                'max_length' => 'El nombre no puede superar los 50 caracteres.',
+                'required'    => 'El nombre y apellido es obligatorio.',
+                'regex_match' => 'El nombre solo debe contener letras (con acentos y ñ), puntos y espacios.',
+                'min_length'  => 'El nombre debe tener al menos 5 caracteres.',
+                'max_length'  => 'El nombre no puede superar los 50 caracteres.',
             ],
             'birth_date' => [
                 'valid_date' => 'La fecha de nacimiento no tiene un formato válido.',
@@ -73,12 +74,6 @@ class Profile extends BaseController
                 'min_length' => 'La nueva contraseña debe tener al menos 6 caracteres.',
             ],
         ];
-
-        $rolActual = session()->get('rol');
-        if (in_array($rolActual, ['free', 'premium'])) {
-            $reglas['name'] = 'required|alpha_space|min_length[5]|max_length[50]';
-            $mensajes['name']['alpha_space'] = 'Tu nombre solo debe contener letras y espacios. El uso de puntos y títulos (Dr., Dra.) es exclusivo para los Nutricionistas de la plataforma.';
-        }
 
         $passwordPost = (string) $this->request->getPost('password');
         $esMismaPassword = ($passwordPost !== '' && !empty($usuarioActual['password']) && password_verify($passwordPost, $usuarioActual['password']));
@@ -120,7 +115,7 @@ class Profile extends BaseController
     // --------------------------------------------------------------------
     public function actualizarFoto()
     {
-        $userId = session()->get('loggedUser');
+        $userId = (int) session()->get('loggedUser');
         $userModel = new UserModel();
         $usuarioActual = $userModel->find($userId);
 
@@ -168,7 +163,7 @@ class Profile extends BaseController
     // --------------------------------------------------------------------
     public function actualizarMetricas()
     {
-        $userId = session()->get('loggedUser');
+        $userId = (int) session()->get('loggedUser');
         $healthModel = new HealthProfilesModel();
         $perfilActual = $healthModel->where('user_id', $userId)->first();
 
@@ -200,7 +195,8 @@ class Profile extends BaseController
             return redirect()->to(base_url('perfil'))->withInput()->with('fail', reset($errores));
         }
 
-        $pesoPost = $this->request->getPost('weight_kg');
+        $pesoRaw = $this->request->getPost('weight_kg');
+        $pesoPost = ($pesoRaw !== null && $pesoRaw !== '') ? str_replace(',', '.', trim((string) $pesoRaw)) : null;
         $alturaPost = $this->request->getPost('height_cm');
         $objetivoPost = $this->request->getPost('goal');
 
@@ -244,8 +240,10 @@ class Profile extends BaseController
     // --------------------------------------------------------------------
     public function actualizarCondiciones()
     {
-        $userId = session()->get('loggedUser');
-        $userConditionsModel = new UserConditionsModel();
+        $userId = (int) session()->get('loggedUser');
+        if ($userId <= 0) {
+            return redirect()->to(base_url('perfil'))->with('fail', 'Sesión no válida.');
+        }
 
         $condicionesSeleccionadas = $this->request->getPost('conditions');
         if (!is_array($condicionesSeleccionadas)) {
@@ -258,7 +256,7 @@ class Profile extends BaseController
         $db = \Config\Database::connect();
         $db->transStart();
 
-        $userConditionsModel->where('user_id', $userId)->delete();
+        $db->table('user_conditions')->where('user_id', $userId)->delete();
 
         if (!empty($idsLimpios)) {
             $condicionesInsert = [];
@@ -268,7 +266,7 @@ class Profile extends BaseController
                     'condition_id' => $condicionId,
                 ];
             }
-            $userConditionsModel->insertBatch($condicionesInsert);
+            $db->table('user_conditions')->insertBatch($condicionesInsert);
         }
 
         $db->transComplete();
@@ -281,22 +279,20 @@ class Profile extends BaseController
     }
 
     // --------------------------------------------------------------------
-    // GUARDADO COMPLETO (OPCIONAL / RETROCOMPATIBILIDAD)
+    // GUARDADO COMPLETO (PERFIL + MÉTRICAS + CUADRO CLÍNICO)
     // --------------------------------------------------------------------
     public function actualizar()
     {
-        $userId = session()->get('loggedUser');
+        $userId = (int) session()->get('loggedUser');
         $userModel = new UserModel();
         $usuarioActual = $userModel->find($userId);
 
+        if (!$usuarioActual) {
+            return redirect()->to(base_url('perfil'))->with('fail', 'Usuario no encontrado.');
+        }
+
         $reglas = config('Validation')->actualizarPerfil;
         $mensajes = config('Validation')->actualizarPerfil_errors;
-
-        $rolActual = session()->get('rol');
-        if (in_array($rolActual, ['free', 'premium'])) {
-            $reglas['name'] = 'required|alpha_space|min_length[5]|max_length[50]';
-            $mensajes['name']['alpha_space'] = 'Tu nombre solo debe contener letras y espacios. El uso de puntos y títulos (Dr., Dra.) es exclusivo para los Nutricionistas de la plataforma.';
-        }
 
         // Si la contraseña viene vacía o es idéntica a la actual (ej. autocompletada por el navegador), omitimos su validación
         $password = (string) $this->request->getPost('password');
@@ -312,8 +308,6 @@ class Profile extends BaseController
         }
 
         $healthModel = new HealthProfilesModel();
-        $userConditionsModel = new UserConditionsModel();
-
         $perfilActual = $healthModel->where('user_id', $userId)->first();
 
         $db = \Config\Database::connect();
@@ -321,7 +315,10 @@ class Profile extends BaseController
 
         // 1. Foto de perfil
         $archivoFoto = $this->request->getFile('foto_perfil');
-        $nombreFoto = $this->request->getPost('foto_actual') ?: ($usuarioActual['avatar'] ?? null);
+        $fotoActualPost = trim((string) $this->request->getPost('foto_actual'));
+        $nombreFoto = ($fotoActualPost !== '' && $fotoActualPost !== 'default-avatar.png')
+            ? $fotoActualPost
+            : ($usuarioActual['avatar'] ?? null);
 
         if ($archivoFoto && $archivoFoto->getError() !== UPLOAD_ERR_NO_FILE) {
             if (!$archivoFoto->isValid()) {
@@ -358,10 +355,14 @@ class Profile extends BaseController
             $datosUsuario['password'] = Hash::make($password);
         }
 
-        $userModel->update($userId, $datosUsuario);
+        if (!$userModel->update($userId, $datosUsuario)) {
+            $db->transRollback();
+            return redirect()->to(base_url('perfil'))->withInput()->with('fail', 'No se pudieron actualizar tus datos personales.');
+        }
 
         // 3. Métricas y objetivos
-        $pesoPost = $this->request->getPost('weight_kg');
+        $pesoRaw = $this->request->getPost('weight_kg');
+        $pesoPost = ($pesoRaw !== null && $pesoRaw !== '') ? str_replace(',', '.', trim((string) $pesoRaw)) : null;
         $alturaPost = $this->request->getPost('height_cm');
         $objetivoPost = $this->request->getPost('goal');
 
@@ -389,17 +390,26 @@ class Profile extends BaseController
             ];
 
             if ($perfilActual) {
-                $healthModel->update($perfilActual['id'], $datosFisicos);
+                $okSalud = $healthModel->update($perfilActual['id'], $datosFisicos);
             } else {
                 $datosFisicos['user_id'] = $userId;
-                $healthModel->insert($datosFisicos);
+                $okSalud = (bool) $healthModel->insert($datosFisicos);
+            }
+
+            if (!$okSalud) {
+                $db->transRollback();
+                return redirect()->to(base_url('perfil'))->withInput()->with('fail', 'No se pudieron actualizar tus métricas y objetivos.');
             }
         }
 
-        // 4. Condiciones (solo si el campo fue enviado en el POST)
-        if ($this->request->getPost('conditions') !== null) {
-            $userConditionsModel->where('user_id', $userId)->delete();
-            $condicionesSeleccionadas = (array) $this->request->getPost('conditions');
+        // 4. Condiciones clínicas (se sincroniza siempre al guardar el formulario, incluso si se desmarcan todas)
+        $condicionesPost = $this->request->getPost('conditions');
+        $actualizarCondiciones = $this->request->getPost('actualizar_condiciones') !== null || $condicionesPost !== null;
+
+        if ($actualizarCondiciones) {
+            $db->table('user_conditions')->where('user_id', $userId)->delete();
+
+            $condicionesSeleccionadas = is_array($condicionesPost) ? $condicionesPost : [];
             $idsLimpios = array_values(array_unique(array_filter(array_map('intval', $condicionesSeleccionadas), fn ($id) => $id > 0)));
 
             if (!empty($idsLimpios)) {
@@ -410,7 +420,7 @@ class Profile extends BaseController
                         'condition_id' => $condicionId,
                     ];
                 }
-                $userConditionsModel->insertBatch($condicionesInsert);
+                $db->table('user_conditions')->insertBatch($condicionesInsert);
             }
         }
 
