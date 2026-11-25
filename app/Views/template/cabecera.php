@@ -205,6 +205,14 @@
             font-size: 1rem;
             color: #4A4A4A;
         }
+        /* Distintivo de verificación según el tipo de usuario */
+        .dash-navbar .user-verification-badge {
+            width: 23px;
+            height: 23px;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: inline-block;
+        }
         .dash-navbar .arrow-down {
             font-size: 0.7rem;
             color: #777777;
@@ -314,8 +322,17 @@
 
 <?php
     // Consulta segura de avatar y notificaciones desde BD
-    $ncUserId   = (int) session()->get('loggedUser');
-    $ncRolMenu  = (string) (session()->get('rol') ?? '');
+    $ncUserId  = (int) session()->get('loggedUser');
+    $ncRolMenu = (string) (session()->get('rol') ?? '');
+
+    // Distintivo correspondiente al rol del usuario.
+    $ncDistintivos = [
+        'admin'         => 'verificadoadmin.png',
+        'nutricionista' => 'verificadonutricionista.png',
+        'premium'       => 'verificadopremium.png',
+    ];
+    $ncDistintivo = $ncDistintivos[$ncRolMenu] ?? null;
+
     $avatarFile = null;
     $ncNotifs   = [];
     $ncNoLeidas = 0;
@@ -431,6 +448,13 @@
             <button type="button" class="dropdown-trigger" id="tplUserBtn">
                 <img src="<?= esc($fotoPerfil) ?>" alt="Avatar" class="user-avatar">
                 <span class="user-name"><?= esc((string) (session()->get('name') ?? 'Usuario')) ?></span>
+                <?php if ($ncDistintivo !== null): ?>
+                    <img
+                        src="<?= base_url('assets/imagenes/' . $ncDistintivo) ?>"
+                        alt="Usuario verificado"
+                        class="user-verification-badge"
+                    >
+                <?php endif; ?>
                 <span class="arrow-down">▼</span>
             </button>
             <div class="dropdown-content" id="tplUserMenu">

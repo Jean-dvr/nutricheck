@@ -49,13 +49,17 @@
 
                     <div class="password-container">
                         <input type="password" name="password" class="input-field" placeholder="Contraseña" required>
-                        <button type="button" class="view-password-btn">👁️</button>
+                        <button type="button" class="view-password-btn">
+                        <img src="<?= base_url('assets/imagenes/ojocontraseña.png') ?>" alt="Mostrar contraseña">
+                        </button>
                     </div>
                     <span class="text-danger"><?= isset($validation) ? display_error($validation, 'password') : '' ?></span>
 
                     <div class="password-container">
                         <input type="password" name="cpassword" class="input-field" placeholder="Confirmar Contraseña" required>
-                        <button type="button" class="view-password-btn">👁️</button>
+                        <button type="button" class="view-password-btn">
+                        <img src="<?= base_url('assets/imagenes/ojocontraseña.png') ?>" alt="Mostrar contraseña">
+                        </button>
                     </div>
                     <span class="text-danger"><?= isset($validation) ? display_error($validation, 'cpassword') : '' ?></span>
 
@@ -72,26 +76,21 @@
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Buscamos todos los botones con la clase del ojito
-            const togglePasswordBtns = document.querySelectorAll('.view-password-btn');
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePasswordBtns = document.querySelectorAll('.view-password-btn');
 
-            togglePasswordBtns.forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    // Seleccionamos el input que está en el mismo contenedor
-                    const input = this.previousElementSibling;
+        togglePasswordBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const input = this.previousElementSibling;
 
-                    // Intercambiamos el tipo de campo
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        this.textContent = '👁️'; 
-                    } else {
-                        input.type = 'password';
-                        this.textContent = '👁️'; // Volvemos al ojito normal
-                    }
+                if (input.type === 'password') {
+                    input.type = 'text';
+                } else {
+                    input.type = 'password';
+                }
                 });
             });
         });
-    </script>
+</script>
 </body>
 </html>

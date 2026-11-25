@@ -122,9 +122,9 @@
                 </div>
             </div>
             <div class="asesor-card">
-                <img src="<?= base_url('assets/imagenes/foto_bari.jpg') ?>" alt="Estudiantes del Inst. Gastronómico del Litoral" class="asesor-img">
+                <img src="<?= base_url('assets/imagenes/foto_bari.jpg') ?>" alt="Estudiantes Inst. Gastronómico del Litoral" class="asesor-img">
                 <div class="asesor-text">
-                    <h3>ESTUDIANTES DEL INST. GASTRONÓMICO DEL LITORAL</h3>
+                    <h3>ESTUDIANTES INST. GASTRONÓMICO DEL LITORAL</h3>
                     <p>Contribuyeron con sus conocimientos y experiencia en la elaboración de recetas adaptadas a la realidad del estado La Guaira.</p>
                 </div>
             </div>
@@ -148,7 +148,7 @@
             </div>
             <div class="footer-col">
                 <h4>CONTACTO</h4>
-                <p>nutricheck@gmail.com</p>
+                <p>nutrichecksupport@gmail.com</p>
             </div>
         </div>
     </footer>

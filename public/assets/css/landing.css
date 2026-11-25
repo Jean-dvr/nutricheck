@@ -80,7 +80,7 @@ body {
 }
 
 .hero-content {
-    background: linear-gradient(90deg, #f3cf3e 0%, #FFCA56 25%, #ffb245 50%, #ff9d42 75%, #fc7725 100%);
+    background: linear-gradient(90deg,#FFCA56 25%,#FFCA56 25%,#ffb245 50%,#ff9d42 75%,#fc7725 100%);
     width: 100%;
     min-height: calc(100vh - 60px);
     display: flex;
