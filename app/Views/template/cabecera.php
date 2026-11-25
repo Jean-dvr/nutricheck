@@ -14,14 +14,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
     <style>
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
         body { font-family: 'Montserrat', Arial, sans-serif; background-color: #f4f6f9; }
         .navbar-brand { font-weight: 700; color: #f1682d !important; letter-spacing: 1px; }
 
         /* Navbar Principal (estética idéntica al Dashboard) */
         .dash-navbar {
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             padding: 10px 40px;
             height: 70px;
             background-color: #FFFFFF;
@@ -29,6 +36,9 @@
             margin-bottom: 3rem;
             position: relative;
             z-index: 1100;
+        }
+        .dash-navbar .logo-container {
+            flex-shrink: 0;
         }
         .dash-navbar .logo-wrapper {
             display: flex;
@@ -45,6 +55,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            min-width: 0;
         }
         .dash-navbar .btn-top {
             padding: 8px 16px;
@@ -66,7 +77,7 @@
         }
 
         /* Campanita de Notificaciones (idéntica al Dashboard) */
-        .nc-notif-dropdown { position: relative; }
+        .nc-notif-dropdown { position: relative; flex-shrink: 0; }
         .nc-bell-btn {
             position: relative;
             display: inline-flex;
@@ -172,7 +183,7 @@
         .nc-notif-empty { padding: 26px 16px; text-align: center; color: #888888; font-size: 0.84rem; }
 
         /* Menú Desplegable de Usuario (idéntico al Dashboard) */
-        .dash-navbar .user-dropdown { position: relative; }
+        .dash-navbar .user-dropdown { position: relative; flex-shrink: 0; }
         .dash-navbar .dropdown-trigger {
             display: flex;
             align-items: center;
@@ -235,8 +246,67 @@
         }
 
         @media (max-width: 768px) {
-            .dash-navbar { padding: 10px 16px; }
-            .dash-navbar .user-name { display: none; }
+            .dash-navbar {
+                padding: 10px 14px;
+                height: 64px;
+                margin-bottom: 1.5rem;
+            }
+            .dash-navbar .dash-logo {
+                height: 28px;
+            }
+            .dash-navbar .user-menu-wrapper {
+                gap: 8px;
+            }
+            .dash-navbar .user-name {
+                display: none;
+            }
+            .dash-navbar .dropdown-trigger {
+                gap: 5px;
+            }
+            .dash-navbar .user-avatar {
+                width: 34px;
+                height: 34px;
+            }
+            .nc-bell-btn {
+                width: 36px;
+                height: 36px;
+            }
+            .dash-navbar .btn-top {
+                padding: 6px 11px;
+                font-size: 0.74rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dash-navbar {
+                padding: 8px 12px;
+                height: 60px;
+            }
+            .dash-navbar .dash-logo {
+                height: 24px;
+            }
+            .dash-navbar .user-menu-wrapper {
+                gap: 6px;
+            }
+            .dash-navbar .btn-top {
+                padding: 5px 10px;
+                font-size: 0.72rem;
+            }
+            .nc-bell-btn {
+                width: 34px;
+                height: 34px;
+            }
+            .dash-navbar .user-avatar {
+                width: 32px;
+                height: 32px;
+            }
+            .nc-notif-menu {
+                position: fixed;
+                top: 64px;
+                left: 12px;
+                right: 12px;
+                width: auto;
+            }
         }
     </style>
 </head>
@@ -301,7 +371,7 @@
 
     <div class="user-menu-wrapper">
         <?php if($ncRolMenu === 'admin'): ?>
-            <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin">💳 Validar Pagos</a>
+            <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin">💳 <span class="d-none d-sm-inline">Validar </span>Pagos</a>
         <?php endif; ?>
 
         <!-- Campanita de Notificaciones -->

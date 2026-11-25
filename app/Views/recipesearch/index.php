@@ -33,6 +33,10 @@ $filtroTextoPost = (string) ($_POST['filtro_ingrediente'] ?? '');
     .pantry-container::-webkit-scrollbar { width: 6px; }
     .pantry-container::-webkit-scrollbar-thumb { background-color: #f1682d; border-radius: 10px; }
 
+    .recipe-header-actions {
+        gap: 8px;
+    }
+
     .recipe-card {
         transition: transform 0.2s, box-shadow 0.2s;
         border-radius: 15px;
@@ -56,24 +60,38 @@ $filtroTextoPost = (string) ($_POST['filtro_ingrediente'] ?? '');
         margin-top: 15px;
         margin-bottom: 10px;
     }
+
+    @media (max-width: 576px) {
+        .recipe-header-title {
+            font-size: 1.55rem;
+        }
+        .recipe-header-actions .btn {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            font-size: 0.85rem;
+        }
+        .pantry-container {
+            max-height: 320px;
+        }
+    }
 </style>
 
 <div class="container mt-4 mb-5">
 
     <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <div>
-            <h2 style="color: #f1682d; font-weight: 700;"><i class="fas fa-book-medical"></i> Buscador de Recetas</h2>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 border-bottom pb-3">
+        <div class="mb-3 mb-md-0 mr-md-3">
+            <h2 class="recipe-header-title" style="color: #f1682d; font-weight: 700;"><i class="fas fa-book-medical"></i> Buscador de Recetas</h2>
             <p class="text-muted mb-0">Selecciona los ingredientes de tu despensa y las recetas se actualizarán automáticamente.</p>
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex flex-wrap align-items-center recipe-header-actions flex-shrink-0">
             <?php if (in_array(session()->get('rol'), ['admin', 'nutricionista'], true)): ?>
-                <a href="<?= base_url('admin') ?>" class="btn btn-outline-success font-weight-bold rounded-pill px-4 mr-2 shadow-sm">
+                <a href="<?= base_url('admin') ?>" class="btn btn-outline-success font-weight-bold rounded-pill px-4 shadow-sm text-nowrap flex-shrink-0">
                     <i class="fas fa-plus"></i> Creador de Recetas
                 </a>
             <?php endif; ?>
 
-            <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+            <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm text-nowrap flex-shrink-0">
                 Volver al Inicio
             </a>
         </div>
@@ -160,9 +178,9 @@ $filtroTextoPost = (string) ($_POST['filtro_ingrediente'] ?? '');
 
         <!-- Columna derecha: Resultados -->
         <div class="col-lg-8">
-            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 border-bottom pb-2" style="gap: 8px;">
                 <h5 class="font-weight-bold mb-0 text-muted">Resultados de la Búsqueda</h5>
-                <span id="contadorRecetas" class="badge badge-pill px-3 py-2" style="background-color: #fff3ed; color: #f1682d;">
+                <span id="contadorRecetas" class="badge badge-pill px-3 py-2 text-nowrap" style="background-color: #fff3ed; color: #f1682d;">
                     <?= count($recetas_encontradas) ?> recetas
                 </span>
             </div>
@@ -313,4 +331,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?= view('template/piepagina') ?>
-```[cite: 35, 37]

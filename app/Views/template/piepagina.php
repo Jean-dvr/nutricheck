@@ -5,16 +5,19 @@ $rolActual = session()->get('rol');
 // Mostramos a Free y Admin (Premium y Nutricionista no ven esto)
 if(in_array($rolActual, ['free', 'admin'])): 
     
-    $bannersModel = new \App\Models\BannersModel();$dbBanners = \Config\Database::connect();
+    $bannersModel = new \App\Models\BannersModel();
+    $dbBanners = \Config\Database::connect();
     if ($dbBanners->fieldExists('orientation', 'banners')) {
-        $listaBanners =$bannersModel->where('orientation', 'vertical')->orderBy('created_at', 'DESC')->findAll();
+        $listaBanners = $bannersModel->where('orientation', 'vertical')->orderBy('created_at', 'DESC')->findAll();
     } else {
-        $listaBanners =$bannersModel->orderBy('created_at', 'DESC')->findAll();
+        $listaBanners = $bannersModel->orderBy('created_at', 'DESC')->findAll();
     }
     
     // TRUCO LÓGICO para la rotación
-    if(empty($listaBanners)) {$nombresBanners = ['placeholder', 'placeholder'];
-    } elseif(count($listaBanners) === 1) {$nombresBanners = [$listaBanners[0]['image_url'],$listaBanners[0]['image_url']];
+    if(empty($listaBanners)) {
+        $nombresBanners = ['placeholder', 'placeholder'];
+    } elseif(count($listaBanners) === 1) {
+        $nombresBanners = [$listaBanners[0]['image_url'], $listaBanners[0]['image_url']];
     } else {
         $nombresBanners = array_column($listaBanners, 'image_url');
     }
@@ -35,6 +38,12 @@ if(in_array($rolActual, ['free', 'admin'])):
             z-index: 1050;
             text-align: center;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        /* Evita que los laterales tapen el contenido al hacer zoom o en resoluciones intermedias */
+        @media (max-width: 1499.98px) {
+            .nc-side-ad {
+                display: none !important;
+            }
         }
         .nc-side-ad:hover {
             box-shadow: 0 16px 38px rgba(0, 0, 0, 0.12);
@@ -236,7 +245,7 @@ if(in_array($rolActual, ['free', 'admin'])):
                         </div>
                     <?php else: ?>
                         <div class="row">
-                            <?php foreach($listaBanners as$banner): ?>
+                            <?php foreach($listaBanners as $banner): ?>
                                 <div class="col-6 col-md-3 mb-4">
                                     <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 10px;">
                                         <img src="<?= base_url('assets/ads/' . $banner['image_url']) ?>" class="card-img-top bg-dark" style="height: 250px; object-fit: contain;" alt="Banner">
