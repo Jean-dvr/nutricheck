@@ -19,6 +19,11 @@ class CreateBannersTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255'
             ],
+            'orientation' => [
+                'type'       => 'ENUM',
+                'constraint' => ['vertical', 'horizontal'],
+                'default'    => 'vertical'
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true
