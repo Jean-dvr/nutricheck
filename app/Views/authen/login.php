@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/auth.css?v=1.1') ?>">
 </head>
 
 <body>
@@ -24,7 +24,9 @@
             <div class="form-box">
                 
                 <div class="logo-form-container">
-                    <img src="<?= base_url('assets/imagenes/logo_naranja.png') ?>" alt="NutriCheck Logo Naranja" class="logo-form-img">
+                    <a href="<?= base_url('/') ?>" class="logo-home-link" title="Volver a la página principal">
+                        <img src="<?= base_url('assets/imagenes/logo_naranja.png') ?>" alt="NutriCheck Logo Naranja" class="logo-form-img">
+                    </a>
                 </div>
                 
                 <h2 class="page-subtitle">INICIAR SESIÓN</h2>
@@ -57,6 +59,7 @@
                     <div class="action-container">
                         <button type="submit" class="btn-submit">Iniciar</button>
                         <a href="<?= base_url('register') ?>" class="register-link">¿No tienes una cuenta? Regístrate aquí</a>
+                        <a href="<?= base_url('/') ?>" class="btn-back-landing">← Volver al inicio</a>
                     </div>
 
                 </form>
