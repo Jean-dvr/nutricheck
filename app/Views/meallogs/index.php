@@ -5,8 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NutriCheck - Racha de Comidas</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=1.2') ?>">
+    <link rel="stylesheet" href="<?= base_url('/assets/css/meallogs.css?v=2.0') ?>">
     <style>
+        /* Distintivo de verificación según el tipo de usuario */
+        .dash-navbar .user-verification-badge {
+            width: 23px;
+            height: 23px;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: inline-block;
+        }
+
         .meal-actions {
             display: flex;
             gap: 8px;
@@ -210,6 +219,20 @@
             cursor: pointer;
             line-height: 1;
         }
+
+        @media (max-width: 576px) {
+            .nc-notif-menu {
+                position: fixed;
+                top: 68px;
+                left: 12px;
+                right: 12px;
+                width: auto;
+            }
+            .dash-navbar .user-verification-badge {
+                width: 20px;
+                height: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -217,8 +240,17 @@
 <?php
     // Consulta segura de notificaciones recientes y contador de no leídas
     $ncUserId   = (int) session()->get('loggedUser');
+    $ncRolMenu  = (string) (session()->get('rol') ?? '');
     $ncNotifs   = [];
     $ncNoLeidas = 0;
+
+    // Distintivo correspondiente al rol del usuario.
+    $ncDistintivos = [
+        'admin'         => 'verificadoadmin.png',
+        'nutricionista' => 'verificadonutricionista.png',
+        'premium'       => 'verificadopremium.png',
+    ];
+    $ncDistintivo = $ncDistintivos[$ncRolMenu] ?? null;
 
     if ($ncUserId > 0) {
         try {
@@ -261,7 +293,7 @@
     </div>
 
     <div class="user-menu-wrapper">
-        <?php if (session()->get('rol') === 'admin'): ?>
+        <?php if ($ncRolMenu === 'admin'): ?>
             <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin">💳 Validar Pagos</a>
         <?php endif; ?>
 
@@ -335,17 +367,23 @@
                 ?>
                 <img src="<?= $fotoPerfil ?>" alt="Avatar" class="user-avatar">
                 <span class="user-name"><?= esc((string) (session()->get('name') ?? 'Usuario')) ?></span>
+                <?php if ($ncDistintivo !== null): ?>
+                    <img
+                        src="<?= base_url('assets/imagenes/' . $ncDistintivo) ?>"
+                        alt="Usuario verificado"
+                        class="user-verification-badge"
+                    >
+                <?php endif; ?>
                 <span class="arrow-down">▼</span>
             </button>
             <div class="dropdown-content" id="userDropdownContent">
                 <a href="<?= base_url('dashboard') ?>">Inicio</a>
                 <a href="<?= base_url('perfil') ?>">Configuración</a>
                 <?php
-                    $rolMenu = session()->get('rol');
-                    if (in_array($rolMenu, ['free', 'premium', 'pro'], true)):
+                    if (in_array($ncRolMenu, ['free', 'premium', 'pro'], true)):
                 ?>
                     <a href="<?= base_url('premium/checkout') ?>" class="text-orange">NutricheckPro</a>
-                <?php elseif ($rolMenu === 'admin'): ?>
+                <?php elseif ($ncRolMenu === 'admin'): ?>
                     <a href="<?= base_url('dashboard/pagos') ?>" class="text-orange">NutricheckPro (Pagos)</a>
                 <?php endif; ?>
                 <hr>
