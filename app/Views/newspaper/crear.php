@@ -30,6 +30,9 @@
                                 <option value="general" <?= old('category') == 'general' ? 'selected' : '' ?>>🌐 General (Información y Noticias)</option>
                                 <option value="eventos" <?= old('category') == 'eventos' ? 'selected' : '' ?>>📅 Eventos y Jornadas Médicas</option>
                                 <option value="recetas" <?= old('category') == 'recetas' ? 'selected' : '' ?>>🍲 Recetas Especiales Recomendadas</option>
+                                <?php if(session()->get('rol') === 'admin'): ?>
+                                    <option value="novedades" <?= old('category') == 'novedades' ? 'selected' : '' ?>>🎁 Promociones y Ofertas NutriCheckPro (Novedades)</option>
+                                <?php endif; ?>
                             </select>
                         </div>
 

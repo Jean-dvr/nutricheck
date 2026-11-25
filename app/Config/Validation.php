@@ -184,7 +184,7 @@ class Validation extends BaseConfig
     // Reglas para el Newspaper
     public $crearPost = [
         'title'    => 'required|min_length[5]|max_length[150]',
-        'category' => 'required|in_list[general,eventos,recetas]',
+        'category' => 'required|in_list[general,eventos,recetas,novedades]',
         'contents' => 'required|min_length[15]'
     ];
     // Reglas para Reporte de Pagos

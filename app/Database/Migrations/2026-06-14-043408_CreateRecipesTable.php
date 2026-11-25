@@ -15,6 +15,13 @@ class CreateRecipesTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
+            'user_id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'null'           => true,
+                'default'        => null
+            ],
             'title' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '150',

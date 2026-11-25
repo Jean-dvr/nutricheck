@@ -13,6 +13,7 @@ class RecipesModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        'user_id',
         'title',
         'preparation',
         'prep_time_minutes',

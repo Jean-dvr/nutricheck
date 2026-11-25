@@ -7,6 +7,7 @@ use App\Models\RecipesModel;
 use App\Models\RecipeIngredientsModel;
 use App\Models\TagsModel;
 use App\Models\RecipeTagsModel;
+use App\Models\NotificationsModel;
 
 class AdminController extends BaseController
 {
@@ -40,26 +41,54 @@ class AdminController extends BaseController
     public function guardarIngrediente()
     {
         if (!$this->verificarAcceso()) return redirect()->to(base_url('recetas'));
+        $nombreIng = trim((string) $this->request->getPost('name'));
+
         $ingModel = new IngredientsModel();
         $ingModel->insert([
-            'name'              => $this->request->getPost('name'),
+            'name'              => $nombreIng,
             'category'          => $this->request->getPost('category'),
             'calories_per_100g' => $this->request->getPost('calories'),
             'protein_g'         => $this->request->getPost('protein') ?? 0,
             'carb_g'            => $this->request->getPost('carb') ?? 0,
             'fat_g'             => $this->request->getPost('fat') ?? 0,
         ]);
+
+        // Notificar cambio en el sistema al resto del personal
+        $notifModel = new NotificationsModel();
+        $notifModel->notificarPorRoles(
+            ['admin', 'nutricionista'],
+            'Nuevo ingrediente registrado',
+            "Se agregó el ingrediente \"{$nombreIng}\" a la base nutricional.",
+            'admin',
+            'sistema',
+            (int) session()->get('loggedUser')
+        );
+
         return redirect()->to(base_url('admin'))->with('success', '¡Ingrediente agregado exitosamente!');
     }
 
     public function guardarEtiqueta()
     {
         if (!$this->verificarAcceso()) return redirect()->to(base_url('recetas'));
+        $nombreTag = trim((string) $this->request->getPost('name'));
+
         $tagsModel = new TagsModel();
         $tagsModel->insert([
-            'name'      => $this->request->getPost('name'),
+            'name'      => $nombreTag,
             'color_hex' => $this->request->getPost('color_hex'),
         ]);
+
+        // Notificar cambio en el sistema al resto del personal
+        $notifModel = new NotificationsModel();
+        $notifModel->notificarPorRoles(
+            ['admin', 'nutricionista'],
+            'Nueva etiqueta nutricional',
+            "Se creó la etiqueta \"{$nombreTag}\" para clasificación de recetas.",
+            'admin',
+            'sistema',
+            (int) session()->get('loggedUser')
+        );
+
         return redirect()->to(base_url('admin'))->with('success', '¡Etiqueta creada exitosamente!');
     }
 
@@ -77,10 +106,13 @@ class AdminController extends BaseController
 
         // WORKFLOW DE APROBACIÓN: Si es Admin se aprueba sola (1), si es Nutricionista queda pendiente (0)
         $estadoAprobacion = (session()->get('rol') === 'admin') ? 1 : 0;
+        $tituloReceta     = trim((string) $this->request->getPost('title'));
+        $autorId          = (int) session()->get('loggedUser');
 
         $recipesModel = new RecipesModel();
         $recipeId = $recipesModel->insert([
-            'title'             => $this->request->getPost('title'),
+            'user_id'           => $autorId,
+            'title'             => $tituloReceta,
             'preparation'       => $this->request->getPost('preparation'),
             'prep_time_minutes' => $this->request->getPost('prep_time'),
             'difficulty'        => $this->request->getPost('difficulty'),
@@ -118,6 +150,30 @@ class AdminController extends BaseController
             }
         }
 
+        // Notificaciones según quién creó la receta
+        $notifModel  = new NotificationsModel();
+        $nombreAutor = (string) (session()->get('name') ?? 'Especialista');
+
+        if ($estadoAprobacion === 0) {
+            // Nutricionista envió receta -> notificar al Administrador para aprobación
+            $notifModel->notificarPorRoles(
+                ['admin'],
+                'Nueva receta por aprobar',
+                "{$nombreAutor} envió la receta \"{$tituloReceta}\" para revisión.",
+                'admin',
+                'receta'
+            );
+        } else {
+            // Administrador publicó receta directamente -> notificar a los Nutricionistas
+            $notifModel->notificarPorRoles(
+                ['nutricionista'],
+                'Nueva receta publicada',
+                "Se publicó la receta \"{$tituloReceta}\" en el catálogo de NutriCheck.",
+                'recetas',
+                'receta'
+            );
+        }
+
         $mensaje = ($estadoAprobacion == 1) ? '¡Receta armada y publicada exitosamente!' : '¡Receta enviada! Está pendiente de aprobación por un Administrador.';
         return redirect()->to(base_url('admin'))->with('success', $mensaje);
     }
@@ -134,7 +190,36 @@ class AdminController extends BaseController
         }
 
         $recipesModel = new RecipesModel();
+        $receta = $recipesModel->find($id);
+
+        if (!$receta) {
+            return redirect()->to(base_url('admin'))->with('fail', 'Receta no encontrada.');
+        }
+
         $recipesModel->update($id, ['is_approved' => 1]);
+
+        // Notificar al nutricionista creador (o a los nutricionistas si es una receta antigua sin user_id)
+        $notifModel = new NotificationsModel();
+        $autorId    = (int) ($receta['user_id'] ?? 0);
+        $adminId    = (int) session()->get('loggedUser');
+
+        if ($autorId > 0 && $autorId !== $adminId) {
+            $notifModel->notificarUsuario(
+                $autorId,
+                '¡Receta aprobada!',
+                "Tu receta \"{$receta['title']}\" fue aprobada por el administrador y ya es visible en el buscador.",
+                'recetas',
+                'receta'
+            );
+        } else {
+            $notifModel->notificarPorRoles(
+                ['nutricionista'],
+                'Nueva receta aprobada',
+                "La receta \"{$receta['title']}\" fue aprobada y ya está disponible en el buscador.",
+                'recetas',
+                'receta'
+            );
+        }
         
         return redirect()->to(base_url('admin'))->with('success', 'La receta ha sido aprobada y ahora es pública.');
     }

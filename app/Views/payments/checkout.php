@@ -1,3 +1,12 @@
+<?php
+/**
+ * Variables inyectadas por el Controlador Payments
+ * @var array|null  $pagoPendiente
+ * @var bool        $esPremium
+ * @var string|null $fechaVencimiento
+ * @var int|null    $diasRestantes
+ */
+?>
 <?= view('template/cabecera') ?>
 
 <div class="container mt-4 mb-5">
@@ -5,9 +14,40 @@
         <div class="col-md-8">
             
             <div class="text-center mb-4">
-                <h2 style="color: #ffc107; font-weight: 800;">⭐ Conviértete en Premium</h2>
-                <p class="text-muted">Desbloquea el acceso ilimitado a NutriCheck y elimina la publicidad por solo <strong>$5.00 al mes</strong>.</p>
+                <?php if(!empty($esPremium)): ?>
+                    <h2 style="color: #ffc107; font-weight: 800;">⭐ Tu Suscripción NutriCheckPro</h2>
+                    <p class="text-muted">Consulta la vigencia de tu plan actual o prolonga tu suscripción por <strong>1 mes adicional ($5.00)</strong>.</p>
+                <?php else: ?>
+                    <h2 style="color: #ffc107; font-weight: 800;">⭐ Conviértete en Premium</h2>
+                    <p class="text-muted">Desbloquea el acceso ilimitado a NutriCheck y elimina la publicidad por solo <strong>$5.00 al mes</strong>.</p>
+                <?php endif; ?>
             </div>
+
+            <?php if(!empty($esPremium)): ?>
+                <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px; background-color: #fff9e6; border-left: 5px solid #ffc107 !important;">
+                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h5 class="font-weight-bold text-dark mb-1">✅ Plan Premium Activo</h5>
+                            <?php if(!empty($fechaVencimiento)): ?>
+                                <p class="text-muted mb-0 small">
+                                    Tu suscripción vence el <strong><?= date('d/m/Y', strtotime($fechaVencimiento)) ?></strong>.
+                                </p>
+                            <?php else: ?>
+                                <p class="text-muted mb-0 small">
+                                    Tu cuenta cuenta con beneficios Premium activos. Al reportar una renovación se asignará un nuevo periodo mensual.
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                        <?php if($diasRestantes !== null): ?>
+                            <div class="mt-2 mt-md-0">
+                                <span class="badge badge-warning px-3 py-2 text-dark shadow-sm" style="font-size: 0.95rem;">
+                                    ⏳ <?= esc((string) $diasRestantes) ?> <?= ($diasRestantes === 1) ? 'día restante' : 'días restantes' ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <div class="row mb-4">
                 <div class="col-md-6 mb-3">
@@ -39,7 +79,9 @@
 
             <div class="card shadow border-0" style="border-radius: 15px;">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h5 class="font-weight-bold">📋 Reportar Transferencia</h5>
+                    <h5 class="font-weight-bold">
+                        <?= !empty($esPremium) ? '🔄 Prolongar Suscripción (+1 Mes)' : '📋 Reportar Transferencia' ?>
+                    </h5>
                 </div>
                 <div class="card-body p-4">
                     
@@ -48,7 +90,7 @@
                         <div class="alert alert-warning text-center rounded" style="border: 2px dashed #ffc107;">
                             <h4 class="mb-2">⏳</h4>
                             <h5 class="font-weight-bold text-dark">Tu pago está en revisión</h5>
-                            <p class="mb-0 text-dark small">Ya hemos recibido un reporte tuyo y nuestro equipo lo está validando. Si todo es correcto, tu cuenta Premium se activará en breve.</p>
+                            <p class="mb-0 text-dark small">Ya hemos recibido un reporte tuyo y nuestro equipo lo está validando. Si todo es correcto, tu suscripción Premium se actualizará en breve.</p>
                         </div>
 
                     <?php else: ?>
@@ -82,7 +124,7 @@
                             </div>
 
                             <button type="submit" class="btn btn-warning btn-block font-weight-bold shadow-sm rounded-pill mt-4 text-dark" style="padding: 12px;">
-                                Enviar Reporte de Pago
+                                <?= !empty($esPremium) ? 'Enviar Reporte para Prolongar Plan' : 'Enviar Reporte de Pago' ?>
                             </button>
                         </form>
 
