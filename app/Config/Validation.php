@@ -181,12 +181,7 @@ class Validation extends BaseConfig
         ]
     ];
     
-    // Reglas para el Newspaper
-    public $crearPost = [
-        'title'    => 'required|min_length[5]|max_length[150]',
-        'category' => 'required|in_list[general,eventos,recetas,novedades]',
-        'contents' => 'required|min_length[15]'
-    ];
+    
     // Reglas para Reporte de Pagos
     public $reportePago = [
         'amount'           => 'required|numeric|greater_than[0]',
@@ -257,5 +252,35 @@ class Validation extends BaseConfig
             ]
         ]
     ];
+    
+    // --------------------------------------------------------------------
+// Reglas para el Newspaper
+// --------------------------------------------------------------------
+public $crearPost = [
+    'title' => [
+        // Permite letras (con tildes/ñ), números, espacios y signos básicos; evita símbolos raros
+        'rules'  => 'required|min_length[5]|max_length[150]|regex_match[/^[a-zA-Z0-9ÁÉÍÓÚÜÑáéíóúüñ\s.,:¡!¿?\-()]+$/u]',
+        'errors' => [
+            'required'    => 'El título del artículo es obligatorio.',
+            'min_length'  => 'El título debe tener al menos 5 caracteres.',
+            'max_length'  => 'El título no puede superar los 150 caracteres.',
+            'regex_match' => 'El título solo puede contener letras, números, espacios y puntuación básica.'
+        ]
+    ],
+    'category' => [
+        'rules'  => 'required|in_list[general,eventos,recetas,novedades]',
+        'errors' => [
+            'required' => 'Debes seleccionar una categoría.',
+            'in_list'  => 'La categoría seleccionada no es válida.'
+        ]
+    ],
+    'contents' => [
+        'rules'  => 'required|min_length[15]',
+        'errors' => [
+            'required'   => 'El contenido de la publicación es obligatorio.',
+            'min_length' => 'El contenido debe tener al menos 15 caracteres.'
+        ]
+    ]
+];
 
 }
