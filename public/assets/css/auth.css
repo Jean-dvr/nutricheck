@@ -68,3 +68,19 @@
             .left-side { min-height: 300px; }
             .right-side { padding: 30px 20px; }
         }
+        view-password-btn {
+            background: transparent;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .view-password-btn img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            display: block;
+}
