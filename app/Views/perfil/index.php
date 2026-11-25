@@ -13,7 +13,12 @@
 <div class="container mt-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <h2 class="mb-4" style="color: #f1682d; font-weight: 700;">Configuración de Perfil</h2>
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+                <h2 class="mb-2 mb-sm-0" style="color: #f1682d; font-weight: 700;">Configuración de Perfil</h2>
+                <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                    Volver al Inicio
+                </a>
+            </div>
 
             <form action="<?= base_url('perfil/actualizar') ?>" method="POST" enctype="multipart/form-data" autocomplete="off">
                 <?= csrf_field() ?>

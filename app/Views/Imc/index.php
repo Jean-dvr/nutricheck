@@ -18,6 +18,12 @@
 <div class="container mt-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
+
+            <div class="d-flex justify-content-end mb-3">
+                <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                    Volver al Inicio
+                </a>
+            </div>
             
             <div class="card shadow-sm border-0" style="border-radius: 15px;">
                 <div class="card-header bg-white border-0 pt-4 pb-0 text-center">

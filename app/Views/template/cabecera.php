@@ -294,7 +294,7 @@
 
 <header class="dash-navbar">
     <div class="logo-container">
-        <a href="<?= base_url('dashboard') ?>" class="logo-wrapper">
+        <a href="<?= base_url('/') ?>" class="logo-wrapper">
             <img src="<?= base_url('/assets/imagenes/logo_naranja.png') ?>" alt="NutriCheck" class="dash-logo">
         </a>
     </div>
@@ -364,6 +364,7 @@
                 <span class="arrow-down">▼</span>
             </button>
             <div class="dropdown-content" id="tplUserMenu">
+                <a href="<?= base_url('dashboard') ?>">Inicio</a>
                 <a href="<?= base_url('perfil') ?>">Configuración</a>
                 <?php if(in_array($ncRolMenu, ['free', 'premium', 'pro'], true)): ?>
                     <a href="<?= base_url('premium/checkout') ?>" class="text-orange">NutricheckPro</a>
