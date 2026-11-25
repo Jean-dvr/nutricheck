@@ -11,12 +11,12 @@
 <div class="container mt-4 mb-5">
 
     <div class="row align-items-center mb-4 border-bottom pb-3">
-        <div class="col-lg-6 mb-3 mb-lg-0 text-center text-lg-left">
+        <div class="col-lg-5 mb-3 mb-lg-0 text-center text-lg-left">
             <h2 style="color: #f1682d; font-weight: 800; font-family: serif; margin-bottom: 0;">📰 NutriCheck News</h2>
             <p class="text-muted small mb-0">Lo último en salud, jornadas médicas y nutrición.</p>
         </div>
         
-        <div class="col-lg-6 text-center text-lg-right">
+        <div class="col-lg-7 text-center text-lg-right">
             
             <?php if($rol_usuario === 'admin'): ?>
                 <a href="<?= base_url('newspaper/pendientes') ?>" class="btn font-weight-bold text-white shadow-sm rounded-pill mr-md-2 mb-2" style="background-color: #dc3545;">
@@ -28,10 +28,14 @@
             <?php endif; ?>
 
             <?php if(in_array($rol_usuario, ['admin', 'nutricionista'])): ?>
-                <a href="<?= base_url('newspaper/crear') ?>" class="btn font-weight-bold text-white shadow-sm rounded-pill mb-2" style="background-color: #28a745;">
+                <a href="<?= base_url('newspaper/crear') ?>" class="btn font-weight-bold text-white shadow-sm rounded-pill mr-md-2 mb-2" style="background-color: #28a745;">
                     ✍️ Nueva Publicación
                 </a>
             <?php endif; ?>
+
+            <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm mb-2">
+                Volver al Inicio
+            </a>
 
         </div>
     </div> 

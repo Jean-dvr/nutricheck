@@ -63,6 +63,11 @@ class Authen extends BaseController{
         if (!$insercion) {
             return redirect()->to(base_url('register'))->withInput()->with('fail', 'Ocurrió un error interno al guardar el usuario. Intenta de nuevo.');
         } 
+
+        // 5. Si había una sesión anterior abierta en este navegador, limpiamos sus datos para permitir iniciar sesión con la nueva cuenta
+        if (session()->has('loggedUser') || session()->get('isLoggedIn')) {
+            session()->remove(['loggedUser', 'name', 'rol', 'avatar', 'isLoggedIn']);
+        }
         
         return redirect()->to(base_url('login'))->with('success', '¡Registro exitoso! Ya puedes iniciar sesión.');
     }
@@ -132,6 +137,3 @@ class Authen extends BaseController{
 
 
 }
-
-
-

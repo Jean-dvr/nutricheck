@@ -114,9 +114,7 @@ class Filters extends BaseFilters
     public array $filters = ['guest' => [
             'before' => [
                 'login', 
-                'login/*', 
-                'register', 
-                'register/*'
+                'login/*'
             ]
         ],
         ];
