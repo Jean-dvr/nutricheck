@@ -1,13 +1,12 @@
 <?php
 /**
  * Vista: Buscador de Recetas por Despensa
- * Variables inyectadas por RecipeSearch::index():
  * @var array $ingredientes_disponibles
  * @var array $recetas_encontradas
  * @var bool  $busqueda_realizada
  */
 
-// Agrupa los ingredientes por categoría para facilitar la lectura en la despensa
+// Agrupa ingredientes por categoría para organizar la despensa
 $ingredientes_agrupados = [];
 if (!empty($ingredientes_disponibles)) {
     foreach ($ingredientes_disponibles as $ing) {
@@ -19,12 +18,14 @@ if (!empty($ingredientes_disponibles)) {
 $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredientes']))
     ? array_map('intval', $_POST['ingredientes'])
     : [];
+
+$filtroTextoPost = (string) ($_POST['filtro_ingrediente'] ?? '');
 ?>
 <?= view('template/cabecera') ?>
 
 <style>
     .pantry-container {
-        max-height: 500px;
+        max-height: 460px;
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: #f1682d #fcfcfc;
@@ -55,32 +56,15 @@ $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredie
         margin-top: 15px;
         margin-bottom: 10px;
     }
-    .btn-naranja-solido {
-        background-color: #f1682d !important;
-        border: 2px solid #f1682d !important;
-        color: #ffffff !important;
-        border-radius: 50rem !important;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 0.25rem 0.5rem;
-        text-decoration: none;
-    }
-    .btn-naranja-solido:hover {
-        background-color: #d65a25 !important;
-        border-color: #d65a25 !important;
-        color: #ffffff !important;
-    }
 </style>
 
 <div class="container mt-4 mb-5">
 
-    <!-- Encabezado y navegación -->
+    <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <div>
             <h2 style="color: #f1682d; font-weight: 700;"><i class="fas fa-book-medical"></i> Buscador de Recetas</h2>
-            <p class="text-muted mb-0">Selecciona los ingredientes que tienes en casa y verás recetas que puedes preparar.</p>
+            <p class="text-muted mb-0">Selecciona los ingredientes de tu despensa y las recetas se actualizarán automáticamente.</p>
         </div>
         <div class="d-flex align-items-center">
             <?php if (in_array(session()->get('rol'), ['admin', 'nutricionista'], true)): ?>
@@ -96,32 +80,36 @@ $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredie
     </div>
 
     <div class="row">
-        <!-- Columna izquierda: Despensa y filtro por letras -->
+        <!-- Columna izquierda: Despensa -->
         <div class="col-lg-4 mb-4">
             <div class="card shadow-sm border-0" style="border-radius: 15px; background-color: #fcfcfc;">
                 <div class="card-header bg-white border-0 pt-4 pb-2">
                     <h5 class="font-weight-bold text-dark mb-1">🛒 Mi Despensa</h5>
 
-                    <!-- Solo permite letras y espacios -->
                     <input
                         type="text"
                         id="buscadorIngredientes"
                         name="filtro_ingrediente"
                         form="formBuscador"
+                        value="<?= esc($filtroTextoPost) ?>"
                         class="form-control form-control-sm mt-3 rounded-pill"
-                        placeholder="🔍 Buscar ingrediente rápido (solo letras)..."
+                        placeholder="🔍 Buscar ingrediente rápido..."
                         autocomplete="off"
                     >
-                    <small id="avisoCaracteres" class="text-danger d-none mt-1 ml-2">
-                        Solo se permiten letras y espacios.
-                    </small>
+
+                    <!-- Limpiar filtros -->
+                    <div class="d-flex mt-3">
+                        <button type="button" id="btnLimpiarFiltros" class="btn btn-sm btn-outline-secondary rounded-pill px-3 btn-block">
+                            Limpiar filtros
+                        </button>
+                    </div>
                 </div>
 
                 <div class="card-body pt-2">
                     <form action="<?= base_url('recetas') ?>" method="POST" id="formBuscador">
                         <?= csrf_field() ?>
 
-                        <div class="pantry-container px-2 border rounded bg-white shadow-sm mb-4 pb-3" id="listaIngredientes">
+                        <div class="pantry-container px-2 border rounded bg-white shadow-sm mb-3 pb-3" id="listaIngredientes">
                             <?php if (empty($ingredientes_agrupados)): ?>
                                 <p class="text-muted small text-center mt-4">No hay ingredientes registrados.</p>
                             <?php else: ?>
@@ -133,13 +121,13 @@ $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredie
 
                                         <?php foreach ($ingredientes as $ingrediente): ?>
                                             <?php
-                                                $idIng = (int) $ingrediente['id'];
+                                                $idIng            = (int) $ingrediente['id'];
                                                 $estaSeleccionado = in_array($idIng, $seleccionadosPost, true) ? 'checked' : '';
                                             ?>
                                             <div class="custom-control custom-checkbox mb-2 ingrediente-item">
                                                 <input
                                                     type="checkbox"
-                                                    class="custom-control-input"
+                                                    class="custom-control-input filtro-ingrediente-chk"
                                                     name="ingredientes[]"
                                                     value="<?= $idIng ?>"
                                                     id="ing_<?= $idIng ?>"
@@ -157,12 +145,13 @@ $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredie
 
                         <button
                             type="submit"
+                            id="btnBuscarRecetas"
                             class="btn btn-block text-white font-weight-bold shadow-sm rounded-pill"
-                            style="background-color: #f1682d; padding: 12px; transition: 0.3s;"
+                            style="background-color: #f1682d; padding: 11px; transition: 0.3s;"
                             onmouseover="this.style.backgroundColor='#d05623'"
                             onmouseout="this.style.backgroundColor='#f1682d'"
                         >
-                            Buscar recetas
+                            Actualizar búsqueda
                         </button>
                     </form>
                 </div>
@@ -171,99 +160,67 @@ $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredie
 
         <!-- Columna derecha: Resultados -->
         <div class="col-lg-8">
-            <h5 class="font-weight-bold mb-3 text-muted border-bottom pb-2">Resultados de la Búsqueda</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h5 class="font-weight-bold mb-0 text-muted">Resultados de la Búsqueda</h5>
+                <span id="contadorRecetas" class="badge badge-pill px-3 py-2" style="background-color: #fff3ed; color: #f1682d;">
+                    <?= count($recetas_encontradas) ?> recetas
+                </span>
+            </div>
 
-            <?php if (!$busqueda_realizada): ?>
-                <div class="alert alert-light border shadow-sm text-center py-5" style="border-radius: 15px;">
-                    <h1 class="mb-3" style="font-size: 4rem;">🥗</h1>
-                    <h5 class="font-weight-bold text-dark">¿Qué hay para comer?</h5>
-                    <p class="text-muted mb-0">Selecciona los ingredientes de tu despensa a la izquierda y presiona "Buscar recetas" para descubrir recetas seguras para ti.</p>
-                </div>
+            <div id="sinResultadosBox" class="alert alert-warning border-0 shadow-sm text-center py-5 <?= !empty($recetas_encontradas) ? 'd-none' : '' ?>" style="border-radius: 15px; background-color: #fff8f3;">
+                <h1 class="mb-3" style="font-size: 4rem;">🚫</h1>
+                <h5 class="font-weight-bold text-danger">No encontramos recetas con esa combinación</h5>
+                <p class="text-muted mb-0 px-md-5">Prueba desmarcando algún ingrediente o usando <strong>Limpiar filtros</strong> para ver todas las recetas seguras disponibles.</p>
+            </div>
 
-            <?php elseif (empty($recetas_encontradas)): ?>
-                <div class="alert alert-warning border-0 shadow-sm text-center py-5" style="border-radius: 15px; background-color: #fff8f3;">
-                    <h1 class="mb-3" style="font-size: 4rem;">🚫</h1>
-                    <h5 class="font-weight-bold text-danger">No encontramos recetas viables</h5>
-                    <p class="text-muted mb-0 px-md-5">Con los ingredientes que marcaste no logramos armar un plato completo, o las opciones disponibles contienen elementos que podrían <strong>afectar tu cuadro clínico</strong>.</p>
-                    <p class="small text-muted mt-3">¡Intenta agregar ingredientes básicos como sal, aceite o condimentos a tu selección!</p>
-                </div>
+            <div class="row" id="contenedorRecetas">
+                <?php foreach ($recetas_encontradas as $receta): ?>
+                    <?php
+                        $ingIdsString = implode(',', array_map('intval', $receta['ingredient_ids'] ?? []));
+                    ?>
+                    <div
+                        class="col-md-6 mb-4 receta-card-item"
+                        data-ingredientes="<?= esc($ingIdsString) ?>"
+                    >
+                        <div class="card recipe-card shadow-sm border-0 h-100">
+                            <?php if (!empty($receta['image_url'])): ?>
+                                <img src="<?= base_url('assets/recipeimg/' . esc($receta['image_url'])) ?>" class="card-img-top recipe-img-top" alt="<?= esc($receta['title']) ?>" onerror="this.src=''">
+                            <?php else: ?>
+                                <img src="" class="card-img-top recipe-img-top" alt="Receta deliciosa">
+                            <?php endif; ?>
 
-            <?php else: ?>
-                <div class="row">
-                    <?php foreach ($recetas_encontradas as $receta): ?>
-                        <div class="col-md-6 mb-4">
-                            <div class="card recipe-card shadow-sm border-0 h-100">
-                                <?php if (!empty($receta['image_url'])): ?>
-                                    <img src="<?= base_url('assets/recipeimg/' . esc($receta['image_url'])) ?>" class="card-img-top recipe-img-top" alt="<?= esc($receta['title']) ?>" onerror="this.src=''">
-                                <?php else: ?>
-                                    <img src="" class="card-img-top recipe-img-top" alt="Receta deliciosa">
-                                <?php endif; ?>
-
-                                <div class="card-body d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="font-weight-bold text-dark mb-0"><?= esc($receta['title']) ?></h5>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <span class="badge badge-success px-2 py-1 mr-1 mb-1"><i class="fas fa-check-circle"></i> Segura</span>
-                                        <?php if (!empty($receta['tags'])): ?>
-                                            <?php foreach ($receta['tags'] as $tag): ?>
-                                                <span class="badge badge-pill text-white mr-1 mb-1" style="background-color: <?= esc($tag['color_hex'] ?? '#6c757d') ?>;">
-                                                    <?= esc($tag['name']) ?>
-                                                </span>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </div>
-
-                                    <div class="d-flex justify-content-center text-muted small mb-3 p-2 rounded" style="background-color: #f8f9fa;">
-                                        <div class="text-center w-50 border-right" title="Tiempo de preparación">
-                                            <span class="d-block text-dark font-weight-bold">⏱️ <?= esc($receta['prep_time_minutes'] ?? '--') ?></span> min
-                                        </div>
-                                        <div class="text-center w-50" title="Dificultad">
-                                            <span class="d-block text-dark font-weight-bold text-capitalize">🍳 <?= esc($receta['difficulty'] ?? 'Media') ?></span> Dificultad
-                                        </div>
-                                    </div>
-
-                                    <p class="card-text text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                        <?= esc($receta['preparation']) ?>
-                                    </p>
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-naranja-solido btn-sm mt-3"
-                                        data-toggle="modal"
-                                        data-target="#modalDetalleReceta"
-                                        data-title="<?= esc($receta['title']) ?>"
-                                        data-prep="<?= esc($receta['preparation']) ?>"
-                                    >
-                                        Ver preparación detallada
-                                    </button>
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="font-weight-bold text-dark mb-0"><?= esc($receta['title']) ?></h5>
                                 </div>
+
+                                <div class="mb-3">
+                                    <span class="badge badge-success px-2 py-1 mr-1 mb-1"><i class="fas fa-check-circle"></i> Segura</span>
+                                    <?php if (!empty($receta['tags'])): ?>
+                                        <?php foreach ($receta['tags'] as $tag): ?>
+                                            <span class="badge badge-pill text-white mr-1 mb-1" style="background-color: <?= esc($tag['color_hex'] ?? '#6c757d') ?>;">
+                                                <?= esc($tag['name']) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="d-flex justify-content-center text-muted small mb-3 p-2 rounded" style="background-color: #f8f9fa;">
+                                    <div class="text-center w-50 border-right" title="Tiempo de preparación">
+                                        <span class="d-block text-dark font-weight-bold">⏱️ <?= esc($receta['prep_time_minutes'] ?? '--') ?></span> min
+                                    </div>
+                                    <div class="text-center w-50" title="Dificultad">
+                                        <span class="d-block text-dark font-weight-bold text-capitalize">🍳 <?= esc($receta['difficulty'] ?? 'Media') ?></span> Dificultad
+                                    </div>
+                                </div>
+
+                                <p class="card-text text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    <?= esc($receta['preparation']) ?>
+                                </p>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <!-- Modal de preparación detallada -->
-    <div class="modal fade" id="modalDetalleReceta" tabindex="-1" role="dialog" aria-labelledby="tituloModal" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tituloModal" style="color: #f1682d; font-weight: bold;"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h6 class="font-weight-bold">Instrucciones de preparación:</h6>
-                    <div id="cuerpoPreparacion" style="white-space: pre-line;"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -272,50 +229,88 @@ $seleccionadosPost = (isset($_POST['ingredientes']) && is_array($_POST['ingredie
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const buscador = document.getElementById('buscadorIngredientes');
-    const aviso = document.getElementById('avisoCaracteres');
-    // Permite letras (con tildes y ñ) y espacios; elimina números y símbolos como # o $
-    const regexNoPermitidos = /[^a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]/g;
+    const buscador        = document.getElementById('buscadorIngredientes');
+    const btnLimpiar      = document.getElementById('btnLimpiarFiltros');
+    const checkboxes      = Array.from(document.querySelectorAll('.filtro-ingrediente-chk'));
+    const tarjetasRecetas = Array.from(document.querySelectorAll('.receta-card-item'));
+    const sinResultados   = document.getElementById('sinResultadosBox');
+    const contadorRecetas = document.getElementById('contadorRecetas');
 
-    if (buscador) {
-        buscador.addEventListener('input', function () {
-            const valorOriginal = this.value;
-            const valorLimpio = valorOriginal.replace(regexNoPermitidos, '');
+    function obtenerIdsReceta(card) {
+        const raw = (card.dataset.ingredientes || '').trim();
+        if (!raw) return [];
+        return raw.split(',')
+            .map(v => parseInt(v, 10))
+            .filter(n => Number.isInteger(n) && n > 0);
+    }
 
-            if (valorOriginal !== valorLimpio) {
-                this.value = valorLimpio;
-                if (aviso) aviso.classList.remove('d-none');
-            } else if (aviso) {
-                aviso.classList.add('d-none');
+    function filtrarRecetasEnVivo() {
+        const seleccionados = checkboxes
+            .filter(chk => chk.checked)
+            .map(chk => parseInt(chk.value, 10))
+            .filter(n => Number.isInteger(n) && n > 0);
+
+        let visiblesCount = 0;
+
+        tarjetasRecetas.forEach(card => {
+            const ingReceta = obtenerIdsReceta(card);
+
+            const mostrar = (seleccionados.length === 0)
+                ? true
+                : seleccionados.every(id => ingReceta.includes(id));
+
+            card.style.display = mostrar ? '' : 'none';
+            if (mostrar) visiblesCount++;
+        });
+
+        if (contadorRecetas) {
+            contadorRecetas.textContent = `${visiblesCount} ${visiblesCount === 1 ? 'receta' : 'recetas'}`;
+        }
+        if (sinResultados) {
+            sinResultados.classList.toggle('d-none', visiblesCount > 0);
+        }
+    }
+
+    function filtrarListaIngredientes() {
+        if (!buscador) return;
+        const filtro = buscador.value.toLowerCase().trim();
+
+        document.querySelectorAll('.ingrediente-item').forEach(item => {
+            const nombre = item.querySelector('.nombre-ingrediente').textContent.toLowerCase();
+            item.style.display = nombre.includes(filtro) ? '' : 'none';
+        });
+
+        document.querySelectorAll('.categoria-grupo').forEach(grupo => {
+            const hayVisibles = Array.from(grupo.querySelectorAll('.ingrediente-item'))
+                .some(el => el.style.display !== 'none');
+            const encabezado = grupo.querySelector('.category-header');
+            if (encabezado) {
+                encabezado.style.display = hayVisibles ? '' : 'none';
             }
-
-            const filtro = valorLimpio.toLowerCase().trim();
-            const items = document.querySelectorAll('.ingrediente-item');
-
-            items.forEach(function (item) {
-                const nombre = item.querySelector('.nombre-ingrediente').textContent.toLowerCase();
-                item.style.display = nombre.includes(filtro) ? '' : 'none';
-            });
-
-            // Oculta encabezados de categoría si no quedan ingredientes visibles
-            document.querySelectorAll('.categoria-grupo').forEach(function (grupo) {
-                const visibles = Array.from(grupo.querySelectorAll('.ingrediente-item'))
-                    .some(function (el) { return el.style.display !== 'none'; });
-                const encabezado = grupo.querySelector('.category-header');
-                if (encabezado) {
-                    encabezado.style.display = visibles ? '' : 'none';
-                }
-            });
         });
     }
-});
 
-$('#modalDetalleReceta').on('show.bs.modal', function (event) {
-    const button = $(event.relatedTarget);
-    const modal = $(this);
-    modal.find('.modal-title').text(button.data('title'));
-    modal.find('#cuerpoPreparacion').text(button.data('prep'));
+    checkboxes.forEach(chk => chk.addEventListener('change', filtrarRecetasEnVivo));
+
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function () {
+            checkboxes.forEach(chk => { chk.checked = false; });
+            if (buscador) {
+                buscador.value = '';
+                filtrarListaIngredientes();
+            }
+            filtrarRecetasEnVivo();
+        });
+    }
+
+    if (buscador) {
+        buscador.addEventListener('input', filtrarListaIngredientes);
+    }
+
+    filtrarListaIngredientes();
+    filtrarRecetasEnVivo();
 });
 </script>
 
 <?= view('template/piepagina') ?>
+```[cite: 35, 37]
