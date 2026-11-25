@@ -100,3 +100,7 @@ $routes->post('/premium/reportar', 'Payments::reportar', ['filter' => 'auth']);
 $routes->get('/dashboard/pagos', 'Payments::lista', ['filter' => 'auth']);
 $routes->get('/dashboard/pagos/aprobar/(:num)', 'Payments::aprobar/$1', ['filter' => 'auth']);
 $routes->get('/dashboard/pagos/rechazar/(:num)', 'Payments::rechazar/$1', ['filter' => 'auth']);
+
+// Módulo de Notificaciones
+$routes->get('/notificaciones/leer/(:num)', 'Notifications::leer/$1', ['filter' => 'auth']);
+$routes->get('/notificaciones/leer-todas', 'Notifications::marcarTodas', ['filter' => 'auth']);

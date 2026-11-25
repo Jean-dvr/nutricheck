@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PostsModel;
 use App\Models\UserModel;
+use App\Models\NotificationsModel;
 
 class Newspaper extends BaseController
 {
@@ -34,6 +35,7 @@ class Newspaper extends BaseController
             $post['autor_nombre'] = $autor ? $autor['name'] : 'NutriCheck Staff';
             $post['autor_avatar'] = $autor ? $autor['avatar'] : 'default-avatar.png';
         }
+        unset($post);
 
         $pendientesCount = 0;
         if ($rolUsuario === 'admin') {
@@ -75,6 +77,12 @@ class Newspaper extends BaseController
         }
 
         $rolUsuario = session()->get('rol');
+        $categoria  = (string) $this->request->getPost('category');
+
+        // Solo el administrador puede publicar en la categoría de promociones/ofertas (novedades)
+        if ($categoria === 'novedades' && $rolUsuario !== 'admin') {
+            $categoria = 'general';
+        }
         
         // LÓGICA DE APROBACIÓN: Si es admin, se aprueba solo. Si es nutricionista, va a revisión.
         $estadoPost = ($rolUsuario === 'admin') ? 'approved' : 'pending';
@@ -82,14 +90,70 @@ class Newspaper extends BaseController
         $postsModel = new PostsModel();
         $datosPost = [
             'user_id'    => session()->get('loggedUser'),
-            'title'      => trim($this->request->getPost('title')),
-            'category'   => $this->request->getPost('category'),
-            'contents'   => trim($this->request->getPost('contents')),
+            'title'      => trim((string) $this->request->getPost('title')),
+            'category'   => $categoria,
+            'contents'   => trim((string) $this->request->getPost('contents')),
             'status'     => $estadoPost,
             'image_url'  => $nombreFoto
         ];
 
         if ($postsModel->insert($datosPost)) {
+            $notifModel  = new NotificationsModel();
+            $nombreAutor = (string) (session()->get('name') ?? 'Especialista');
+            $resumen     = function_exists('mb_strimwidth')
+                ? mb_strimwidth($datosPost['contents'], 0, 110, '...')
+                : substr($datosPost['contents'], 0, 110);
+
+            if ($estadoPost === 'pending') {
+                // Notificar al Admin que hay una publicación esperando moderación
+                $notifModel->notificarPorRoles(
+                    ['admin'],
+                    'Nueva publicación pendiente',
+                    "{$nombreAutor} envió el artículo \"{$datosPost['title']}\" para moderación.",
+                    'newspaper/pendientes',
+                    'noticia'
+                );
+            } else {
+                // Publicación directa del Admin
+                if ($categoria === 'novedades') {
+                    // Oferta/Promoción NutriCheckPro -> Free va al checkout y Premium al periódico
+                    $notifModel->notificarPorRoles(
+                        ['free'],
+                        "Oferta NutriCheckPro: {$datosPost['title']}",
+                        $resumen,
+                        'premium/checkout',
+                        'oferta'
+                    );
+                    $notifModel->notificarPorRoles(
+                        ['premium', 'pro'],
+                        "Promoción NutriCheckPro: {$datosPost['title']}",
+                        $resumen,
+                        'newspaper?cat=novedades',
+                        'oferta'
+                    );
+                    $notifModel->notificarPorRoles(
+                        ['nutricionista'],
+                        'Novedad del sistema',
+                        "El administrador publicó: \"{$datosPost['title']}\".",
+                        'newspaper?cat=novedades',
+                        'sistema'
+                    );
+                } else {
+                    $tituloNotif = ($categoria === 'eventos')
+                        ? 'Nuevo evento en Noticias'
+                        : 'Nueva publicación en Noticias';
+
+                    $notifModel->notificarPorRoles(
+                        ['premium', 'pro', 'nutricionista'],
+                        $tituloNotif,
+                        "Ya puedes leer: \"{$datosPost['title']}\".",
+                        'newspaper?cat=' . $categoria,
+                        'noticia',
+                        (int) session()->get('loggedUser')
+                    );
+                }
+            }
+
             $mensaje = ($estadoPost === 'pending') 
                 ? 'Publicación enviada. Un administrador la revisará pronto.' 
                 : 'Publicación creada y visible exitosamente.';
@@ -117,34 +181,93 @@ class Newspaper extends BaseController
             $post['autor_nombre'] = $autor ? $autor['name'] : 'Desconocido';
             $post['autor_avatar'] = $autor ? $autor['avatar'] : 'default-avatar.png';
         }
+        unset($post);
 
         return view('newspaper/pendientes', ['posts' => $postsPendientes]);
     }
 
-    public function aprobar($id)
+    public function aprobar(int $id)
     {
         if (session()->get('rol') !== 'admin') return redirect()->to(base_url('newspaper'));
+
         $postsModel = new PostsModel();
+        $post = $postsModel->find($id);
+
+        if (!$post) {
+            return redirect()->to(base_url('newspaper/pendientes'))->with('fail', 'La publicación no existe.');
+        }
+
         $postsModel->update($id, ['status' => 'approved']);
+
+        $notifModel = new NotificationsModel();
+        $adminId    = (int) session()->get('loggedUser');
+        $autorId    = (int) ($post['user_id'] ?? 0);
+        $linkPost   = 'newspaper?cat=' . ($post['category'] ?? 'general');
+
+        // 1. Notificar al nutricionista autor que su artículo fue aprobado
+        if ($autorId > 0 && $autorId !== $adminId) {
+            $notifModel->notificarUsuario(
+                $autorId,
+                '¡Publicación aprobada!',
+                "Tu artículo \"{$post['title']}\" fue aprobado y ya está visible en Noticias.",
+                $linkPost,
+                'noticia'
+            );
+        }
+
+        // 2. Notificar a los usuarios Premium sobre la nueva publicación o evento
+        $tituloNotif = (($post['category'] ?? '') === 'eventos')
+            ? 'Nuevo evento en Noticias'
+            : 'Nueva publicación en Noticias';
+
+        $notifModel->notificarPorRoles(
+            ['premium', 'pro'],
+            $tituloNotif,
+            "Ya está disponible: \"{$post['title']}\".",
+            $linkPost,
+            'noticia'
+        );
+
         return redirect()->to(base_url('newspaper/pendientes'))->with('success', '¡Publicación aprobada con éxito!');
     }
 
-    public function rechazar($id)
+    public function rechazar(int $id)
     {
         if (session()->get('rol') !== 'admin') return redirect()->to(base_url('newspaper'));
+
         $postsModel = new PostsModel();
-        $postsModel->delete($id); // Borramos el post rechazado
+        $post = $postsModel->find($id);
+
+        if ($post) {
+            $autorId = (int) ($post['user_id'] ?? 0);
+            $titulo  = (string) ($post['title'] ?? 'Publicación');
+
+            $postsModel->delete($id); // Borramos el post rechazado
+
+            // Notificar al autor que su publicación fue rechazada
+            if ($autorId > 0 && $autorId !== (int) session()->get('loggedUser')) {
+                $notifModel = new NotificationsModel();
+                $notifModel->notificarUsuario(
+                    $autorId,
+                    'Publicación rechazada',
+                    "Tu artículo \"{$titulo}\" no fue aprobado en moderación.",
+                    'newspaper/crear',
+                    'noticia'
+                );
+            }
+        }
+
         return redirect()->to(base_url('newspaper/pendientes'))->with('fail', 'Publicación rechazada y eliminada.');
     }
     
-    public function eliminar($id)
+    public function eliminar(int $id)
     {
         // Medida de seguridad: Solo el admin puede eliminar publicaciones directas
         if (session()->get('rol') !== 'admin') {
             return redirect()->to(base_url('newspaper'));
         }
         
-        $postsModel = new \App\Models\PostsModel();
+        $postsModel = new PostsModel();
         $post = $postsModel->find($id);
         
         if ($post) {

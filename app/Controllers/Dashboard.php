@@ -2,11 +2,16 @@
 
 namespace App\Controllers;
 
+use App\Models\UserModel;
+use App\Models\BannersModel;
+use App\Models\NotificationsModel;
+
 class Dashboard extends BaseController
 {
     public function index()
     {
-        $userModel = new \App\Models\UserModel();
+        $userModel = new UserModel();
+        $notifModel = new NotificationsModel();
         $usuario = $userModel->find(session()->get('loggedUser'));
 
         // EL VIGILANTE DE SUSCRIPCIONES
@@ -18,6 +23,31 @@ class Dashboard extends BaseController
                 ]);
                 session()->set('rol', 'free');
                 session()->setFlashdata('fail', 'Tu suscripción Premium ha caducado. ¡Renueva para seguir disfrutando sin anuncios!');
+
+                // Notificación persistente en la campanita
+                $notifModel->notificarUsuario(
+                    (int) $usuario['id'],
+                    'Tu suscripción Premium caducó',
+                    'Tu plan NutriCheckPro ha vencido. Renueva ahora para recuperar tus beneficios sin anuncios.',
+                    'premium/checkout',
+                    'pago'
+                );
+            } else {
+                // Aviso preventivo cuando falten 5 días o menos para vencer (máximo 1 aviso cada 24h)
+                $diasRestantes = (int) ceil((strtotime($usuario['premium_expires_at']) - time()) / 86400);
+                if ($diasRestantes > 0 && $diasRestantes <= 5) {
+                    $tituloAviso = 'Tu plan NutriCheckPro vence pronto';
+                    if (!$notifModel->existeReciente((int) $usuario['id'], 'pago', $tituloAviso, 24)) {
+                        $etiquetaDias = ($diasRestantes === 1) ? '1 día' : "{$diasRestantes} días";
+                        $notifModel->notificarUsuario(
+                            (int) $usuario['id'],
+                            $tituloAviso,
+                            "Te quedan {$etiquetaDias} de suscripción. Prolonga tu plan para no perder acceso a Noticias.",
+                            'premium/checkout',
+                            'pago'
+                        );
+                    }
+                }
             }
         }
 
@@ -52,8 +82,19 @@ class Dashboard extends BaseController
 
             $archivo->move($rutaDestino, $nombreFoto);
             
-            $bannersModel = new \App\Models\BannersModel();
+            $bannersModel = new BannersModel();
             $bannersModel->insert(['image_url' => $nombreFoto]);
+
+            // Notificar cambio en el sistema al personal
+            $notifModel = new NotificationsModel();
+            $notifModel->notificarPorRoles(
+                ['nutricionista', 'admin'],
+                'Cambio en el sistema',
+                'Se ha añadido un nuevo banner publicitario a la rotación de NutriCheck.',
+                'dashboard',
+                'sistema',
+                (int) session()->get('loggedUser')
+            );
             
             return redirect()->back()->with('success', '¡Nuevo banner añadido a la rotación exitosamente!');
         }
@@ -61,13 +102,13 @@ class Dashboard extends BaseController
         return redirect()->back()->with('fail', 'Error al subir la imagen.');
     }
     
-    public function eliminarAnuncio($id)
+    public function eliminarAnuncio(int $id)
     {
         if (session()->get('rol') !== 'admin') {
             return redirect()->back()->with('fail', 'No tienes permisos para realizar esta acción.');
         }
 
-        $bannersModel = new \App\Models\BannersModel();
+        $bannersModel = new BannersModel();
         $banner = $bannersModel->find($id);
 
         if ($banner) {
@@ -78,6 +119,17 @@ class Dashboard extends BaseController
             }
             
             $bannersModel->delete($id);
+
+            // Notificar cambio en el sistema al personal
+            $notifModel = new NotificationsModel();
+            $notifModel->notificarPorRoles(
+                ['nutricionista', 'admin'],
+                'Cambio en el sistema',
+                'Se ha eliminado un banner publicitario de la rotación.',
+                'dashboard',
+                'sistema',
+                (int) session()->get('loggedUser')
+            );
             
             return redirect()->back()->with('success', '¡Banner publicitario eliminado exitosamente!');
         }

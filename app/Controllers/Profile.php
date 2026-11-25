@@ -6,6 +6,7 @@ use App\Models\UserModel;
 use App\Models\HealthProfilesModel;
 use App\Models\HealthConditionsModel;
 use App\Models\UserConditionsModel;
+use App\Models\NotificationsModel;
 use App\Libraries\Hash;
 
 class Profile extends BaseController
@@ -444,16 +445,29 @@ class Profile extends BaseController
             return redirect()->back()->with('fail', reset($errores));
         }
 
+        $nombreCondicion = trim((string) $this->request->getPost('name'));
+
         $conditionsModel = new HealthConditionsModel();
         $conditionsModel->insert([
-            'name' => trim((string) $this->request->getPost('name')),
+            'name' => $nombreCondicion,
             'type' => $this->request->getPost('type'),
         ]);
+
+        // Notificar cambio en el catálogo médico al personal
+        $notifModel = new NotificationsModel();
+        $notifModel->notificarPorRoles(
+            ['nutricionista', 'admin'],
+            'Cambio en el catálogo médico',
+            "Se añadió la condición \"{$nombreCondicion}\" al cuadro clínico del sistema.",
+            'perfil',
+            'sistema',
+            (int) session()->get('loggedUser')
+        );
 
         return redirect()->back()->with('success', '✅ Nueva condición médica añadida al catálogo exitosamente.');
     }
 
-    public function eliminarCondicion($id)
+    public function eliminarCondicion(int $id)
     {
         if (session()->get('rol') !== 'admin') {
             return redirect()->back()->with('fail', 'No tienes permisos para alterar el catálogo médico.');
@@ -461,10 +475,22 @@ class Profile extends BaseController
 
         $conditionsModel = new HealthConditionsModel();
         $userConditionsModel = new UserConditionsModel();
+        $condicion = $conditionsModel->find($id);
 
-        if ($conditionsModel->find($id)) {
+        if ($condicion) {
             $userConditionsModel->where('condition_id', $id)->delete();
             $conditionsModel->delete($id);
+
+            // Notificar cambio en el catálogo médico al personal
+            $notifModel = new NotificationsModel();
+            $notifModel->notificarPorRoles(
+                ['nutricionista', 'admin'],
+                'Cambio en el catálogo médico',
+                "Se eliminó la condición \"{$condicion['name']}\" del cuadro clínico del sistema.",
+                'perfil',
+                'sistema',
+                (int) session()->get('loggedUser')
+            );
 
             return redirect()->back()->with('success', '🗑️ Condición médica eliminada permanentemente del sistema.');
         }
