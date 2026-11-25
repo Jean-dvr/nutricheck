@@ -9,6 +9,7 @@ body {
     background-color: #F4F5F7;
     color: #333333;
     padding-bottom: 120px;
+    overflow-x: hidden;
 }
 
 /* Navbar */
@@ -45,6 +46,7 @@ body {
     font-size: 0.85rem;
     font-weight: 700;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .btn-admin {
@@ -93,7 +95,7 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 10px 0;
-    z-index: 100;
+    z-index: 1200;
 }
 
 .dropdown-content.show {
@@ -162,6 +164,7 @@ body {
     padding: 30px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.02);
     height: fit-content;
+    min-width: 0;
 }
 
 .form-card h2 {
@@ -181,6 +184,7 @@ body {
     flex-direction: column;
     margin-bottom: 16px;
     flex: 1;
+    min-width: 0;
 }
 
 .form-group label {
@@ -214,6 +218,7 @@ body {
 
 .image-preview-container img {
     max-height: 120px;
+    max-width: 100%;
     border-radius: 10px;
     object-fit: cover;
 }
@@ -242,6 +247,7 @@ body {
 .history-section {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .calendar-widget {
@@ -278,6 +284,7 @@ body {
 .calendar-days {
     display: flex;
     justify-content: space-between;
+    gap: 2px;
 }
 
 .day-col {
@@ -289,6 +296,7 @@ body {
     padding: 6px;
     border-radius: 8px;
     transition: background 0.2s;
+    flex: 1;
 }
 
 .day-col:hover { background-color: #F8F9FA; }
@@ -355,6 +363,7 @@ body {
 
 .info-container {
     flex: 1;
+    min-width: 0;
 }
 
 .card-top-row {
@@ -362,6 +371,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .meal-badge {
@@ -388,6 +399,7 @@ body {
     font-size: 0.9rem;
     color: #333333;
     font-weight: 500;
+    word-wrap: break-word;
 }
 
 .empty-history-card {
@@ -533,6 +545,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    padding: 0 12px;
 }
 
 /* Modal de Gestión de Banners Horizontales */
@@ -594,7 +608,7 @@ body {
 
 .ad-modal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
 }
 
@@ -643,4 +657,109 @@ body {
     color: #777777;
     font-size: 0.9rem;
     font-weight: 600;
+}
+
+/* ==========================================
+   RESPONSIVE: ZOOM, TABLET Y TELÉFONOS
+   ========================================== */
+@media (max-width: 1024px) {
+    .meallogs-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .meallogs-container {
+        margin: 22px auto;
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dash-navbar {
+        padding: 10px 16px;
+        height: 64px;
+    }
+
+    .dash-logo {
+        height: 30px;
+    }
+
+    .user-menu-wrapper {
+        gap: 10px;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .btn-top {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    .section-header h1 {
+        font-size: 1.35rem;
+    }
+
+    .header-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .calendar-widget {
+        padding: 16px 12px;
+    }
+
+    .ad-banner-horizontal {
+        padding: 6px 12px;
+    }
+
+    .ad-image {
+        height: 54px;
+    }
+
+    .ad-placeholder-box {
+        height: 54px;
+        font-size: 0.75rem;
+    }
+
+    .ad-admin-file {
+        max-width: 155px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-bottom: 145px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .history-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .photo-container {
+        width: 100%;
+        height: 160px;
+    }
+
+    .day-col {
+        padding: 4px 2px;
+        font-size: 0.7rem;
+    }
+
+    .ad-modal-grid {
+        grid-template-columns: 1fr;
+    }
 }
