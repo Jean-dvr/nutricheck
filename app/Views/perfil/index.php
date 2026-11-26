@@ -46,7 +46,7 @@ $rutaAvatar = ($avatarActual !== '' && file_exists(FCPATH . 'assets/avatars/' . 
                                 <hr>
                                 <div class="form-group text-left">
                                     <label class="font-weight-bold text-muted small">Correo Electrónico</label>
-                                    <input type="email" class="form-control bg-light" value="<?= esc($usuario['email']) ?>" readonly>
+                                    <input type="email" class="form-control bg-light" value="<?= esc($usuario['email'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="form-group text-left">
                                     <label class="font-weight-bold text-muted small">Actualizar Contraseña</label>
