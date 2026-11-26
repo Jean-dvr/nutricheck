@@ -46,6 +46,19 @@ La plataforma permite evaluar indicadores antropométricos, consultar recetas ad
 
 ---
 
+## Cuentas de Prueba
+
+Tras ejecutar `UsersSeeder`, puedes probar cada rol del sistema con las siguientes credenciales:
+
+| Rol | Correo electrónico | Contraseña |
+| :--- | :--- | :--- |
+| Administrador | `dbasdbah@gmail.com` | `123456` |
+| Nutricionista | `angelesfit@nutricheck.com` | `123456` |
+| Premium | `paciente@gmail.com` | `123456` |
+| Gratuito (Free) | `usuario4@gmail.com` | `123456` |
+
+---
+
 ## Tecnologías Utilizadas
 
 * **Backend:** PHP 8.2 y CodeIgniter 4
