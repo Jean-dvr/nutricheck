@@ -1,0 +1,765 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+body {
+    background-color: #F4F5F7;
+    color: #333333;
+    padding-bottom: 120px;
+    overflow-x: hidden;
+}
+
+/* Navbar */
+.dash-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    height: 70px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.dash-logo {
+    height: 38px;
+    width: auto;
+}
+
+.user-menu-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-top {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-admin {
+    background-color: #dc3545;
+    color: #FFFFFF;
+}
+
+.user-dropdown {
+    position: relative;
+}
+
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #4A4A4A;
+}
+
+.arrow-down {
+    font-size: 0.7rem;
+    color: #777777;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background-color: #FFFFFF;
+    min-width: 180px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 10px 0;
+    z-index: 1200;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #4A4A4A;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.dropdown-content a:hover {
+    background-color: #F8F9FA;
+}
+
+.dropdown-content hr {
+    border: 0;
+    border-top: 1px solid #EAEAEA;
+    margin: 5px 0;
+}
+
+.text-orange { color: #F8B133 !important; font-weight: 700; }
+.text-danger { color: #DC3545 !important; }
+
+/* Main Container */
+.meallogs-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.header-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.section-header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #7A7A7A;
+}
+
+/* Grid Layout */
+.meallogs-grid {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 30px;
+}
+
+/* Card Formulario */
+.form-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    height: fit-content;
+    min-width: 0;
+}
+
+.form-card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7A7A7A;
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: #333333;
+    background: #FFFFFF;
+    outline: none;
+}
+
+.form-group textarea {
+    resize: none;
+}
+
+.image-preview-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.image-preview-container img {
+    max-height: 120px;
+    max-width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.d-none { display: none !important; }
+
+.btn-submit {
+    width: 100%;
+    background-color: #00C853;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    padding: 12px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #00B248;
+}
+
+/* History Section */
+.history-section {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.calendar-widget {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.month-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #333333;
+}
+
+.calendar-nav button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #666666;
+    padding: 0 6px;
+}
+
+.calendar-days {
+    display: flex;
+    justify-content: space-between;
+    gap: 2px;
+}
+
+.day-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    flex: 1;
+}
+
+.day-col:hover { background-color: #F8F9FA; }
+.day-col.current-day .day-num { color: #F8B133; }
+.day-name { color: #666666; margin-bottom: 4px; }
+.day-num { font-weight: 700; color: #333333; }
+
+.active-dot {
+    width: 5px;
+    height: 5px;
+    background-color: #F8B133;
+    border-radius: 50%;
+    margin-top: 4px;
+}
+
+.history-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #7A7A7A;
+    margin-bottom: 15px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.history-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 16px;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    align-items: center;
+}
+
+.photo-container {
+    width: 140px;
+    height: 90px;
+    flex-shrink: 0;
+}
+
+.meal-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.no-photo {
+    width: 100%;
+    height: 100%;
+    background-color: #F8F9FA;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #A0A0A0;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.info-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.meal-badge {
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    text-transform: uppercase;
+}
+
+.badge-desayuno { background-color: #FFA726; }
+.badge-almuerzo { background-color: #FFA726; }
+.badge-cena { background-color: #FFA726; }
+.badge-snack { background-color: #FFA726; }
+
+.meal-datetime {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666666;
+}
+
+.meal-description {
+    font-size: 0.9rem;
+    color: #333333;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+
+.empty-history-card {
+    background: #FFFFFF;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    color: #7A7A7A;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+/* Publicidad Horizontal */
+.ad-banner-horizontal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #FFFFFF;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+    z-index: 999;
+    padding: 8px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ad-header {
+    width: 100%;
+    max-width: 1160px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ad-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #888888;
+    text-transform: uppercase;
+}
+
+.ad-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ad-timer {
+    background-color: #FFC107;
+    color: #000000;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.ad-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #777777;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.ad-link {
+    width: 100%;
+    max-width: 1160px;
+    display: block;
+}
+
+.ad-image {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    transition: opacity 0.35s ease;
+}
+
+/* Controles de Administrador para Anuncios Horizontales */
+.ad-admin-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ad-admin-file {
+    font-size: 0.72rem;
+    max-width: 210px;
+    color: #4a4a4a;
+}
+
+.ad-admin-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #ffffff;
+    transition: opacity 0.2s ease;
+}
+
+.ad-admin-btn:hover {
+    opacity: 0.9;
+}
+
+.ad-btn-upload {
+    background-color: #28a745;
+}
+
+.ad-btn-manage {
+    background-color: #dc3545;
+}
+
+.ad-admin-count {
+    background-color: #212529;
+    color: #ffc107;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+}
+
+.ad-placeholder-box {
+    width: 100%;
+    max-width: 1160px;
+    height: 70px;
+    border-radius: 6px;
+    background-color: #e9ecef;
+    border: 1px dashed #adb5bd;
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 12px;
+}
+
+/* Modal de Gestión de Banners Horizontales */
+.ad-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1300;
+    padding: 16px;
+}
+
+.ad-modal-backdrop.active {
+    display: flex;
+}
+
+.ad-modal-card {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 780px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
+}
+
+.ad-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.ad-modal-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333333;
+}
+
+.ad-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #777777;
+    cursor: pointer;
+}
+
+.ad-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+.ad-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.ad-modal-item {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    border: 1px solid #eeeeee;
+}
+
+.ad-modal-item img {
+    width: 100%;
+    height: 95px;
+    object-fit: cover;
+    display: block;
+    background-color: #212529;
+}
+
+.ad-modal-item-footer {
+    padding: 10px;
+    text-align: center;
+}
+
+.ad-modal-delete {
+    display: block;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.ad-modal-delete:hover {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+.ad-modal-empty {
+    text-align: center;
+    padding: 36px 16px;
+    color: #777777;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ==========================================
+   RESPONSIVE: ZOOM, TABLET Y TELÉFONOS
+   ========================================== */
+@media (max-width: 1024px) {
+    .meallogs-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .meallogs-container {
+        margin: 22px auto;
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dash-navbar {
+        padding: 10px 16px;
+        height: 64px;
+    }
+
+    .dash-logo {
+        height: 30px;
+    }
+
+    .user-menu-wrapper {
+        gap: 10px;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .btn-top {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    .section-header h1 {
+        font-size: 1.35rem;
+    }
+
+    .header-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .calendar-widget {
+        padding: 16px 12px;
+    }
+
+    .ad-banner-horizontal {
+        padding: 6px 12px;
+    }
+
+    .ad-image {
+        height: 54px;
+    }
+
+    .ad-placeholder-box {
+        height: 54px;
+        font-size: 0.75rem;
+    }
+
+    .ad-admin-file {
+        max-width: 155px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-bottom: 145px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .history-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .photo-container {
+        width: 100%;
+        height: 160px;
+    }
+
+    .day-col {
+        padding: 4px 2px;
+        font-size: 0.7rem;
+    }
+
+    .ad-modal-grid {
+        grid-template-columns: 1fr;
+    }
+}

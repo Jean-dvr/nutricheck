@@ -1,0 +1,588 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #FFFFFF;
+    overflow-x: hidden;
+}
+
+/* Navbar fijo en la parte superior */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    min-height: 60px;
+    background-color: #FFFFFF;
+    position: relative;
+    z-index: 100;
+}
+
+.nav-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #F8B133;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Botón hamburguesa solo visible en pantallas pequeñas */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 1.5px solid #F8B133;
+    border-radius: 10px;
+    padding: 7px;
+    cursor: pointer;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 100%;
+    height: 2.5px;
+    background-color: #F8B133;
+    border-radius: 2px;
+}
+
+/* Hero Section (Primera pantalla con degradado) */
+.hero-container {
+    min-height: calc(100vh - 60px);
+    width: 100%;
+    padding: 0;
+    display: flex;
+}
+
+.hero-content {
+    background: linear-gradient(90deg,#FFCA56 25%,#FFCA56 25%,#ffb245 50%,#ff9d42 75%,#fc7725 100%);
+    width: 100%;
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Lado Izquierdo: Texto y Botones */
+.left-section {
+    flex: 1;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.img-frase {
+    width: 100%;
+    max-width: 530px; 
+    height: auto;
+    margin-bottom: 30px;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+}
+
+.btn {
+    padding: 10px 24px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: #FFFFFF;
+    transition: all 0.3s ease;
+}
+
+.btn-login, .btn-register {
+    background-color: transparent;
+}
+
+.btn:hover {
+    background-color: #FFFFFF;
+    color: #FF8F1C;
+}
+
+/* Lado Derecho: Imagen ajustada a los bordes exactos del contenedor */
+.right-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+    position: relative;
+}
+
+.img-hero, .right-section img {
+    max-height: calc(100vh - 60px);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ==========================================
+   SECCIÓN SOBRE NOSOTROS
+   ========================================== */
+.about-section {
+    width: 100%;
+    min-height: 50vh;
+    padding: 60px 40px;
+    background-color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* Tarjetas individuales */
+.info-card {
+    flex: 1;
+    background: #FFFFFF;
+    border: 2px solid #EAEAEA;
+    border-radius: 18px;
+    padding: 40px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.info-card:hover {
+    border-color: #FF8F1C;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 143, 28, 0.15);
+}
+
+.card-icon {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+.info-card h2 {
+    color: #F8B133;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.info-card p {
+    color: #6c6c6c;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.info-card ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+}
+
+.info-card ul li {
+    color: #6c6c6c;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 18px;
+}
+
+/* Viñeta personalizada para la lista (Corregida) */
+.info-card ul li::before {
+    content: "▪";
+    color: #F8B133;
+    font-size: 1.1rem;
+    position: absolute;
+    left: 0;
+    top: -2px;
+}
+
+/* ==========================================
+   SECCIÓN HERRAMIENTAS (CARRUSEL)
+   ========================================== */
+.tools-section {
+    background: linear-gradient(90deg, #f3cf3e 0%, #FFCA56 25%, #ffb245 50%, #ff9d42 75%, #fc7725 100%);
+    padding: 60px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    gap: 15px;
+}
+
+.carousel-wrapper {
+    width: min(690px, calc(100vw - 150px));
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+.carousel-track {
+    display: flex;
+    align-items: center;
+    transition: transform 0.4s ease-in-out;
+    width: max-content;
+}
+
+/* Íconos de Herramientas */
+.tool-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 230px;
+    text-align: center;
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+}
+
+.tool-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: brightness(0) invert(1);
+}
+
+.tool-item h3 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* Estado inactivo (lados) */
+.tool-item.side {
+    opacity: 0.35;
+    transform: scale(0.8);
+}
+
+/* Estado activo (centro) */
+.tool-item.active {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Flechas con efecto hover */
+.carousel-arrow {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+}
+
+.carousel-arrow:hover {
+    transform: scale(1.25);
+}
+
+/* ==========================================
+   SECCIÓN ASESORES
+   ========================================== */
+.asesores-section {
+    padding: 80px 40px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section-title {
+    color: #F8B133;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+.asesores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.asesor-card {
+    background: #ffffff;
+    border: 2px solid #EAEAEA;
+    border-radius: 18px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.asesor-img {
+    width: 110px;
+    height: 110px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* Título de las tarjetas en color amarillo/dorado de origen */
+.asesor-text h3 {
+    color: #F8B133;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.asesor-text p {
+    color: #6c6c6c;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* Efecto hover: El borde y el título cambian a un naranja más encendido */
+.asesor-card:hover {
+    border-color: #FF8F1C;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 143, 28, 0.15);
+}
+
+.asesor-card:hover .asesor-text h3 {
+    color: #FF8F1C;
+}
+
+/* ==========================================
+   FOOTER / DESARROLLADORES (RESTAURADO)
+   ========================================== */
+.footer-section {
+    background-color: #fafafa;
+    border-top: 2px solid #eaeaea;
+    padding: 60px 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.footer-col h4 {
+    color: #F8B133;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.footer-col p {
+    color: #6c6c6c;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   RESPONSIVE: ZOOM, TABLET Y TELÉFONOS
+   ========================================== */
+@media (max-width: 992px) {
+    .hero-container,
+    .hero-content {
+        min-height: auto;
+    }
+
+    .hero-content {
+        flex-direction: column;
+        padding: 35px 20px 25px 20px;
+        gap: 25px;
+    }
+
+    .left-section {
+        padding: 10px 10px;
+    }
+
+    .img-frase {
+        max-width: 420px;
+        margin-bottom: 22px;
+    }
+
+    .img-hero, .right-section img {
+        max-height: 380px;
+        width: 100%;
+        max-width: 460px;
+    }
+
+    .cards-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .about-section,
+    .asesores-section,
+    .footer-section {
+        padding: 45px 24px;
+    }
+
+    .asesores-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .navbar {
+        padding: 10px 20px;
+        flex-wrap: wrap;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+        padding: 10px 0 6px 0;
+        border-top: 1px solid #f0f0f0;
+        margin-top: 10px;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-links a {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 680px) {
+    .carousel-container {
+        gap: 8px;
+    }
+
+    .carousel-wrapper {
+        width: 220px;
+    }
+
+    .tool-item {
+        width: 220px;
+    }
+
+    .tool-item img {
+        width: 68px;
+        height: 68px;
+    }
+
+    .tool-item h3 {
+        font-size: 0.98rem;
+    }
+
+    .carousel-arrow {
+        width: 36px;
+        height: 36px;
+    }
+
+    .asesor-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .asesor-img {
+        width: 96px;
+        height: 96px;
+    }
+}
+
+@media (max-width: 520px) {
+    .btn-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 260px;
+    }
+
+    .info-card {
+        padding: 28px 18px;
+    }
+
+    .section-title {
+        font-size: 1.45rem;
+        margin-bottom: 26px;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 24px;
+    }
+}

@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Database\Seeds;
+
+use CodeIgniter\Database\Seeder;
+
+class UsersSeeder extends Seeder
+{
+    public function run()
+    {
+        $data = [
+            [
+                'name'       => 'Ricardo DBA',
+                'email'      => 'dbasdbah@gmail.com',
+                'password'   => password_hash('123456', PASSWORD_BCRYPT),
+                'rol'        => 'admin',
+                'sex'        => 'male',          
+                'birth_date' => '1995-05-26', 
+                'avatar'     => 'admin_profile.png', // Ejemplo: Ponemos una imagen personalizada                
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'name'       => 'Dra. María de los Ángeles',
+                'email'      => 'angelesfit@nutricheck.com',
+                'password'   => password_hash('123456', PASSWORD_BCRYPT),
+                'rol'        => 'nutricionista',
+                'sex'        => 'female',          
+                'birth_date' => '1996-07-10', 
+                'avatar'     => 'default-avatar.png',    
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'name'       => 'Paciente Prueba',
+                'email'      => 'paciente@gmail.com',
+                'password'   => password_hash('123456', PASSWORD_BCRYPT),
+                'rol'        => 'premium',
+                'sex'        => 'male',          
+                'birth_date' => '1990-08-20',  
+                'avatar'        => 'default-avatar.png',   
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'name'       => 'Usuario Cuatro',
+                'email'      => 'usuario4@gmail.com',
+                'password'   => password_hash('123456', PASSWORD_BCRYPT),
+                'rol'        => 'free',
+                'sex'        => 'female',          
+                'birth_date' => '1999-03-12',  
+                'avatar'     => 'default-avatar.png',   
+                'created_at' => date('Y-m-d H:i:s'),
+            ]
+        ];
+        
+        $this->db->table('users')->insertBatch($data);
+    }
+}

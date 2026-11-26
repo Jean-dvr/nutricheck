@@ -1,0 +1,524 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: #F4F5F7;
+    color: #333333;
+    padding-bottom: 120px;
+}
+
+/* Navbar Principal */
+.dash-navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    height: 70px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Logo con texto "Pro" integrado en gris sin recuadro */
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+}
+
+.dash-logo {
+    height: 38px;
+    width: auto;
+    display: block;
+}
+
+.logo-pro-text {
+    font-family: Arial, 'Montserrat', sans-serif;
+    color: #777777;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-left: 2px;
+    line-height: 1;
+}
+
+.user-menu-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-top {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-admin {
+    background-color: #dc3545;
+    color: #FFFFFF;
+}
+
+.btn-premium {
+    background-color: #FFC107;
+    color: #000000;
+}
+
+/* Menú Desplegable */
+.user-dropdown {
+    position: relative;
+}
+
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #4A4A4A;
+}
+
+.arrow-down {
+    font-size: 0.7rem;
+    color: #777777;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background-color: #FFFFFF;
+    min-width: 180px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 10px 0;
+    z-index: 1200;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #4A4A4A;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.dropdown-content a:hover {
+    background-color: #F8F9FA;
+}
+
+.dropdown-content hr {
+    border: 0;
+    border-top: 1px solid #EAEAEA;
+    margin: 5px 0;
+}
+
+.text-orange { 
+    color: #F8B133 !important; 
+    font-weight: 700;
+}
+
+.text-orange:hover { 
+    color: #FF8F1C !important; 
+}
+
+.text-danger { 
+    color: #DC3545 !important; 
+}
+
+.text-warning { 
+    color: #E0A800 !important; 
+}
+
+/* Layout del Dashboard */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 25px;
+    width: 100%;
+    max-width: 1250px;
+    margin: 30px auto 10px auto;
+    padding: 0 20px;
+}
+
+/* Grid de Tarjetas */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    min-width: 0;
+}
+
+.dash-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 190px;
+    min-width: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.card-info {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.text-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.text-group h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 6px;
+    word-wrap: break-word;
+}
+
+.text-group p {
+    font-size: 0.82rem;
+    color: #888888;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.btn-probar {
+    align-self: flex-end;
+    background-color: #F8B133;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 8px 22px;
+    border-radius: 15px;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+    margin-top: 14px;
+}
+
+.btn-probar:hover {
+    background-color: #FF8F1C;
+}
+
+.btn-locked {
+    background-color: #A0A0A0;
+}
+
+/* Sidebar Derecha */
+.sidebar-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Widget Calendario */
+.calendar-widget {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.month-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #333333;
+}
+
+.calendar-nav button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #666666;
+    padding: 0 6px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+    width: 100%;
+}
+
+.day-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 6px 2px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    min-width: 0;
+}
+
+.day-col:hover {
+    background-color: #F8F9FA;
+}
+
+.day-col.current-day .day-num {
+    color: #F8B133;
+}
+
+.day-name {
+    color: #666666;
+    margin-bottom: 4px;
+}
+
+.day-num {
+    font-weight: 700;
+    color: #333333;
+}
+
+.active-dot {
+    width: 5px;
+    height: 5px;
+    background-color: #F8B133;
+    border-radius: 50%;
+    margin-top: 4px;
+}
+
+/* Comidas del Día */
+.daily-meals h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333333;
+}
+
+.meal-item {
+    background: #FFFFFF;
+    border-radius: 15px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.status-icon {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 6px;
+}
+
+.meal-details {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.meal-details h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #333333;
+    word-wrap: break-word;
+}
+
+.meal-details p {
+    font-size: 0.75rem;
+    color: #888888;
+}
+
+.meal-actions {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.btn-action {
+    background: #4A4A4A;
+    color: #FFFFFF;
+    border: none;
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.btn-action:hover {
+    opacity: 0.85;
+}
+
+/* Banner Publicitario - Bordes completamente rectos y link cliqueable */
+.ad-banner-wrapper {
+    width: 100%;
+    max-width: 1250px;
+    margin: 15px auto 20px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.ad-banner-link {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+}
+
+.ad-banner-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 0px !important; /* Bordes totalmente rectos */
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.ad-banner-img:hover {
+    opacity: 0.95;
+}
+
+/* ==========================================
+   RESPONSIVE: ZOOM, TABLET Y TELÉFONOS
+   ========================================== */
+@media (max-width: 1024px) {
+    .dashboard-layout {
+        grid-template-columns: minmax(0, 1fr);
+        margin-top: 22px;
+        gap: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dash-navbar {
+        padding: 10px 16px;
+        height: 64px;
+    }
+
+    .dash-logo {
+        height: 30px;
+    }
+
+    .user-menu-wrapper {
+        gap: 10px;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .btn-top {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    .dashboard-layout {
+        padding: 0 14px;
+        margin-top: 18px;
+    }
+
+    .tools-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .dash-card {
+        min-height: auto;
+        padding: 18px;
+    }
+
+    .card-icon {
+        width: 46px;
+        height: 46px;
+    }
+
+    .text-group h2 {
+        font-size: 1.08rem;
+    }
+
+    .calendar-widget {
+        padding: 16px 12px;
+    }
+
+    .meal-item {
+        flex-wrap: wrap;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-bottom: 145px;
+    }
+
+    .dash-navbar {
+        padding: 8px 12px;
+    }
+
+    .dash-logo {
+        height: 26px;
+    }
+
+    .btn-top {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+
+    .day-col {
+        padding: 4px 1px;
+        font-size: 0.68rem;
+    }
+}
