@@ -388,7 +388,7 @@
 
     <div class="user-menu-wrapper">
         <?php if($ncRolMenu === 'admin'): ?>
-            <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin">💳 <span class="d-none d-sm-inline">Validar </span>Pagos</a>
+            <a href="<?= base_url('dashboard/pagos') ?>" class="btn-top btn-admin"> <span class="d-none d-sm-inline">Validar </span>Pagos</a>
         <?php endif; ?>
 
         <!-- Campanita de Notificaciones -->

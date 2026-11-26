@@ -48,10 +48,18 @@ if (!empty($recetas_encontradas)) {
         max-height: 460px;
         overflow-y: auto;
         scrollbar-width: thin;
-        scrollbar-color: #f1682d #fcfcfc;
+        scrollbar-color: #adb5bd #f8f9fa;
     }
     .pantry-container::-webkit-scrollbar { width: 6px; }
-    .pantry-container::-webkit-scrollbar-thumb { background-color: #f1682d; border-radius: 10px; }
+    .pantry-container::-webkit-scrollbar-thumb { background-color: #adb5bd; border-radius: 10px; }
+
+    .recipe-header-title-icon {
+        width: 34px;
+        height: 34px;
+        object-fit: contain;
+        margin-right: 10px;
+        vertical-align: -5px;
+    }
 
     .recipe-header-actions {
         gap: 8px;
@@ -83,8 +91,8 @@ if (!empty($recetas_encontradas)) {
         gap: 5px;
     }
     .category-header {
-        background-color: #fff3ed;
-        color: #f1682d;
+        background-color: #e9ecef;
+        color: #495057;
         padding: 8px 12px;
         border-radius: 8px;
         font-weight: 600;
@@ -237,6 +245,12 @@ if (!empty($recetas_encontradas)) {
         .recipe-header-title {
             font-size: 1.55rem;
         }
+        .recipe-header-title-icon {
+            width: 26px;
+            height: 26px;
+            margin-right: 8px;
+            vertical-align: -4px;
+        }
         .recipe-header-actions .btn {
             padding-left: 1rem !important;
             padding-right: 1rem !important;
@@ -254,12 +268,14 @@ if (!empty($recetas_encontradas)) {
 <div class="container mt-4 mb-5">
 
     <!-- Encabezado -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 border-bottom pb-3">
-        <div class="mb-3 mb-md-0 mr-md-3">
-            <h2 class="recipe-header-title" style="color: #f1682d; font-weight: 700;"><i class="fas fa-book-medical"></i> Buscador de Recetas</h2>
+    <div class="mb-4 border-bottom pb-3">
+        <div class="mb-3">
+            <h2 class="recipe-header-title" style="color: #6c757d; font-weight: 700;">
+                <img src="<?= base_url('assets/imagenes/iconlupanaranja.png') ?>" alt="" class="recipe-header-title-icon"> Buscador de Recetas
+            </h2>
             <p class="text-muted mb-0">Selecciona los ingredientes de tu despensa y las recetas se actualizarán automáticamente.</p>
         </div>
-        <div class="d-flex flex-wrap align-items-center recipe-header-actions flex-shrink-0">
+        <div class="d-flex flex-wrap align-items-center recipe-header-actions">
             <?php if (in_array(session()->get('rol'), ['admin', 'nutricionista'], true)): ?>
                 <a href="<?= base_url('admin') ?>" class="btn btn-outline-success font-weight-bold rounded-pill px-4 shadow-sm text-nowrap flex-shrink-0">
                     <i class="fas fa-plus"></i> Creador de Recetas
@@ -277,7 +293,7 @@ if (!empty($recetas_encontradas)) {
         <div class="col-lg-4 mb-4">
             <div class="card shadow-sm border-0" style="border-radius: 15px; background-color: #fcfcfc;">
                 <div class="card-header bg-white border-0 pt-4 pb-2">
-                    <h5 class="font-weight-bold text-dark mb-1">🛒 Mi Despensa</h5>
+                    <h5 class="font-weight-bold text-dark mb-1"> Mi Despensa</h5>
 
                     <input
                         type="text"
@@ -286,7 +302,7 @@ if (!empty($recetas_encontradas)) {
                         form="formBuscador"
                         value="<?= esc($filtroTextoPost) ?>"
                         class="form-control form-control-sm mt-3 rounded-pill"
-                        placeholder="🔍 Buscar ingrediente rápido..."
+                        placeholder="Buscar ingrediente rápido..."
                         autocomplete="off"
                     >
 
@@ -340,9 +356,9 @@ if (!empty($recetas_encontradas)) {
                             type="submit"
                             id="btnBuscarRecetas"
                             class="btn btn-block text-white font-weight-bold shadow-sm rounded-pill"
-                            style="background-color: #f1682d; padding: 11px; transition: 0.3s;"
-                            onmouseover="this.style.backgroundColor='#d05623'"
-                            onmouseout="this.style.backgroundColor='#f1682d'"
+                            style="background-color: #f7b52c; padding: 11px; transition: 0.3s;"
+                            onmouseover="this.style.backgroundColor='#e09f1c'"
+                            onmouseout="this.style.backgroundColor='#f7b52c'"
                         >
                             Actualizar búsqueda
                         </button>
@@ -406,7 +422,7 @@ if (!empty($recetas_encontradas)) {
 
                                 <div class="d-flex justify-content-center text-muted small mb-3 p-2 rounded" style="background-color: #f8f9fa;">
                                     <div class="text-center w-50 border-right" title="Tiempo de preparación">
-                                        <span class="d-block text-dark font-weight-bold">⏱️ <?= esc($receta['prep_time_minutes'] ?? '--') ?></span> min
+                                        <span class="d-block text-dark font-weight-bold">⏱ <?= esc($receta['prep_time_minutes'] ?? '--') ?></span> min
                                     </div>
                                     <div class="text-center w-50" title="Dificultad">
                                         <span class="d-block text-dark font-weight-bold text-capitalize">🍳 <?= esc($receta['difficulty'] ?? 'Media') ?></span> Dificultad
@@ -593,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Métricas
-        modalTiempo.textContent = receta.prep_time_minutes ? `⏱️ ${receta.prep_time_minutes} min` : '⏱️ --';
+        modalTiempo.textContent = receta.prep_time_minutes ? `⏱ ${receta.prep_time_minutes} min` : '⏱ --';
         modalDificultad.textContent = `🍳 ${formatearDificultad(receta.difficulty)}`;
         modalCalorias.textContent = receta.total_calories ? `🔥 ${receta.total_calories} kcal` : '🔥 --';
 
