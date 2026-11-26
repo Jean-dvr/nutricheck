@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call('IngredientsSeeder');
         $this->call('RecipesSeeder');
         $this->call('TagsSeeder');
+        $this->call('BannersSeeder');
 
         // Tablas Dependientes
         $this->call('HealthProfilesSeeder');
