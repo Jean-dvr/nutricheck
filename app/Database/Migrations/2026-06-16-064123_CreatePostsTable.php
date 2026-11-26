@@ -54,6 +54,7 @@ class CreatePostsTable extends Migration
 
         // Definir la llave primaria
         $this->forge->addKey('id', true);
+        $this->forge->addKey(['status', 'category']);
         
         // Llave foránea
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');

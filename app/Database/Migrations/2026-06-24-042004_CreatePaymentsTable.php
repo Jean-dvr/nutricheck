@@ -20,7 +20,8 @@ class CreatePaymentsTable extends Migration
             ],
             'amount' => [
                 'type'       => 'DECIMAL',
-                'constraint' => '10,2'
+                'constraint' => '10,2',
+                'unsigned' => true
             ],
             'payment_method' => [
                 'type'       => 'VARCHAR',
@@ -50,6 +51,9 @@ class CreatePaymentsTable extends Migration
         ]);
         
         $this->forge->addKey('id', true);
+        $this->forge->addKey('status');
+        $this->forge->addUniqueKey(['payment_method', 'reference_number']);
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
         $this->forge->createTable('payments');
     }
     public function down() { $this->forge->dropTable('payments'); }

@@ -28,6 +28,7 @@ class CreateRecipeIngredientsTable extends Migration
             'quantity' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '6,2',
+                'unsigned' => true
             ],
             'unit_of_measure' => [
                 'type'       => 'VARCHAR',
