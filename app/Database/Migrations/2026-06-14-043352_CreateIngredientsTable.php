@@ -28,21 +28,25 @@ class CreateIngredientsTable extends Migration
             'calories_per_100g' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '6,2',
+                'unsigned' => true
             ],
             'protein_g' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '5,2',
                 'default'    => 0,
+                'unsigned' => true
             ],
             'carb_g' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '5,2',
                 'default'    => 0,
+                'unsigned' => true
             ],
             'fat_g' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '5,2',
                 'default'    => 0,
+                'unsigned' => true
             ],
             'image_url' => [
                 'type'       => 'VARCHAR',

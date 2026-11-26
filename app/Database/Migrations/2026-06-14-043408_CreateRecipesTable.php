@@ -32,6 +32,7 @@ class CreateRecipesTable extends Migration
             'prep_time_minutes' => [
                 'type' => 'INT',
                 'null' => true,
+                'unsigned' => true
             ],
             'difficulty' => [
                 'type'       => 'ENUM',
@@ -41,9 +42,11 @@ class CreateRecipesTable extends Migration
             'portions' => [
                 'type'    => 'INT',
                 'default' => 1,
+                'unsigned' => true
             ],
             'total_calories' => [
                 'type' => 'INT',
+                'unsigned' => true
             ],
             'is_approved' => [
                 'type'       => 'TINYINT',
@@ -59,6 +62,7 @@ class CreateRecipesTable extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->createTable('recipes');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'SET NULL');
     }
     public function down() { $this->forge->dropTable('recipes'); }
 }

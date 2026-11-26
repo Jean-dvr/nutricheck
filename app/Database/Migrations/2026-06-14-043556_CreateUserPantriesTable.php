@@ -29,6 +29,7 @@ class CreateUserPantriesTable extends Migration
                 'type'       => 'DECIMAL',
                 'constraint' => '6,2',
                 'null'       => true,
+                'unsigned' => true
             ],
         ]);
 
