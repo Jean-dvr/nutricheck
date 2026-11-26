@@ -62,9 +62,7 @@ La plataforma permite evaluar indicadores antropométricos, consultar recetas ad
 * **MySQL**
 * **Composer**
 
-### Pasos de configuración
-
-1. **Clonar el repositorio** dentro de la carpeta `htdocs` de XAMPP:
+**Clonar el repositorio** dentro de la carpeta `htdocs` de XAMPP:
    ```bash
    git clone [https://github.com/USUARIO/REPOSITORIO.git](https://github.com/USUARIO/REPOSITORIO.git) nutricheck
    cd nutricheck
