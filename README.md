@@ -1,69 +1,70 @@
-# CodeIgniter 4 Application Starter
+<p align="center">
+  <img src="public/assets/imagenes/logo_naranja.png" alt="Logo NutriCheck" width="260">
+</p>
 
-## What is CodeIgniter?
+<h1 align="center">NutriCheck</h1>
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+<p align="center">
+  <strong>Plataforma web de planificación nutricional y seguimiento de hábitos saludables</strong><br>
+  Proyecto académico desarrollado para la asignatura <em>Programación 3</em> — Universidad Marítima del Caribe (UMC).
+</p>
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+<p align="center">
+  <a href="https://test-nutri.infinityfreeapp.com/" target="_blank">Ver versión desplegada (Demo)</a>
+</p>
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+---
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## Descripción del Proyecto
 
-## Installation & updates
+**NutriCheck** es un prototipo web desarrollado con fines académicos que facilita a los usuarios el monitoreo de sus hábitos alimenticios y su evaluación física, a la vez que organiza información útil para el acompañamiento con especialistas en nutrición.
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+La plataforma permite evaluar indicadores antropométricos, consultar recetas adaptadas a condiciones médicas o alergias, registrar el historial diario de comidas y acceder a contenido informativo validado por profesionales.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+---
 
-## Setup
+## Funcionalidades Principales
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+* **Calculadora de Evaluación Física (IMC, Cintura e ICE):** Calcula el Índice de Masa Corporal, el rango de peso saludable estimado, el riesgo por perímetro abdominal y el Índice Cintura-Estatura bajo referencias OMS y NICE, ofreciendo recomendaciones personalizadas.
+* **Buscador de Recetas:** Permite explorar recetas saludables y filtrar resultados considerando ingredientes y el perfil clínico del usuario.
+* **Creador y Gestor de Recetas:** Panel exclusivo para administradores y nutricionistas para registrar recetas, ingredientes y etiquetas nutricionales, con flujo de aprobación antes de su publicación.
+* **Racha de Comidas:** Registro diario de comidas (desayuno, almuerzo, cena y merienda) con calendario interactivo, historial editable y opción de cargar foto del plato.
+* **Perfil Clínico:** Administración de datos personales, medidas corporales y catálogo de patologías y alergias.
+* **Noticias (Newspaper):** Espacio informativo de salud, jornadas médicas y recetas especiales con categorías, guardado de artículos y moderación de publicaciones.
+* **Suscripción NutriCheckPro y Notificaciones:** Flujo de reporte y validación de pagos (Pago Móvil y Zelle), notificaciones internas por rol y rotación de banners publicitarios para cuentas gratuitas.
 
-## Important Change with index.php
+---
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+## Roles de Usuario
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+| Rol | Alcance dentro del sistema |
+| :--- | :--- |
+| **Administrador (`admin`)** | Control total de la plataforma: aprobación de recetas, noticias y pagos, gestión de banners publicitarios y catálogo clínico. |
+| **Nutricionista (`nutricionista`)** | Creación de recetas, ingredientes, etiquetas y artículos en Noticias (sujetos a aprobación del administrador). |
+| **Usuario Premium (`premium`)** | Acceso completo a todas las herramientas sin anuncios publicitarios, incluyendo la sección de Noticias. |
+| **Usuario Gratuito (`free`)** | Acceso a Calculadora IMC, Buscador de Recetas, Racha de Comidas y Perfil Clínico con anuncios integrados. |
 
-**Please** read the user guide for a better explanation of how CI4 works!
+---
 
-## Repository Management
+## Tecnologías Utilizadas
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+* **Backend:** PHP 8.2 y CodeIgniter 4
+* **Base de datos:** MySQL (driver MySQLi)
+* **Frontend:** HTML5, CSS3, Bootstrap y JavaScript
+* **Entorno local y despliegue:** XAMPP, Composer e InfinityFree
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+---
 
-## Server Requirements
+## Instalación y Ejecución Local
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+### Requisitos previos
+* PHP 8.2 o superior (recomendado mediante **XAMPP**)
+* **MySQL**
+* **Composer**
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+### Pasos de configuración
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+1. **Clonar el repositorio** dentro de la carpeta `htdocs` de XAMPP:
+   ```bash
+   git clone [https://github.com/USUARIO/REPOSITORIO.git](https://github.com/USUARIO/REPOSITORIO.git) nutricheck
+   cd nutricheck
