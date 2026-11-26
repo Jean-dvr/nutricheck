@@ -1,9 +1,9 @@
 </div> 
-  <?php 
+<?php 
 $rolActual = session()->get('rol');
 
 // Mostramos a Free y Admin (Premium y Nutricionista no ven esto)
-if(in_array($rolActual, ['free', 'admin'])): 
+if (in_array($rolActual, ['free', 'admin'])): 
     
     $bannersModel = new \App\Models\BannersModel();
     $dbBanners = \Config\Database::connect();
@@ -14,9 +14,9 @@ if(in_array($rolActual, ['free', 'admin'])):
     }
     
     // TRUCO LÓGICO para la rotación
-    if(empty($listaBanners)) {
+    if (empty($listaBanners)) {
         $nombresBanners = ['placeholder', 'placeholder'];
-    } elseif(count($listaBanners) === 1) {
+    } elseif (count($listaBanners) === 1) {
         $nombresBanners = [$listaBanners[0]['image_url'], $listaBanners[0]['image_url']];
     } else {
         $nombresBanners = array_column($listaBanners, 'image_url');
@@ -115,19 +115,6 @@ if(in_array($rolActual, ['free', 'admin'])):
             align-items: center;
             gap: 6px;
         }
-        .nc-side-ad-pill {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 50rem;
-            background: rgba(255, 255, 255, 0.22);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            color: #ffffff;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-        }
         .nc-side-ad-pro-link {
             pointer-events: auto;
             display: inline-block;
@@ -167,25 +154,22 @@ if(in_array($rolActual, ['free', 'admin'])):
         }
     </style>
 
+    <!-- Banner Lateral Izquierdo -->
     <div id="freemium-ad-izq" class="d-none d-xl-block nc-side-ad" style="left: 18px;">
         <div class="nc-side-ad-header <?= $rolActual !== 'admin' ? 'nc-centered' : '' ?>">
             <span class="nc-side-ad-label"><?= $rolActual === 'admin' ? '📊 Estadísticas' : 'Publicidad' ?></span>
-            <?php if($rolActual === 'admin'): ?>
+            <?php if ($rolActual === 'admin'): ?>
                 <button type="button" class="nc-side-ad-close" aria-label="Cerrar anuncios" title="Ocultar anuncios temporalmente" onclick="cerrarAnuncios()">&times;</button>
             <?php endif; ?>
         </div>
         
         <div id="banner-img-izq" class="nc-side-ad-canvas">
-            
-            <?php if($rolActual !== 'admin'): ?>
+            <?php if ($rolActual !== 'admin'): ?>
                 <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-link" aria-label="Mejorar a NutriCheckPro"></a>
                 <div class="nc-side-ad-overlay">
-                    <span class="nc-side-ad-pill ad-timer-badge">Cambia en <span class="time-left-span">30</span>s</span>
                     <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-pro-link">✨ Quitar anuncios</a>
                 </div>
-            <?php endif; ?>
-
-            <?php if($rolActual === 'admin'): ?>
+            <?php else: ?>
                 <div class="nc-side-ad-admin-panel text-center">
                     <p class="small font-weight-bold mb-1 text-warning" style="font-size: 0.72rem;">Anuncios Activos</p>
                     <h3 class="mb-2 text-white font-weight-bold"><?= count($listaBanners) ?></h3>
@@ -195,25 +179,22 @@ if(in_array($rolActual, ['free', 'admin'])):
         </div>
     </div>
 
+    <!-- Banner Lateral Derecho -->
     <div id="freemium-ad-der" class="d-none d-xl-block nc-side-ad" style="right: 18px;">
         <div class="nc-side-ad-header <?= $rolActual !== 'admin' ? 'nc-centered' : '' ?>">
             <span class="nc-side-ad-label"><?= $rolActual === 'admin' ? '⚙️ Nuevo Anuncio' : 'Publicidad' ?></span>
-            <?php if($rolActual === 'admin'): ?>
+            <?php if ($rolActual === 'admin'): ?>
                 <button type="button" class="nc-side-ad-close" aria-label="Cerrar anuncios" title="Ocultar anuncios temporalmente" onclick="cerrarAnuncios()">&times;</button>
             <?php endif; ?>
         </div>
         
         <div id="banner-img-der" class="nc-side-ad-canvas">
-            
-            <?php if($rolActual !== 'admin'): ?>
+            <?php if ($rolActual !== 'admin'): ?>
                 <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-link" aria-label="Mejorar a NutriCheckPro"></a>
                 <div class="nc-side-ad-overlay">
-                    <span class="nc-side-ad-pill ad-timer-badge">Cambia en <span class="time-left-span">30</span>s</span>
                     <a href="<?= base_url('premium/checkout') ?>" class="nc-side-ad-pro-link">✨ Quitar anuncios</a>
                 </div>
-            <?php endif; ?>
-
-            <?php if($rolActual === 'admin'): ?>
+            <?php else: ?>
                 <div class="nc-side-ad-admin-panel text-left">
                     <form action="<?= base_url('dashboard/actualizarAnuncio') ?>" method="POST" enctype="multipart/form-data">
                         <?= csrf_field() ?>
@@ -227,7 +208,7 @@ if(in_array($rolActual, ['free', 'admin'])):
         </div>
     </div>
 
-    <?php if($rolActual === 'admin'): ?>
+    <?php if ($rolActual === 'admin'): ?>
     <div class="modal fade text-left" id="modalGestionarBanners" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content" style="border-radius: 15px;">
@@ -238,14 +219,14 @@ if(in_array($rolActual, ['free', 'admin'])):
                     </button>
                 </div>
                 <div class="modal-body bg-light">
-                    <?php if(empty($listaBanners)): ?>
+                    <?php if (empty($listaBanners)): ?>
                         <div class="text-center py-5">
                             <h3 class="text-muted">📭</h3>
                             <p class="text-muted font-weight-bold">No hay banners subidos en el sistema actualmente.</p>
                         </div>
                     <?php else: ?>
                         <div class="row">
-                            <?php foreach($listaBanners as $banner): ?>
+                            <?php foreach ($listaBanners as $banner): ?>
                                 <div class="col-6 col-md-3 mb-4">
                                     <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 10px;">
                                         <img src="<?= base_url('assets/ads/' . $banner['image_url']) ?>" class="card-img-top bg-dark" style="height: 250px; object-fit: contain;" alt="Banner">
@@ -281,42 +262,32 @@ if(in_array($rolActual, ['free', 'admin'])):
         bannerIzq.style.backgroundImage = "url('" + obtenerUrl(banners[indexIzq]) + "')";
         bannerDer.style.backgroundImage = "url('" + obtenerUrl(banners[indexDer]) + "')";
 
-        <?php if($rolActual === 'admin'): ?>
+        <?php if ($rolActual === 'admin'): ?>
         function cerrarAnuncios() { 
             document.getElementById('freemium-ad-izq').style.display = 'none'; 
             document.getElementById('freemium-ad-der').style.display = 'none'; 
             if (rotacionAd) clearInterval(rotacionAd);
         }
         <?php else: ?>
-        let segundosFaltantes = 30;
-        const contadores = document.querySelectorAll('.time-left-span');
-
         rotacionAd = setInterval(() => {
-            segundosFaltantes--;
-            contadores.forEach(c => c.textContent = segundosFaltantes);
+            indexIzq = (indexIzq + 1) % banners.length;
+            indexDer = (indexDer + 1) % banners.length;
             
-            if (segundosFaltantes <= 0) {
-                indexIzq = (indexIzq + 1) % banners.length;
-                indexDer = (indexDer + 1) % banners.length;
-                
-                bannerIzq.style.opacity = "0";
-                bannerDer.style.opacity = "0";
-                
-                setTimeout(() => { 
-                    bannerIzq.style.backgroundImage = "url('" + obtenerUrl(banners[indexIzq]) + "')";
-                    bannerDer.style.backgroundImage = "url('" + obtenerUrl(banners[indexDer]) + "')";
-                    bannerIzq.style.opacity = "1";
-                    bannerDer.style.opacity = "1";
-                }, 400);
-
-                segundosFaltantes = 30;
-                contadores.forEach(c => c.textContent = segundosFaltantes);
-            }
-        }, 1000);
+            bannerIzq.style.opacity = "0";
+            bannerDer.style.opacity = "0";
+            
+            setTimeout(() => { 
+                bannerIzq.style.backgroundImage = "url('" + obtenerUrl(banners[indexIzq]) + "')";
+                bannerDer.style.backgroundImage = "url('" + obtenerUrl(banners[indexDer]) + "')";
+                bannerIzq.style.opacity = "1";
+                bannerDer.style.opacity = "1";
+            }, 400);
+        }, 30000);
         <?php endif; ?>
     </script>
 <?php endif; ?>
+
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>
